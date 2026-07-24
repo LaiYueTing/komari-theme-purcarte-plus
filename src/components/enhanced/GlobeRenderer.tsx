@@ -94,8 +94,8 @@ export default function GlobeRenderer({
     }
   }, []);
 
-  // 抑制 globe.gl 内部的 THREE.js 弃用警告（THREE.Clock 已弃用）
-  // globe.gl v2.45.0 尚未迁移到 THREE.Timer，此警告无害但刷屏
+  // 抑制 globe.gl 內部的 THREE.js 棄用警告（THREE.Clock 已棄用）
+  // globe.gl v2.45.0 尚未遷移到 THREE.Timer，此警告無害但洗版
   useEffect(() => {
     const originalWarn = console.warn;
     console.warn = (...args: any[]) => {
@@ -116,7 +116,7 @@ export default function GlobeRenderer({
     const container = containerRef.current;
     if (!container || globeRef.current) return;
 
-    // 获取或创建 tooltip
+    // 取得或建立 tooltip
     const renderArea = container.closest("#earth-render-area");
     let tooltip = renderArea?.querySelector("#earth-tooltip") as HTMLDivElement;
     if (!tooltip) {
@@ -307,7 +307,7 @@ export default function GlobeRenderer({
     globe.controls().autoRotateSpeed = 0.6;
     globe.controls().enableZoom = true;
 
-    // 点击空白区域隐藏 tooltip
+    // 點擊空白區域隱藏 tooltip
     container.addEventListener("click", (e: Event) => {
       const target = e.target as HTMLElement;
       if (target === container || target.tagName === "CANVAS") {
@@ -315,7 +315,7 @@ export default function GlobeRenderer({
       }
     });
 
-    // 触摸事件
+    // 觸控事件
     let touchStartTime = 0;
     container.addEventListener("touchstart", () => {
       touchStartTime = Date.now();
@@ -331,7 +331,7 @@ export default function GlobeRenderer({
       }
     });
 
-    // 窗口大小变化
+    // 視窗大小變化
     const handleResize = () => {
       globe.width(container.clientWidth);
       globe.height(container.clientHeight);
@@ -345,21 +345,21 @@ export default function GlobeRenderer({
     return () => {
       window.removeEventListener("resize", handleResize);
     };
-    // 只在挂载时初始化一次
+    // 只在掛載時初始化一次
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // 主题颜色变更时同步 ref 并刷新弧线/脉冲环颜色
+  // 主題顏色變更時同步 ref 並重新整理弧線/脈衝環顏色
   useEffect(() => {
     themeColorRef.current = themeColor;
     const globe = globeRef.current;
     if (!globe) return;
-    // 重新设置颜色回调以触发 globe.gl 重绘
+    // 重新設定顏色回呼以觸發 globe.gl 重繪
     globe.arcColor(() => themeColor);
     globe.ringColor(() => themeColor);
   }, [themeColor]);
 
-  // 主题变更时更新地球外观
+  // 主題變更時更新地球外觀
   useEffect(() => {
     const globe = globeRef.current;
     if (!globe) return;
@@ -382,7 +382,7 @@ export default function GlobeRenderer({
     lastAppliedThemeRef.current = { ...bgConfig };
   }, [bgConfig]);
 
-  // 模态框重新打开时调整尺寸
+  // 對話框重新開啟時調整尺寸
   useEffect(() => {
     const globe = globeRef.current;
     const container = containerRef.current;

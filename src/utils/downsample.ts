@@ -1,8 +1,8 @@
 /**
- * LTTB (Largest-Triangle-Three-Buckets) 降采样算法
- * 比简单的每N个取一个采样保留更好的视觉形状
+ * LTTB (Largest-Triangle-Three-Buckets) 降採樣演算法
+ * 比簡單的每 N 個取一個採樣保留更好的視覺形狀
  *
- * 对于多线条图表，使用所有非null值的平均值作为代表Y值进行三角计算
+ * 對於多線條圖表，使用所有非 null 值的平均值作為代表 Y 值進行三角計算
  */
 export function lttbDownsample<T extends { time: number; [key: string]: any }>(
   data: T[],
@@ -12,20 +12,20 @@ export function lttbDownsample<T extends { time: number; [key: string]: any }>(
   const len = data.length;
   if (targetPoints >= len || targetPoints <= 2) return data;
 
-  const result: T[] = [data[0]]; // 始终保留第一个点
+  const result: T[] = [data[0]]; // 始終保留第一個點
   const bucketSize = (len - 2) / (targetPoints - 2);
 
   let prevIndex = 0;
 
   for (let i = 0; i < targetPoints - 2; i++) {
-    // 当前桶范围
+    // 目前桶範圍
     const bucketStart = Math.floor((i + 1) * bucketSize) + 1;
     const bucketEnd = Math.min(
       Math.floor((i + 2) * bucketSize) + 1,
       len - 1
     );
 
-    // 下一个桶的平均值 (用于三角计算)
+    // 下一個桶的平均值 (用於三角計算)
     const nextBucketStart = Math.floor((i + 2) * bucketSize) + 1;
     const nextBucketEnd = Math.min(
       Math.floor((i + 3) * bucketSize) + 1,
@@ -41,7 +41,7 @@ export function lttbDownsample<T extends { time: number; [key: string]: any }>(
       avgCount++;
     }
     if (avgCount === 0) {
-      // 最后一个桶可能为空，使用最后一个点
+      // 最後一個桶可能為空，使用最後一個點
       avgX = data[len - 1].time;
       avgY = getAvgValue(data[len - 1], valueKeys);
     } else {
@@ -49,7 +49,7 @@ export function lttbDownsample<T extends { time: number; [key: string]: any }>(
       avgY /= avgCount;
     }
 
-    // 在当前桶中找到使三角面积最大的点
+    // 在目前桶中找到使三角面積最大的點
     const prevX = data[prevIndex].time;
     const prevY = getAvgValue(data[prevIndex], valueKeys);
 
@@ -60,7 +60,7 @@ export function lttbDownsample<T extends { time: number; [key: string]: any }>(
       const pointX = data[j].time;
       const pointY = getAvgValue(data[j], valueKeys);
 
-      // 三角面积公式 (叉积的绝对值 / 2)
+      // 三角面積公式 (外積的絕對值 / 2)
       const area = Math.abs(
         (prevX - avgX) * (pointY - prevY) -
           (prevX - pointX) * (avgY - prevY)
@@ -76,12 +76,12 @@ export function lttbDownsample<T extends { time: number; [key: string]: any }>(
     prevIndex = maxAreaIndex;
   }
 
-  result.push(data[len - 1]); // 始终保留最后一个点
+  result.push(data[len - 1]); // 始終保留最後一個點
   return result;
 }
 
 /**
- * 计算数据行中所有值键的平均值 (忽略 null/undefined)
+ * 計算資料列中所有值鍵的平均值 (忽略 null/undefined)
  */
 function getAvgValue(row: { [key: string]: any }, keys: string[]): number {
   let sum = 0;
@@ -97,8 +97,8 @@ function getAvgValue(row: { [key: string]: any }, keys: string[]): number {
 }
 
 /**
- * 根据数据量和线条数自动计算最佳降采样目标点数
- * 返回 0 表示不需要降采样
+ * 根據資料量和線條數自動計算最佳降採樣目標點數
+ * 回傳 0 表示不需要降採樣
  */
 export function calculateAutoMaxPoints(
   dataLength: number,
@@ -108,15 +108,15 @@ export function calculateAutoMaxPoints(
 
   const totalCells = dataLength * lineCount;
 
-  // 小数据集不需要降采样
+  // 小資料集不需要降採樣
   if (totalCells < 50_000) return 0;
 
-  // 中等数据集
+  // 中等資料集
   if (totalCells < 200_000) {
     return Math.min(dataLength, 1500);
   }
 
-  // 大数据集: 基于线条数动态计算
+  // 大資料集: 基於線條數動態計算
   const target = Math.max(
     300,
     Math.floor(2000 / Math.sqrt(lineCount))

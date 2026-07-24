@@ -100,7 +100,7 @@
     "false": "否",
     "textPlaceholder": "关键词搜索，& 为 AND，| 为 OR",
     "unifiedTextLabel": "全文搜索",
-    "unifiedTextPlaceholder": "搜索 UUID、名称、CPU、系统、地区、分组、标签等...",
+    "unifiedTextPlaceholder": "搜索 UUID、名称、CPU、系统、地区、分组、标签等 ...",
     "unifiedTextHelp": "在所有文本字段中模糊搜索，支持 & (AND) 和 | (OR) 分隔多个关键词",
     "textHelpAnd": "使用 & 分隔关键词，所有关键词必须匹配",
     "textHelpOr": "使用 | 分隔关键词，任一关键词匹配即可",
@@ -115,7 +115,7 @@
     "dateRangeMode": "日期范围",
     "dateFrom": "起始日期",
     "dateTo": "截止日期",
-    "dateHelp": "日期为 UTC+8 北京时间，后台存储 UTC 格式需转换",
+    "dateHelp": "日期为 UTC+8 台北时间，后台存储 UTC 格式需转换",
     "rangeFrom": "最小值",
     "rangeTo": "最大值",
     "rangeUnit": "单位",
@@ -182,7 +182,7 @@
       "trafficLimitType_sum": "总和",
       "trafficLimitType_up": "仅上传",
       "trafficLimit_description": "用于首页流量进度条，设置为 0 B 禁用。",
-      "waiting": "等待..."
+      "waiting": "等待 ..."
     },
     "nodeTable": {
       "addNode": "添加节点",
@@ -199,7 +199,7 @@
       "currency": "货币",
       "currencyTips": "¥-人民币，$-美元，€-欧元，£-英镑，₽-卢布，₣-法郎，₹-卢比，₫-越南盾，฿-泰铢",
       "customColumns": "自定义列",
-      "deleting": "删除中...",
+      "deleting": "删除中 ...",
       "disableAutoUpdate": "禁用自动更新",
       "disableWebSsh": "禁用远程控制",
       "dragToReorder": "长按拖拽重新排序",
@@ -220,7 +220,7 @@
       "install_dir_placeholder": "安装目录，为空则使用默认目录(/opt/komari-agent)",
       "invalidPrice": "价格无效",
       "ipAddress": "IP 地址",
-      "loading": "加载中...",
+      "loading": "加载中 ...",
       "memoryModeAvailable": "包含缓冲区内存",
       "memoryModeAvailable_tip": "Agent 默认监测并上报已用内存，勾选此选项将上报已用内存+缓冲区内存。",
       "monthRotate": "网络统计月重置日",
@@ -272,8 +272,8 @@
     "hours": "{{count}} 小时",
     "interval": "检测间隔",
     "latest": "最新",
-    "loading": "正在加载图表...",
-    "loadingData": "正在加载图表数据...",
+    "loading": "正在加载图表 ...",
+    "loadingData": "正在加载图表数据 ...",
     "lossRate": "丢包",
     "loss_tips": "丢包率计算算法并不准确，谨慎参考。  波动：延迟的拖尾波动，数值越高，波动越大，计算方法：(P99 - P50) / max(min(P50, 50), 10)。",
     "max": "最大值",
@@ -432,10 +432,10 @@
       "longTermChicken": "长期鸡，按原价",
       "longTermTooltip": "到期时间>100年/长期机器，按原价计算",
       "defaultRates": "使用默认汇率",
-      "ratesUpdated": "汇率更新: {{time}}",
-      "ratesUpdating": "汇率更新中...",
-      "excludeFreeOn": "当前：已排除白嫖中标签",
-      "excludeFreeOff": "当前：包含白嫖中标签",
+      "ratesUpdated": "汇率更新：{{time}}",
+      "ratesUpdating": "汇率更新中 ...",
+      "excludeFreeOn": "当前：已排除免费标签",
+      "excludeFreeOff": "当前：包含免费标签",
       "refresh": "刷新数据"
     },
     "trade": {
@@ -460,6 +460,7 @@
       "remainingDays": "(剩余{{days}}天)",
       "expiresToday": "(今日到期)",
       "expiredDays": "(已过期{{days}}天)",
+      "longTerm": "长期",
       "tags": "标签:",
       "remarks": "备注:",
       "tradeCalc": "交易计算",
@@ -484,6 +485,7 @@
       "trafficInfinite": "∞TB/月",
       "share": "分享链接",
       "shareCopied": "分享链接已复制到剪贴板",
+      "shareFail": "复制分享链接失败",
       "shareDisabled": "高级搜索未启用，禁止分享交易链接",
       "exportImage": "导出图片",
       "exportSuccess": "图片已保存",
@@ -491,7 +493,7 @@
     },
     "earth": {
       "totalServers": "服务器总数",
-      "loading": "加载地球组件中..."
+      "loading": "加载地球组件中 ..."
     },
     "protection": {
       "warning": "警告",
@@ -523,7 +525,7 @@
       "noNodes": "请选择至少一个节点"
     },
     "execute": "执行命令",
-    "executing": "执行中...",
+    "executing": "执行中 ...",
     "pollingTimeout": "任务执行超时",
     "results": "执行结果",
     "selectNodes": "选择目标节点",
@@ -570,7 +572,7 @@
     "addNode": "添加节点",
     "addNodesInAdmin": "请先通过管理端添加节点",
     "errorFetchingNodes": "获取节点数据失败",
-    "loadingData": "正在努力获取数据中...",
+    "loadingData": "正在努力获取数据中 ...",
     "noDetailsAvailable": "未启用详细信息与延迟图表",
     "noNodes": "暂无节点数据",
     "retryFetchingNodes": "获取节点数据失败，请重试"
@@ -582,14 +584,14 @@
     "cpu": "CPU",
     "days": "{{count}}天",
     "disk": "磁盘",
-    "enteringNodeDetails": "正在进入节点详情...",
+    "enteringNodeDetails": "正在进入节点详情 ...",
     "gpu": "GPU",
     "hours": "{{count}}小时",
     "lastUpdated": "最后上报",
     "latency": "延迟",
     "live": "实时",
     "load": "负载",
-    "loadingNodeInfo": "正在获取节点信息...",
+    "loadingNodeInfo": "正在获取节点信息 ...",
     "mem": "内存",
     "nodeNotFound": "未找到该节点",
     "optionLoad": "负载",
@@ -609,7 +611,7 @@
     "threshold_placeholder": "百分比，例如80代表80%",
     "title": "负载警报"
   },
-  "loading": "加载中...",
+  "loading": "加载中 ...",
   "log": {
     "title": "日志"
   },
@@ -636,8 +638,8 @@
     "disk": "硬盘",
     "downloadPrefix": "↓",
     "expired": "已过期",
-    "expiredAt": "到期:",
-    "lastSeen": "最后上线:",
+    "expiredAt": "到期：",
+    "lastSeen": "最后上线：",
     "load": "负载",
     "longTerm": "长期",
     "mem": "内存",
@@ -652,7 +654,7 @@
     "swap": "SWAP",
     "traffic": "流量",
     "uploadPrefix": "↑",
-    "uptime": "在线:"
+    "uptime": "在线："
   },
   "nodeCard": {
     "actions": "操作",
@@ -736,7 +738,7 @@
     "_": "延迟总览",
     "deselectAll": "取消全选",
     "entry": "延迟总览",
-    "loadingData": "正在获取所有服务器延迟数据...",
+    "loadingData": "正在获取所有服务器延迟数据 ...",
     "monitorNodes": "监测节点",
     "noData": "暂无延迟监测数据",
     "selectAll": "全选",
@@ -784,7 +786,7 @@
     "clear": "清空搜索",
     "no_results": "未找到匹配的服务器",
     "notFound": "Not Found",
-    "placeholder": "搜索服务器...",
+    "placeholder": "搜索服务器 ...",
     "results": "找到 {{count}} 个服务器，共 {{total}} 个",
     "retry": "重试",
     "tryChangingFilters": "请尝试更改筛选条件",
@@ -806,7 +808,7 @@
     "last_user_agent": "最后活动UA",
     "latest_ip": "最后活动IP",
     "latest_online": "最近在线",
-    "loading": "加载中...",
+    "loading": "加载中 ...",
     "login_method": "登入方式",
     "session_id": "会话 ID",
     "title": "会话管理"
@@ -1098,7 +1100,7 @@
     "upload_first_theme": "上传您的第一个主题",
     "upload_success": "主题上传成功",
     "upload_theme": "上传主题",
-    "uploading": "正在上传主题...",
+    "uploading": "正在上传主题 ...",
     "uploda_413_content_too_large": "文件上传失败 (413)。请检查并增大您的反向代理服务器（如 Nginx/CDN）配置中的文件大小限制（client_max_body_size），确保该值大于您的目标文件大小。",
     "version": "版本",
     "zip_files_only": "仅支持 .zip 格式"

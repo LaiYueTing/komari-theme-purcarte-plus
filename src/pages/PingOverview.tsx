@@ -51,14 +51,14 @@ import { cn } from "@/utils";
 import { lttbDownsample, calculateAutoMaxPoints } from "@/utils/downsample";
 import { apiService } from "@/services/api";
 
-// 排序类型定义
+// 排序型別定義
 type ServerSortKey = "weight" | "name";
 type SortDirection = "asc" | "desc";
 
-// localStorage 键
+// localStorage 鍵
 const SERVER_SORT_KEY = "pingOverview_serverSort";
 
-// 读写 localStorage 排序配置
+// 讀寫 localStorage 排序設定
 function loadSort<K extends string>(
   storageKey: string,
   defaultKey: K,
@@ -80,7 +80,7 @@ function saveSort(storageKey: string, key: string, dir: SortDirection) {
   } catch { /* empty */ }
 }
 
-// 类型定义
+// 型別定義
 interface CombinedLineInfo {
   key: string; // `${uuid}_${taskId}`
   name: string; // `${serverName} - ${taskName}`
@@ -91,20 +91,20 @@ interface CombinedLineInfo {
   interval: number;
 }
 
-// 合并线条的颜色生成（按服务器分色相，同服务器内按监测节点偏移色相+亮度+饱和度）
+// 合併線條的顏色產生（按伺服器分色相，同伺服器內按監測節點偏移色相+亮度+飽和度）
 const generateCombinedColor = (
   serverIndex: number,
   totalServers: number,
   taskIndex: number,
   totalTasks: number
 ) => {
-  // 不同服务器：均匀分配色相
+  // 不同伺服器：均勻分配色相
   const baseHue = (serverIndex * (360 / Math.max(totalServers, 1))) % 360;
-  // 同服务器不同监测节点：色相偏移 + 亮度/饱和度大幅变化
+  // 同伺服器不同監測節點：色相偏移 + 亮度/飽和度大幅變化
   const hueShift = totalTasks > 1 ? (taskIndex * 30) / (totalTasks - 1) - 15 : 0;
   const hue = (baseHue + hueShift + 360) % 360;
 
-  // OKLCH: 亮度 0.55~0.85，饱和度 0.25~0.12
+  // OKLCH: 亮度 0.55~0.85，飽和度 0.25~0.12
   const lightness = totalTasks > 1
     ? 0.55 + taskIndex * (0.3 / (totalTasks - 1))
     : 0.7;
@@ -114,7 +114,7 @@ const generateCombinedColor = (
 
   const oklchColor = `oklch(${lightness} ${chroma} ${hue} / .85)`;
 
-  // HSL 回退: 亮度 40%~70%，饱和度 70%~40%
+  // HSL 回退: 亮度 40%~70%，飽和度 70%~40%
   const hslLightness = totalTasks > 1
     ? 40 + taskIndex * (30 / (totalTasks - 1))
     : 55;
@@ -133,7 +133,7 @@ const generateCombinedColor = (
   return hslFallback;
 };
 
-// 组件
+// 元件
 const PingOverview = memo(() => {
   const {
     enableCutPeak,
@@ -148,7 +148,7 @@ const PingOverview = memo(() => {
   const isMobile = useIsMobile();
   const { t } = useLocale();
 
-  // 服务器排序状态（从 localStorage 恢复）
+  // 伺服器排序狀態（從 localStorage 恢復）
   const [serverSort, setServerSort] = useState(() =>
     loadSort<ServerSortKey>(SERVER_SORT_KEY, "weight", "asc")
   );
@@ -159,7 +159,7 @@ const PingOverview = memo(() => {
     saveSort(SERVER_SORT_KEY, key, dir);
   };
 
-  // 管理员 Ping 任务数据（用于按 target/type/weight 排序）
+  // 管理員 Ping 任務資料（用於按 target/type/weight 排序）
   const [pingTasksFull, setPingTasksFull] = useState<PingTaskFull[]>([]);
   useEffect(() => {
     const needsAdminData = ["target_asc", "target_desc", "type_asc", "type_desc", "weight_asc", "weight_desc"].includes(monitorNodeSortMode);
@@ -170,7 +170,7 @@ const PingOverview = memo(() => {
 
   const { chartContentRef, handleChartMouseMove, tooltipProps } = useTooltipScrollLock();
 
-  // 首页分组
+  // 首頁分組
   const allGroups = useMemo(() => {
     const groups = getGroups();
     return [ALL_GROUP, ...groups];
@@ -178,7 +178,7 @@ const PingOverview = memo(() => {
 
   const [selectedGroups, setSelectedGroups] = useState<Set<string>>(new Set());
 
-  // 默认选中所有分组
+  // 預設選中所有分組
   useEffect(() => {
     if (allGroups.length > 0) {
       setSelectedGroups((prev) => {
@@ -192,7 +192,7 @@ const PingOverview = memo(() => {
     setSelectedGroups((prev) => {
       const next = new Set(prev);
       if (group === ALL_GROUP) {
-        // 点击"所有"：如果已全选则取消全选，否则全选
+        // 點擊「全部」：如果已全選則取消全選，否則全選
         if (next.size === allGroups.length) {
           next.clear();
         } else {
@@ -204,7 +204,7 @@ const PingOverview = memo(() => {
           next.delete(ALL_GROUP);
         } else {
           next.add(group);
-          // 检查是否所有非"所有"的分组都选中了
+          // 檢查是否所有非「全部」的分組都選中了
           const nonAllGroups = allGroups.filter((g) => g !== ALL_GROUP);
           if (nonAllGroups.every((g) => next.has(g))) {
             next.add(ALL_GROUP);
@@ -218,7 +218,7 @@ const PingOverview = memo(() => {
   const maxPingRecordPreserveTime =
     publicSettings?.ping_record_preserve_time || 24;
 
-  // 时间范围
+  // 時間範圍
   const timeRanges = useMemo(() => {
     const ranges = [
       { label: t("instancePage.hours", { count: 1 }), hours: 1 },
@@ -247,7 +247,7 @@ const PingOverview = memo(() => {
 
   const [hours, setHours] = useState<number>(1);
 
-  // 数据获取
+  // 資料取得
   const [allPingData, setAllPingData] = useState<
     Map<string, PingHistoryResponse>
   >(new Map());
@@ -280,7 +280,7 @@ const PingOverview = memo(() => {
             map.set(result.uuid, result.data);
           }
         }
-        // 渐进式更新：每批到达即刷新
+        // 漸進式更新：每批到達即重新整理
         setAllPingData(new Map(map));
         if (i === 0) setDataLoading(false);
       }
@@ -297,7 +297,7 @@ const PingOverview = memo(() => {
     }
   }, [nodesLoading, nodes, fetchAllPingData]);
 
-  // 构建合并线条信息
+  // 建構合併線條資訊
   const allLines = useMemo<CombinedLineInfo[]>(() => {
     const lines: CombinedLineInfo[] = [];
     for (const node of nodes || []) {
@@ -318,9 +318,9 @@ const PingOverview = memo(() => {
     return lines.sort((a, b) => a.key.localeCompare(b.key));
   }, [nodes, allPingData]);
 
-  // 去重的监测节点（按任务名）+ 基于后台配置排序
+  // 去重的監測節點（按任務名）+ 基於後台設定排序
   const uniqueMonitorNodes = useMemo(() => {
-    // 收集去重的监测节点信息（name + taskId）
+    // 收集去重的監測節點資訊（name + taskId）
     const taskMap = new Map<string, number>(); // name → taskId
     for (const line of allLines) {
       if (!taskMap.has(line.taskName)) {
@@ -329,7 +329,7 @@ const PingOverview = memo(() => {
     }
     const arr = Array.from(taskMap.entries()).map(([name, taskId]) => ({ name, taskId }));
 
-    // 构建 admin API 数据查找表（用于 target/type/weight 排序）
+    // 建構 admin API 資料查找表（用於 target/type/weight 排序）
     const adminTaskMap = new Map<number, PingTaskFull>();
     for (const task of pingTasksFull) {
       adminTaskMap.set(task.id, task);
@@ -338,7 +338,7 @@ const PingOverview = memo(() => {
     const mode = monitorNodeSortMode;
 
     if (mode === "custom") {
-      // 自定义排序：按用户填写的名称顺序排列，未列出的按 ID 正序
+      // 自訂排序：按使用者填寫的名稱順序排列，未列出的按 ID 升序
       const customLines = monitorNodeCustomOrder
         .split(/\r?\n/)
         .map((s) => s.trim())
@@ -352,7 +352,7 @@ const PingOverview = memo(() => {
         if (aIdx !== undefined && bIdx !== undefined) return aIdx - bIdx;
         if (aIdx !== undefined) return -1;
         if (bIdx !== undefined) return 1;
-        return a.taskId - b.taskId; // 未列出的按 ID 正序
+        return a.taskId - b.taskId; // 未列出的按 ID 升序
       });
     } else if (mode === "name_asc" || mode === "name_desc") {
       const dir = mode === "name_asc" ? 1 : -1;
@@ -397,14 +397,14 @@ const PingOverview = memo(() => {
         arr.sort((a, b) => dir * (a.taskId - b.taskId));
       }
     } else {
-      // 默认按 ID 正序
+      // 預設按 ID 升序
       arr.sort((a, b) => a.taskId - b.taskId);
     }
 
     return arr.map((item) => item.name);
   }, [allLines, monitorNodeSortMode, monitorNodeCustomOrder, pingTasksFull]);
 
-  // 去重的服务器节点 + 排序
+  // 去重的伺服器節點 + 排序
   const uniqueServerNodes = useMemo(() => {
     const servers: { uuid: string; name: string; weight: number; group: string }[] = [];
     const seen = new Set<string>();
@@ -433,7 +433,7 @@ const PingOverview = memo(() => {
     return servers;
   }, [allLines, nodes, serverSort]);
 
-  // 按分组过滤后的服务器节点
+  // 按分組過濾後的伺服器節點
   const filteredServerNodes = useMemo(() => {
     const allLabel = ALL_GROUP;
     if (selectedGroups.has(allLabel)) return uniqueServerNodes;
@@ -442,12 +442,12 @@ const PingOverview = memo(() => {
       if (!s.group) return false;
 
       const nodeGroups = s.group.split(";").map(g => g.trim());
-      // 只要该节点的任意一个分组被选中，就展示
+      // 只要該節點的任意一個分組被選中，就展示
       return nodeGroups.some(g => selectedGroups.has(g));
     });
   }, [uniqueServerNodes, selectedGroups]);
 
-  // 可见性状态
+  // 可見性狀態
   const [visibleMonitorNodes, setVisibleMonitorNodes] = useState<Set<string>>(
     new Set()
   );
@@ -455,7 +455,7 @@ const PingOverview = memo(() => {
     new Set()
   );
 
-  // 默认全选：数据变化时选中所有
+  // 預設全選：資料變化時選中所有
   useEffect(() => {
     if (uniqueMonitorNodes.length > 0) {
       setVisibleMonitorNodes((prev) => {
@@ -475,13 +475,13 @@ const PingOverview = memo(() => {
     }
   }, [filteredServerNodes]);
 
-  // 分组变化时同步可见服务器
+  // 分組變化時同步可見伺服器
   useEffect(() => {
     const filteredUuids = new Set(filteredServerNodes.map((s) => s.uuid));
     setVisibleServers(filteredUuids);
   }, [selectedGroups, filteredServerNodes]);
 
-  // 单条线的显隐状态（通过统计卡片点击控制）
+  // 單條線的顯隱狀態（透過統計卡片點擊控制）
   const [hiddenLines, setHiddenLines] = useState<Set<string>>(new Set());
 
   const isLineVisible = useCallback(
@@ -507,7 +507,7 @@ const PingOverview = memo(() => {
     });
   };
 
-  // 图表状态
+  // 圖表狀態
   const [timeRange, setTimeRange] = useState<[number, number] | null>(null);
   const [brushIndices, setBrushIndices] = useState<{
     startIndex?: number;
@@ -527,11 +527,11 @@ const PingOverview = memo(() => {
 
   const chartMargin = { top: 8, right: 16, bottom: 8, left: 16 };
 
-  // 合并所有记录到统一时间线
+  // 合併所有記錄到統一時間線
   const midData = useMemo(() => {
     if (allPingData.size === 0 || allLines.length === 0) return [];
 
-    // 计算最小间隔用于容差
+    // 計算最小間隔用於容差
     const intervals = allLines
       .map((l) => l.interval)
       .filter((v) => typeof v === "number" && v > 0);
@@ -544,7 +544,7 @@ const PingOverview = memo(() => {
       Math.max(800, Math.floor(fallbackIntervalSec * 1000 * 0.25))
     );
 
-    // 使用分桶匹配替代线性扫描 O(n*m) -> O(n)
+    // 使用分桶比對取代線性掃描 O(n*m) -> O(n)
     const bucketSize = toleranceMs * 2;
     const grouped: Record<number, any> = {};
     const bucketToAnchor = new Map<number, number>();
@@ -555,7 +555,7 @@ const PingOverview = memo(() => {
         const ts = new Date(rec.time).getTime();
         const bucket = Math.floor(ts / bucketSize);
 
-        // 检查当前桶和相邻桶
+        // 檢查目前桶和相鄰桶
         let anchor: number | null = null;
         for (const b of [bucket - 1, bucket, bucket + 1]) {
           const candidate = bucketToAnchor.get(b);
@@ -595,7 +595,7 @@ const PingOverview = memo(() => {
     return (merged as any[]).slice(startIdx);
   }, [allPingData, allLines, hours]);
 
-  // 图表数据处理
+  // 圖表資料處理
   const chartData = useMemo(() => {
     let full = midData;
     if (!allLines.length || !full.length) return [];
@@ -606,7 +606,7 @@ const PingOverview = memo(() => {
       full = cutPeakValues(full, keys);
     }
 
-    // 使用 Uint8Array 替代 Set<string> 标记 null 值（避免字符串拼接开销）
+    // 使用 Uint8Array 取代 Set<string> 標記 null 值（避免字串拼接開銷）
     const keyCount = keys.length;
     const preservedNulls = new Uint8Array(full.length * keyCount);
     for (let i = 0; i < full.length; i++) {
@@ -623,7 +623,7 @@ const PingOverview = memo(() => {
       maxCapMs: 30 * 60_000,
     });
 
-    // 恢复原始 null 值
+    // 恢復原始 null 值
     for (let i = 0; i < full.length; i++) {
       for (let ki = 0; ki < keyCount; ki++) {
         if (preservedNulls[i * keyCount + ki] === 1) {
@@ -632,12 +632,12 @@ const PingOverview = memo(() => {
       }
     }
 
-    // 自动智能降采样：优先用户配置，否则自动计算
+    // 自動智慧降採樣：優先使用者設定，否則自動計算
     const autoMax = calculateAutoMaxPoints(full.length, keys.length);
     const effectiveMax = pingChartMaxPoints > 0 ? pingChartMaxPoints : autoMax;
 
     if (effectiveMax > 0 && full.length > effectiveMax) {
-      // 先转换时间戳，再用 LTTB 降采样
+      // 先轉換時間戳記，再用 LTTB 降採樣
       const withTs = full.map((d: any) => ({
         ...d,
         time: d.__ts ?? new Date(d.time).getTime(),
@@ -651,15 +651,15 @@ const PingOverview = memo(() => {
     }));
   }, [midData, cutPeak, allLines, pingChartMaxPoints]);
 
-  // 线条颜色（按服务器分色相，同服务器内按监测节点变化）
+  // 線條顏色（按伺服器分色相，同伺服器內按監測節點變化）
   const lineColors = useMemo(() => {
     const map = new Map<string, string>();
-    // 构建服务器索引映射
+    // 建構伺服器索引對應
     const serverUuids = [...new Set(allLines.map((l) => l.uuid))];
     const totalServers = serverUuids.length;
     const serverIndexMap = new Map<string, number>();
     serverUuids.forEach((uuid, i) => serverIndexMap.set(uuid, i));
-    // 构建每台服务器内的监测节点索引
+    // 建構每台伺服器內的監測節點索引
     const serverTaskCount = new Map<string, number>();
     const serverTaskIndex = new Map<string, number>();
     for (const line of allLines) {
@@ -676,7 +676,7 @@ const PingOverview = memo(() => {
     return map;
   }, [allLines]);
 
-  // 切换处理函数
+  // 切換處理函式
   const handleToggleMonitorNode = (name: string) => {
     setVisibleMonitorNodes((prev) => {
       const next = new Set(prev);
@@ -717,8 +717,8 @@ const PingOverview = memo(() => {
     }
   };
 
-  // 断点标记
-  // 断点标记（上限 200 个，避免渲染过多 ReferenceLine）
+  // 斷點標記
+  // 斷點標記（上限 200 個，避免渲染過多 ReferenceLine）
   const breakPoints = useMemo(() => {
     if (!connectBreaks || !chartData || chartData.length < 2) {
       return [];
@@ -751,7 +751,7 @@ const PingOverview = memo(() => {
     return points;
   }, [chartData, allLines, isLineVisible, connectBreaks, lineColors]);
 
-  // 每条线的统计信息
+  // 每條線的統計資訊
   const lineStats = useMemo(() => {
     return allLines.map((line) => {
       const pingData = allPingData.get(line.uuid);
@@ -764,7 +764,7 @@ const PingOverview = memo(() => {
           color: lineColors.get(line.key) || "#000",
         };
       }
-      // 筛选该任务的记录
+      // 篩選該任務的記錄
       const { loss, latestValue, latestTime } = calculateTaskStats(
         pingData.records,
         line.taskId,
@@ -780,27 +780,27 @@ const PingOverview = memo(() => {
     });
   }, [allLines, allPingData, timeRange, lineColors]);
 
-  // 根据选中的服务器节点和监测节点过滤统计信息，并按服务器排序 + 监测节点排序
+  // 根據選中的伺服器節點和監測節點過濾統計資訊，並按伺服器排序 + 監測節點排序
   const filteredLineStats = useMemo(() => {
     const filtered = lineStats.filter(
       (stat) =>
         visibleServers.has(stat.uuid) && visibleMonitorNodes.has(stat.taskName)
     );
 
-    // 构建服务器排序索引（复用 filteredServerNodes 的顺序）
+    // 建構伺服器排序索引（複用 filteredServerNodes 的順序）
     const serverOrderMap = new Map<string, number>();
     filteredServerNodes.forEach((s, i) => serverOrderMap.set(s.uuid, i));
 
-    // 构建监测节点排序索引（复用 uniqueMonitorNodes 的顺序）
+    // 建構監測節點排序索引（複用 uniqueMonitorNodes 的順序）
     const monitorOrderMap = new Map<string, number>();
     uniqueMonitorNodes.forEach((name, i) => monitorOrderMap.set(name, i));
 
     filtered.sort((a, b) => {
-      // 优先按服务器节点排序规则
+      // 優先按伺服器節點排序規則
       const serverCmp =
         (serverOrderMap.get(a.uuid) ?? 0) - (serverOrderMap.get(b.uuid) ?? 0);
       if (serverCmp !== 0) return serverCmp;
-      // 其次按监测节点排序规则
+      // 其次按監測節點排序規則
       return (
         (monitorOrderMap.get(a.taskName) ?? 0) -
         (monitorOrderMap.get(b.taskName) ?? 0)
@@ -810,7 +810,7 @@ const PingOverview = memo(() => {
     return filtered;
   }, [lineStats, visibleServers, visibleMonitorNodes, filteredServerNodes, uniqueMonitorNodes]);
 
-  // 切换全部线条显隐
+  // 切換全部線條顯隱
   const handleToggleAllLines = () => {
     const allMonitorSelected =
       visibleMonitorNodes.size === uniqueMonitorNodes.length;
@@ -828,7 +828,7 @@ const PingOverview = memo(() => {
     }
   };
 
-  // 仅可见的线条（条件渲染替代 hide 属性，减少 Recharts 内部处理）
+  // 僅可見的線條（條件渲染取代 hide 屬性，減少 Recharts 內部處理）
   const visibleLines = useMemo(
     () => allLines.filter(isLineVisible),
     [allLines, isLineVisible]
@@ -851,7 +851,7 @@ const PingOverview = memo(() => {
 
   return (
     <div className="text-card-foreground space-y-4 my-4 fade-in @container">
-      {/* 返回按钮 + 标题 */}
+      {/* 返回按鈕 + 標題 */}
       <Card className="flex items-center justify-between p-4 text-primary">
         <div className="flex items-center gap-2 min-w-0">
           <Button
@@ -867,7 +867,7 @@ const PingOverview = memo(() => {
         </div>
       </Card>
 
-      {/* 时间范围选择器 */}
+      {/* 時間範圍選擇器 */}
       <div className="flex flex-col items-center w-full space-y-4">
         <Card className={`justify-center p-2 ${isMobile ? "w-full" : ""}`}>
           <div className="flex space-x-2 overflow-x-auto whitespace-nowrap">
@@ -884,7 +884,7 @@ const PingOverview = memo(() => {
         </Card>
       </div>
 
-      {/* 监测节点筛选 */}
+      {/* 監測節點篩選 */}
       {uniqueMonitorNodes.length > 0 && (
         <Card>
           <CardHeader className="pb-2">
@@ -906,7 +906,7 @@ const PingOverview = memo(() => {
             <div className="flex flex-wrap gap-2">
               {uniqueMonitorNodes.map((name) => {
                 const isVisible = visibleMonitorNodes.has(name);
-                // 取一条代表性线条用于颜色
+                // 取一條代表性線條用於顏色
                 const repLine = allLines.find((l) => l.taskName === name);
                 const color = repLine
                   ? lineColors.get(repLine.key)
@@ -933,7 +933,7 @@ const PingOverview = memo(() => {
         </Card>
       )}
 
-      {/* 服务器节点筛选 */}
+      {/* 伺服器節點篩選 */}
       {uniqueServerNodes.length > 0 && (
         <Card>
           <CardHeader className="pb-2">
@@ -995,7 +995,7 @@ const PingOverview = memo(() => {
             </div>
           </CardHeader>
           <CardContent className="pt-0 space-y-3">
-            {/* 分组筛选按钮 */}
+            {/* 分組篩選按鈕 */}
             {allGroups.length > 1 && (
               <div className="flex flex-wrap gap-2">
                 {allGroups.map((group) => {
@@ -1012,11 +1012,11 @@ const PingOverview = memo(() => {
                 })}
               </div>
             )}
-            {/* 服务器节点列表 */}
+            {/* 伺服器節點列表 */}
             <div className="flex flex-wrap gap-2">
               {filteredServerNodes.map((server) => {
                 const isVisible = visibleServers.has(server.uuid);
-                // 取一条代表性线条用于颜色
+                // 取一條代表性線條用於顏色
                 const repLine = allLines.find(
                   (l) => l.uuid === server.uuid
                 );
@@ -1045,7 +1045,7 @@ const PingOverview = memo(() => {
         </Card>
       )}
 
-      {/* 线条统计信息摘要 */}
+      {/* 線條統計資訊摘要 */}
       {filteredLineStats.length > 0 && (
         <Card className="relative">
           <div className="absolute top-2 right-2">
@@ -1091,7 +1091,7 @@ const PingOverview = memo(() => {
         </Card>
       )}
 
-      {/* 图表 */}
+      {/* 圖表 */}
       <Card className="flex-grow flex flex-col relative">
         {isLoading && (
           <div className="absolute inset-0 flex items-center justify-center purcarte-blur rounded-lg z-10">

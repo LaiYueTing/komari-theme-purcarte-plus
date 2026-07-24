@@ -1,4 +1,4 @@
-// API 服务 - 用于与 Komari 后端通信
+// API 服務 - 用於與 Komari 後端通訊
 import type {
   NodeData,
   ApiResponse,
@@ -88,7 +88,7 @@ class ApiService {
     }
   }
 
-  // 获取所有节点信息
+  // 取得所有節點資訊
   async getNodes(): Promise<NodeData[]> {
     if (this.useRpc) {
       const response = await this.rpcCall<{ [uuid: string]: NodeData }>(
@@ -106,7 +106,7 @@ class ApiService {
     return [];
   }
 
-  // 获取指定节点的最近状态
+  // 取得指定節點的最近狀態
   async getNodeRecentStats(uuid: string): Promise<RpcNodeStatus[]> {
     if (this.useRpc) {
       const response = await this.rpcCall<{ records: RpcNodeStatus[] }>(
@@ -124,7 +124,7 @@ class ApiService {
     return [];
   }
 
-  // 获取负载历史记录
+  // 取得負載歷史記錄
   async getLoadHistory(
     uuid: string,
     hours: number = 24
@@ -137,8 +137,8 @@ class ApiService {
       });
       if (response.status === "success" && response.data) {
         const data = response.data;
-        // RPC common:getRecords 函数使用 uuid 直接返回 StatusRecord[] 类型的记录
-        // 如果未提供 uuid，则 records 为 { [uuid]: StatusRecord[] }
+        // RPC common:getRecords 函式使用 uuid 直接回傳 StatusRecord[] 型別的記錄
+        // 如果未提供 uuid，則 records 為 { [uuid]: StatusRecord[] }
         const records = Array.isArray(data.records)
           ? data.records
           : data.records?.[uuid] || [];
@@ -156,7 +156,7 @@ class ApiService {
     return response.status === "success" ? response.data : null;
   }
 
-  // 获取 Ping 历史记录
+  // 取得 Ping 歷史記錄
   async getPingHistory(
     uuid: string,
     hours: number = 24
@@ -169,23 +169,23 @@ class ApiService {
       });
       if (response.status === "success" && response.data) {
         const data = response.data;
-        // RPC type=ping 返回值：{ count, basic_info: BasicInfo[], records: PingRecord[], from, to }
+        // RPC type=ping 回傳值：{ count, basic_info: BasicInfo[], records: PingRecord[], from, to }
         // PingRecord 包含 { task_id, time, value, client }
         const records: PingHistoryRecord[] = Array.isArray(data.records)
           ? data.records
           : [];
 
-        // 尝试使用响应中的任务（某些服务器版本包含此功能）
+        // 嘗試使用回應中的任務（某些伺服器版本包含此功能）
         let tasks: PingTask[] = Array.isArray(data.tasks)
           ? data.tasks
           : [];
 
-        // 如果服务器未提供任务，则根据记录中的唯一 task_id 构建任务
+        // 如果伺服器未提供任務，則根據記錄中的唯一 task_id 建構任務
         if (tasks.length === 0 && records.length > 0) {
           const taskIdSet = new Set<number>();
           records.forEach((r: PingHistoryRecord) => taskIdSet.add(r.task_id));
 
-          // 如果 basic_info 可用，尝试从中推导出损失
+          // 如果 basic_info 可用，嘗試從中推導出損失
           const basicInfo: Array<{ client: string; loss: number }> =
             Array.isArray(data.basic_info) ? data.basic_info : [];
           const avgLoss =
@@ -217,7 +217,7 @@ class ApiService {
     return response.status === "success" ? response.data : null;
   }
 
-  // 获取监测节点任务列表（管理员API）
+  // 取得監測節點任務列表（管理員 API）
   async getPingTasks(): Promise<PingTaskFull[]> {
     try {
       const response = await this.get<PingTaskFull[]>("/api/admin/ping/");
@@ -230,7 +230,7 @@ class ApiService {
     }
   }
 
-  // 获取公开设置
+  // 取得公開設定
   async getPublicSettings(): Promise<PublicInfo | null> {
     if (this.useRpc) {
       const response = await this.rpcCall<PublicInfo>("common:getPublicInfo");
@@ -240,7 +240,7 @@ class ApiService {
     return response.status === "success" ? response.data : null;
   }
 
-  // 获取版本信息
+  // 取得版本資訊
   async getVersion(): Promise<{ version: string; hash: string }> {
     if (this.useRpc) {
       const response = await this.rpcCall<{ version: string; hash: string }>(
@@ -258,7 +258,7 @@ class ApiService {
       : { version: "unknown", hash: "unknown" };
   }
 
-  // 获取用户信息
+  // 取得使用者資訊
   async getUserInfo(): Promise<Me | null> {
     if (this.useRpc) {
       const response = await this.rpcCall<Me>("common:getMe");
@@ -277,7 +277,7 @@ class ApiService {
     }
   }
 
-  // 检查站点状态
+  // 檢查站點狀態
   async checkSiteStatus(): Promise<{
     status: SiteStatus;
     publicInfo: PublicInfo | null;
@@ -338,10 +338,10 @@ class ApiService {
   }
 }
 
-// 创建 API 服务实例
+// 建立 API 服務實例
 export const apiService = new ApiService();
 
-// WebSocket 连接管理
+// WebSocket 連線管理
 export class WebSocketService {
   private ws: WebSocket | null = null;
   private reconnectAttempts = 0;
@@ -487,7 +487,7 @@ export class WebSocketService {
   }
 }
 
-// 延迟 WebSocket 服务实例的创建
+// 延遲 WebSocket 服務實例的建立
 let wsServiceInstance: WebSocketService | null = null;
 
 export function getWsService(): WebSocketService {

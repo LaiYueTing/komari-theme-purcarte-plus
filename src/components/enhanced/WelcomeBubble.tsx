@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, useRef, useCallback } from "react";
 import { useUserGeo } from "./useUserGeo";
 import { useAppConfig } from "@/config";
 import { useLocale } from "@/config/hooks";
@@ -100,6 +100,7 @@ export function WelcomeBubble() {
   const { welcomeBubbleSiteName, welcomeBubbleLogoUrl, welcomeBubbleLogoShape, titleText } = useAppConfig();
   const { t, i18n } = useLocale();
   const [visible, setVisible] = useState(false);
+  const [collapsed, setCollapsed] = useState(false);
   const [ipHidden, setIpHidden] = useState(false);
   const [ispHidden, setIspHidden] = useState(false);
 
@@ -131,23 +132,65 @@ export function WelcomeBubble() {
     return t("enhanced.welcome.messageDefault");
   }, [loading, geo, t]);
 
+  // 自動隱藏計時器（僅在初次顯示時啟用，手動開啟後不再自動隱藏）
+  const autoHideRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
   useEffect(() => {
-    if (!loading) {
-      const timer = setTimeout(() => setVisible(true), 100);
-      return () => clearTimeout(timer);
-    }
+    if (loading) return;
+    const showTimer = setTimeout(() => setVisible(true), 100);
+    autoHideRef.current = setTimeout(() => {
+      setVisible(false);
+      setCollapsed(true);
+    }, 6000);
+    return () => {
+      clearTimeout(showTimer);
+      if (autoHideRef.current) clearTimeout(autoHideRef.current);
+    };
   }, [loading]);
 
+  const handleClose = useCallback(() => {
+    setVisible(false);
+    setCollapsed(true);
+    if (autoHideRef.current) clearTimeout(autoHideRef.current);
+  }, []);
+
+  const handleOpen = useCallback(() => {
+    setVisible(true);
+    setCollapsed(false);
+    if (autoHideRef.current) clearTimeout(autoHideRef.current);
+  }, []);
+
   return (
-    <div
-      id="welcome-bubble-container"
-      className={`welcome-bubble${visible ? " show" : ""}`}>
+    <>
+      {/* 收合後左下角的懸浮按鈕，可重新開啟氣泡 */}
+      <button
+        className={`welcome-ball${collapsed && !visible ? " show" : ""}`}
+        onClick={handleOpen}
+        title={siteName}
+        aria-label={siteName}>
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          width="24"
+          height="24"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2"
+          strokeLinecap="round"
+          strokeLinejoin="round">
+          <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+          <circle cx="12" cy="7" r="4" />
+        </svg>
+      </button>
+      <div
+        id="welcome-bubble-container"
+        className={`welcome-bubble${visible ? " show" : ""}`}>
       <div className="bubble-header">
         <h3 className="bubble-title">
           {welcomeBubbleLogoUrl && <img src={welcomeBubbleLogoUrl} className={welcomeBubbleLogoShape === "original" ? "bubble-logo-image bubble-logo-original" : "bubble-logo-image"} alt="logo" />}
           {siteName}
         </h3>
-        <button className="bubble-close" onClick={() => setVisible(false)}>
+        <button className="bubble-close" onClick={handleClose}>
           <svg
             xmlns="http://www.w3.org/2000/svg"
             width="16"
@@ -239,6 +282,7 @@ export function WelcomeBubble() {
           <span>{dateStr}</span>
         </p>
       </div>
-    </div>
+      </div>
+    </>
   );
 }

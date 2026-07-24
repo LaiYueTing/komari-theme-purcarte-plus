@@ -135,14 +135,19 @@ const NodeTableRow = ({
               const showExpiry = tableExpiredAtDisplay === "show" ||
                 (tableExpiredAtDisplay === "hideUnset" && expired_at !== t("node.notSet"));
               const showUptime = tableUptimeDisplay === "show" ||
-                (tableUptimeDisplay === "hideUnset" && (isOnline ? stats : stats?.time));
+                (tableUptimeDisplay === "hideUnset" && (isOnline ? !!stats : true));
               const parts: string[] = [];
               if (isOnline && stats) {
                 if (showExpiry) parts.push(expired_at);
                 if (showUptime) parts.push(formatUptime(stats.uptime));
               } else if (!isOnline) {
                 if (showExpiry) parts.push(expired_at);
-                if (showUptime && stats?.time) parts.push(`${t("node.lastSeen")} ${formatLastSeen(stats.time)}`);
+                if (showUptime)
+                  parts.push(
+                    stats?.time
+                      ? `${t("node.lastSeen")} ${formatLastSeen(stats.time)}`
+                      : t("node.offline")
+                  );
               }
               const text = parts.length > 0
                 ? parts.join(" | ")

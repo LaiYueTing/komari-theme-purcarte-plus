@@ -5,6 +5,10 @@ import { FinanceWidget } from "./FinanceWidget";
 import { EarthGlobe } from "./EarthGlobe";
 import { ScrollHelpers } from "./ScrollHelpers";
 import { Protection } from "./Protection";
+import { Matomo } from "./Matomo";
+import { CanvasNest } from "./CanvasNest";
+import { Sakura } from "./Sakura";
+import { Live2D } from "./Live2D";
 import { fetchGeoInfo } from "./useUserGeo";
 import "./enhanced.css";
 
@@ -15,10 +19,14 @@ export function EnhancedFeatures() {
     enableEarthGlobe,
     enableScrollHelpers,
     enableProtection,
+    enableMatomo,
+    enableCanvasNest,
+    enableSakura,
+    enableLive2D,
   } = useAppConfig();
 
-  // 当欢迎气泡关闭但地球组件开启时，预获取用户位置
-  // 因为地球组件需要用户位置来居中地球视角和显示用户标记
+  // 當歡迎氣泡關閉但地球元件開啟時，預先取得使用者位置
+  // 因為地球元件需要使用者位置來置中地球視角和顯示使用者標記
   useEffect(() => {
     if (!enableWelcomeBubble && enableEarthGlobe) {
       fetchGeoInfo();
@@ -32,16 +40,25 @@ export function EnhancedFeatures() {
       {enableEarthGlobe && <EarthGlobe />}
       {enableScrollHelpers && <ScrollHelpers />}
       {enableProtection && <Protection />}
+      {enableMatomo && <Matomo />}
+      {enableCanvasNest && <CanvasNest />}
+      {enableSakura && <Sakura />}
+      {enableLive2D && <Live2D />}
     </>
   );
 }
 
 /**
- * 用于 private-unauthenticated 状态下的简化版本
- * 只渲染 Protection 组件
+ * 用於 private-unauthenticated 狀態下的簡化版本
+ * 只渲染 Protection 元件
  */
 export function EnhancedFeaturesPrivate() {
-  const { enableProtection } = useAppConfig();
+  const { enableProtection, enableMatomo } = useAppConfig();
 
-  return <>{enableProtection && <Protection />}</>;
+  return (
+    <>
+      {enableProtection && <Protection />}
+      {enableMatomo && <Matomo />}
+    </>
+  );
 }

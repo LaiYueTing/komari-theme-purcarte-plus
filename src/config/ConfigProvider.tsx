@@ -7,13 +7,13 @@ import Loading from "@/components/loading";
 import { defaultTexts, otherTexts } from "./locales";
 import { mergeTexts, deepMerge } from "@/utils/localeUtils";
 
-// 配置提供者属性类型
+// 設定提供者屬性型別
 interface ConfigProviderProps {
   children: ReactNode;
 }
 
 /**
- * 配置提供者组件，用于将配置传递给子组件
+ * 設定提供者元件，用於將設定傳遞給子元件
  */
 export function ConfigProvider({ children }: ConfigProviderProps) {
   const [publicSettings, setPublicSettings] = useState<PublicInfo | null>(null);
@@ -34,9 +34,9 @@ export function ConfigProvider({ children }: ConfigProviderProps) {
       if (publicInfo) {
         const rawSettings =
           (publicInfo.theme_settings as Partial<ConfigOptions>) || {};
-        // 从后端配置中过滤掉 undefined/null 值，以防止
-        // 覆盖 DEFAULT_CONFIG 的默认值（修复 React 错误 #130）
-        // 对于 string 类型的配置项，允许空字符串通过（用户可能故意清空）
+        // 從後端設定中過濾掉 undefined/null 值，以防止
+        // 覆蓋 DEFAULT_CONFIG 的預設值（修復 React 錯誤 #130）
+        // 對於 string 型別的設定項，允許空字串通過（使用者可能故意清空）
         const themeSettings = Object.fromEntries(
           Object.entries(rawSettings).filter(
             ([k, v]) => v !== undefined && v !== null && (v !== "" || typeof DEFAULT_CONFIG[k as keyof ConfigOptions] === "string")
@@ -50,7 +50,7 @@ export function ConfigProvider({ children }: ConfigProviderProps) {
             publicInfo.sitename ||
             DEFAULT_CONFIG.titleText,
         };
-        // 向后兼容：旧版 enableVideoBackground: true → backgroundMode: "video"
+        // 向後相容：舊版 enableVideoBackground: true → backgroundMode: "video"
         if (
           !themeSettings.backgroundMode &&
           (rawSettings as Record<string, unknown>).enableVideoBackground === true
@@ -122,7 +122,7 @@ export function ConfigProvider({ children }: ConfigProviderProps) {
 
   if (!isLoaded || !config) {
     return (
-      <Loading text="加载配置中..." className={!loading ? "fade-out" : ""} />
+      <Loading text="載入設定中 ..." className={!loading ? "fade-out" : ""} />
     );
   }
 

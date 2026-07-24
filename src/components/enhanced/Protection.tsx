@@ -45,7 +45,7 @@ export function Protection() {
   useEffect(() => {
     if (isLoggedIn !== false) return;
 
-    // 添加用户选择：无样式
+    // 新增使用者選取：無樣式
     const style = document.createElement("style");
     style.innerHTML = `* { -webkit-user-select: none; -moz-user-select: none; -ms-user-select: none; user-select: none; }`;
     document.head.appendChild(style);
@@ -110,7 +110,7 @@ export function Protection() {
     document.addEventListener("dragstart", handleDragStart);
     window.addEventListener("beforeprint", handleBeforePrint);
 
-    // 开发者工具检测
+    // 開發者工具偵測
     const detectInterval = setInterval(() => {
       const start = performance.now();
       // eslint-disable-next-line no-debugger
@@ -127,7 +127,7 @@ export function Protection() {
       }
     }, 500);
 
-    // DOM篡改检测
+    // DOM 篡改偵測
     const observer = new MutationObserver((mutations) => {
       for (const m of mutations) {
         m.addedNodes.forEach((node) => {
@@ -159,7 +159,7 @@ export function Protection() {
     };
   }, [isLoggedIn, showCustomAlert, t]);
 
-  // 如果已登录或仍在检查，则不渲染任何内容。
+  // 如果已登入或仍在檢查，則不渲染任何內容。
   if (isLoggedIn !== false) return null;
 
   return (

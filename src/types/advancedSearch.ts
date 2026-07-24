@@ -1,31 +1,31 @@
 /**
- * 高级搜索 -- 类型定义
+ * 進階搜尋 -- 型別定義
  *
- * 定义多条件高级搜索所需的所有字段过滤器状态。
- * NodeData 字段按搜索行为分类：
- * - Text: 模糊关键词搜索，支持 AND/OR 逻辑
- * - Boolean: 三态下拉（true/false/不限）
- * - Enum: 下拉选择
- * - Price: 免费搜索开关 + 精确匹配
- * - Number: 整数输入
- * - Date: 精确日期或范围
- * - Range: 数值范围 + 单位选择
+ * 定義多條件進階搜尋所需的所有欄位篩選器狀態。
+ * NodeData 欄位按搜尋行為分類：
+ * - Text: 模糊關鍵字搜尋，支援 AND/OR 邏輯
+ * - Boolean: 三態下拉（true/false/不限）
+ * - Enum: 下拉選擇
+ * - Price: 免費搜尋開關 + 精確比對
+ * - Number: 整數輸入
+ * - Date: 精確日期或範圍
+ * - Range: 數值範圍 + 單位選擇
  */
 
-/** 文本字段关键词逻辑运算符 */
+/** 文字欄位關鍵字邏輯運算子 */
 export type TextLogicOperator = "and" | "or" | "none";
 
-/** 文本字段搜索条件 */
+/** 文字欄位搜尋條件 */
 export interface TextFieldFilter {
-  value: string; // 原始输入字符串
-  operator: TextLogicOperator; // 检测到的逻辑运算符
-  keywords: string[]; // 解析后的关键词列表
+  value: string; // 原始輸入字串
+  operator: TextLogicOperator; // 偵測到的邏輯運算子
+  keywords: string[]; // 解析後的關鍵字清單
 }
 
-/** 三态布尔过滤器 */
+/** 三態布林篩選器 */
 export type BooleanFilter = "any" | "true" | "false";
 
-/** 流量统计方式枚举过滤器 */
+/** 流量統計方式列舉篩選器 */
 export type TrafficLimitTypeFilter =
   | "any"
   | "sum"
@@ -34,60 +34,60 @@ export type TrafficLimitTypeFilter =
   | "up"
   | "down";
 
-/** 价格字段过滤器 */
+/** 價格欄位篩選器 */
 export interface PriceFilter {
-  isFreeSearch: boolean; // 开关：ON = 搜索免费 (price=-1)
-  isExact: boolean; // 开关：ON = 精确匹配，OFF = 范围搜索（默认）
-  exactValue: string; // 精确价格匹配值
-  rangeFrom: string; // 范围模式：最低价格
-  rangeTo: string; // 范围模式：最高价格
-  currency: string; // 搜索货币代码，默认 "CNY"，自动汇率转换
+  isFreeSearch: boolean; // 開關：ON = 搜尋免費 (price=-1)
+  isExact: boolean; // 開關：ON = 精確比對，OFF = 範圍搜尋（預設）
+  exactValue: string; // 精確價格比對值
+  rangeFrom: string; // 範圍模式：最低價格
+  rangeTo: string; // 範圍模式：最高價格
+  currency: string; // 搜尋貨幣代碼，預設 "CNY"，自動匯率轉換
 }
 
-/** 日期搜索模式 */
+/** 日期搜尋模式 */
 export type DateSearchMode = "exact" | "range";
 
-/** 日期字段过滤器 */
+/** 日期欄位篩選器 */
 export interface DateFilter {
-  mode: DateSearchMode; // exact=精确日期, range=范围
-  exactDate: string; // yyyy-mm-dd 格式 (UTC+8 显示)
+  mode: DateSearchMode; // exact=精確日期, range=範圍
+  exactDate: string; // yyyy-mm-dd 格式 (UTC+8 顯示)
   rangeFrom: string; // yyyy-mm-dd
   rangeTo: string; // yyyy-mm-dd
 }
 
-/** 内存单位 */
+/** 記憶體單位 */
 export type MemoryUnit = "MB" | "GB";
 
-/** 磁盘单位 */
+/** 磁碟單位 */
 export type DiskUnit = "MB" | "GB" | "TB" | "PB";
 
-/** 交换空间单位 */
+/** 交換空間單位 */
 export type SwapUnit = "MB" | "GB";
 
-/** 流量单位 */
+/** 流量單位 */
 export type TrafficUnit = "MB" | "GB" | "TB" | "PB";
 
-/** 数值范围过滤器（带单位选择） */
+/** 數值範圍篩選器（含單位選擇） */
 export interface RangeFilter<U extends string = string> {
-  from: string; // 起始值（字符串用于输入绑定）
-  to: string; // 结束值
-  unit: U; // 选择的单位
+  from: string; // 起始值（字串用於輸入綁定）
+  to: string; // 結束值
+  unit: U; // 選擇的單位
 }
 
-/** CPU 核心数过滤器 */
+/** CPU 核心數篩選器 */
 export interface CpuCoresFilter {
-  isExact: boolean; // 开关：ON = 精确匹配，OFF = 范围搜索（默认）
-  exactValue: string; // 精确核心数
-  rangeFrom: string; // 范围模式：最少核心
-  rangeTo: string; // 范围模式：最多核心
+  isExact: boolean; // 開關：ON = 精確比對，OFF = 範圍搜尋（預設）
+  exactValue: string; // 精確核心數
+  rangeFrom: string; // 範圍模式：最少核心
+  rangeTo: string; // 範圍模式：最多核心
 }
 
-/** 交换空间过滤器（扩展范围过滤器，新增关闭搜索开关） */
+/** 交換空間篩選器（擴充範圍篩選器，新增關閉搜尋開關） */
 export interface SwapFilter extends RangeFilter<SwapUnit> {
-  isDisabledSearch: boolean; // ON = 搜索已关闭 SWAP 的节点 (swap_total === 0)
+  isDisabledSearch: boolean; // ON = 搜尋已關閉 SWAP 的節點 (swap_total === 0)
 }
 
-/** 所有文本类型的字段名称 */
+/** 所有文字型別的欄位名稱 */
 export const TEXT_FIELD_KEYS = [
   "uuid",
   "name",
@@ -106,44 +106,44 @@ export const TEXT_FIELD_KEYS = [
 
 export type TextFieldKey = (typeof TEXT_FIELD_KEYS)[number];
 
-/** 完整的高级搜索状态 */
+/** 完整的進階搜尋狀態 */
 export interface AdvancedSearchState {
-  // 统一文本搜索（模糊搜索 uuid, name, cpu_name, virtualization, arch, os,
+  // 統一文字搜尋（模糊搜尋 uuid, name, cpu_name, virtualization, arch, os,
   // kernel_version, gpu_name, region, currency, group, tags, public_remark）
   textSearch: TextFieldFilter;
 
-  // 布尔字段
+  // 布林欄位
   auto_renewal: BooleanFilter;
   hidden: BooleanFilter;
 
-  // 枚举字段
+  // 列舉欄位
   traffic_limit_type: TrafficLimitTypeFilter;
 
-  // 价格字段
+  // 價格欄位
   price: PriceFilter;
 
-  // 数值字段
+  // 數值欄位
   cpu_cores: CpuCoresFilter;
 
-  // 日期字段
+  // 日期欄位
   expired_at: DateFilter;
 
-  // 范围字段
+  // 範圍欄位
   mem_total: RangeFilter<MemoryUnit>;
   disk_total: RangeFilter<DiskUnit>;
   swap_total: SwapFilter;
   traffic_limit: RangeFilter<TrafficUnit>;
 }
 
-/** 校验错误映射 -- key 对应 AdvancedSearchState 字段名 */
+/** 校驗錯誤對應 -- key 對應 AdvancedSearchState 欄位名 */
 export type ValidationErrors = Partial<Record<string, string>>;
 
-/** 创建空的文本字段过滤器 */
+/** 建立空的文字欄位篩選器 */
 function emptyTextFilter(): TextFieldFilter {
   return { value: "", operator: "none", keywords: [] };
 }
 
-/** 创建默认的高级搜索状态 */
+/** 建立預設的進階搜尋狀態 */
 export function createDefaultAdvancedSearchState(): AdvancedSearchState {
   return {
     textSearch: emptyTextFilter(),
@@ -160,7 +160,7 @@ export function createDefaultAdvancedSearchState(): AdvancedSearchState {
   };
 }
 
-/** 解析文本输入为 TextFieldFilter（检测 & 或 | 分隔符） */
+/** 解析文字輸入為 TextFieldFilter（偵測 & 或 | 分隔符） */
 export function parseTextInput(value: string): TextFieldFilter {
   const trimmed = value.trim();
   if (!trimmed) {
@@ -171,7 +171,7 @@ export function parseTextInput(value: string): TextFieldFilter {
   const hasOr = trimmed.includes("|");
 
   if (hasAnd && hasOr) {
-    // 混用 & 和 | ，标记为 none 但保留 keywords 为空（校验时报错）
+    // 混用 & 和 | ，標記為 none 但保留 keywords 為空（校驗時報錯）
     return { value, operator: "none", keywords: [] };
   }
 
@@ -191,34 +191,34 @@ export function parseTextInput(value: string): TextFieldFilter {
     return { value, operator: "or", keywords };
   }
 
-  // 单个关键词
+  // 單個關鍵字
   return { value, operator: "none", keywords: [trimmed] };
 }
 
-/** 检查高级搜索状态是否为默认值（即没有任何搜索条件） */
+/** 檢查進階搜尋狀態是否為預設值（即沒有任何搜尋條件） */
 export function isStateDefault(state: AdvancedSearchState): boolean {
-  // 检查统一文本搜索
+  // 檢查統一文字搜尋
   if (state.textSearch.value.trim() !== "") return false;
-  // 检查布尔字段
+  // 檢查布林欄位
   if (state.auto_renewal !== "any") return false;
   if (state.hidden !== "any") return false;
-  // 检查枚举字段
+  // 檢查列舉欄位
   if (state.traffic_limit_type !== "any") return false;
-  // 检查价格字段
+  // 檢查價格欄位
   if (state.price.isFreeSearch) return false;
   if (state.price.exactValue.trim() !== "") return false;
   if (state.price.rangeFrom.trim() !== "" || state.price.rangeTo.trim() !== "") return false;
-  // 检查 CPU 核心数
+  // 檢查 CPU 核心數
   if (state.cpu_cores.exactValue.trim() !== "") return false;
   if (state.cpu_cores.rangeFrom.trim() !== "" || state.cpu_cores.rangeTo.trim() !== "") return false;
-  // 检查日期字段
+  // 檢查日期欄位
   if (state.expired_at.exactDate.trim() !== "") return false;
   if (state.expired_at.rangeFrom.trim() !== "") return false;
   if (state.expired_at.rangeTo.trim() !== "") return false;
-  // 检查交换空间
+  // 檢查交換空間
   if (state.swap_total.isDisabledSearch) return false;
   if (state.swap_total.from.trim() !== "" || state.swap_total.to.trim() !== "") return false;
-  // 检查范围字段
+  // 檢查範圍欄位
   const rangeFields = [
     "mem_total",
     "disk_total",

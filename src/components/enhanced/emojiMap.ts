@@ -1,4 +1,4 @@
-// EMOJI_MAP: 国家码/emoji 双向映射
+// EMOJI_MAP: 國家碼/emoji 雙向對應
 export const EMOJI_MAP: Record<string, string> = {
   'CN': 'CN', 'HK': 'HK', 'TW': 'TW', 'MO': 'MO', 'JP': 'JP', 'KR': 'KR', 'KP': 'KP', 'MN': 'MN',
   'SG': 'SG', 'TH': 'TH', 'VN': 'VN', 'ID': 'ID', 'MY': 'MY', 'PH': 'PH', 'MM': 'MM', 'KH': 'KH', 'LA': 'LA', 'TL': 'TL', 'BN': 'BN',
@@ -78,7 +78,7 @@ export const EMOJI_MAP: Record<string, string> = {
   '🇺🇲': 'UM', '🇧🇻': 'BV', '🇨🇨': 'CC', '🇨🇽': 'CX', '🇩🇬': 'DG', '🇽🇰': 'XK'
 };
 
-// COORD_MAP: 国家码 → [纬度, 经度]
+// COORD_MAP: 國家碼 → [緯度, 經度]
 export const COORD_MAP: Record<string, [number, number]> = {
   'CN': [35.8617, 104.1954], 'HK': [22.3193, 114.1694], 'MO': [22.1987, 113.5439],
   'TW': [23.6978, 120.9605], 'JP': [36.2048, 138.2529], 'KR': [35.9078, 127.7669],
@@ -178,8 +178,8 @@ export const COORD_MAP: Record<string, [number, number]> = {
 };
 
 /**
- * 从节点的 region 字段解析出标准国家码
- * 支持直接国家码、emoji 国旗、country_code 字段
+ * 從節點的 region 欄位解析出標準國家碼
+ * 支援直接國家碼、emoji 國旗、country_code 欄位
  */
 export function resolveCountryCode(region: string, countryCode?: string): string | null {
   if (countryCode) return countryCode.toUpperCase();

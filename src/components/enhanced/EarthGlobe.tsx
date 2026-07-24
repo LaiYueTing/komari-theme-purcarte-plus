@@ -14,7 +14,7 @@ import { useLocale } from "@/config/hooks";
 import { COORD_MAP, resolveCountryCode } from "./emojiMap";
 import type { NodeData } from "@/types/node.d";
 
-// globe.gl 通过 React.lazy 延迟加载
+// globe.gl 透過 React.lazy 延遲載入
 const GlobeComponent = lazy(() => import("./GlobeRenderer"));
 
 interface PointData {
@@ -66,7 +66,7 @@ function processData(
     })
     .filter((item): item is PointData => item !== null);
 
-  // 添加用户位置
+  // 新增使用者位置
   formattedData.push({
     code: "USER",
     lat: userLat,
@@ -76,7 +76,7 @@ function processData(
     size: 2.0,
   });
 
-  // 生成弧线数据
+  // 產生弧線資料
   const arcsData: ArcData[] = formattedData
     .filter((item) => item.type === "server")
     .map((item) => ({
@@ -108,21 +108,21 @@ export function EarthGlobe() {
   const [isClosing, setIsClosing] = useState(false);
   const [globeReady, setGlobeReady] = useState(false);
 
-  // 监听来自 Header 按钮的自定义事件
+  // 監聽來自 Header 按鈕的自訂事件
   useEffect(() => {
     const handler = () => setModalOpen((prev) => !prev);
     window.addEventListener("toggle-earth-globe", handler);
     return () => window.removeEventListener("toggle-earth-globe", handler);
   }, []);
 
-  // 判断当前是否是暗色模式
+  // 判斷目前是否是深色模式
   const isDark = useMemo(() => {
     if (appearance === "dark") return true;
     if (appearance === "light") return false;
     return window.matchMedia("(prefers-color-scheme: dark)").matches;
   }, [appearance]);
 
-  // 获取主题色
+  // 取得主題色
   const themeColor = useMemo(() => {
     const cssColor = getComputedStyle(document.documentElement)
         .getPropertyValue("--accent-9")
@@ -131,7 +131,7 @@ export function EarthGlobe() {
     return cssColor || storedColor || "#3b82f6";
   }, [isDark, modalOpen]);
 
-  // 背景配置
+  // 背景設定
   const bgConfig = useMemo(() => {
     const bg = "rgba(0, 0, 0, 0)";
     if (isDark) {
@@ -161,7 +161,7 @@ export function EarthGlobe() {
     themeColor,
   ]);
 
-  // 处理节点数据
+  // 處理節點資料
   const { formattedData, arcsData, totalCount } = useMemo(() => {
     const userLat = geo.lat || 35.8617;
     const userLng = geo.lng || 104.1954;
@@ -197,7 +197,7 @@ export function EarthGlobe() {
 
   return (
     <>
-      {/* 地球模态框 */}
+      {/* 地球對話框 */}
       {modalOpen && (
         <div
           id="earth-modal-overlay"

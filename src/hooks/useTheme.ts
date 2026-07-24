@@ -46,9 +46,9 @@ export const ThemeContext = createContext<ThemeContextType>({
 });
 
 /**
- * 将 Radix UI 的 "system" 外观转换为实际的 "light" 或 "dark" 外观
- * @param appearance - 上下文中的外观设置（"light"、"dark" 或 "system"）。
- * 返回 Radix UI 已解析的外观（ "light" 或 "dark"）
+ * 將 Radix UI 的 "system" 外觀轉換為實際的 "light" 或 "dark" 外觀
+ * @param appearance - 上下文中的外觀設定（"light"、"dark" 或 "system"）。
+ * 回傳 Radix UI 已解析的外觀（ "light" 或 "dark"）
  */
 export const useSystemTheme = (
   appearance: AppearanceType

@@ -1,4 +1,4 @@
-// 地区emoji到名称的映射
+// 地區 emoji 對應名稱的對照表
 export const emojiToRegionMap: Record<
   string,
   { en: string; zh: string; aliases: string[] }
@@ -10,12 +10,12 @@ export const emojiToRegionMap: Record<
   },
   "🇨🇳": {
     en: "China",
-    zh: "中国",
+    zh: "中國",
     aliases: ["cn", "china", "中国", "中华人民共和国", "prc", "CN"],
   },
   "🇺🇸": {
     en: "United States",
-    zh: "美国",
+    zh: "美國",
     aliases: [
       "us",
       "usa",
@@ -34,7 +34,7 @@ export const emojiToRegionMap: Record<
   },
   "🇰🇷": {
     en: "South Korea",
-    zh: "韩国",
+    zh: "韓國",
     aliases: ["kr", "korea", "south korea", "韩国", "南韩", "KR"],
   },
   "🇸🇬": {
@@ -44,12 +44,12 @@ export const emojiToRegionMap: Record<
   },
   "🇹🇼": {
     en: "Taiwan",
-    zh: "台湾",
+    zh: "台灣",
     aliases: ["tw", "taiwan", "台湾", "台灣", "TW"],
   },
   "🇬🇧": {
     en: "United Kingdom",
-    zh: "英国",
+    zh: "英國",
     aliases: [
       "gb",
       "uk",
@@ -63,12 +63,12 @@ export const emojiToRegionMap: Record<
   },
   "🇩🇪": {
     en: "Germany",
-    zh: "德国",
+    zh: "德國",
     aliases: ["de", "germany", "deutschland", "德国", "德國", "DE"],
   },
   "🇫🇷": {
     en: "France",
-    zh: "法国",
+    zh: "法國",
     aliases: ["fr", "france", "法国", "法國", "FR"],
   },
   "🇨🇦": {
@@ -78,12 +78,12 @@ export const emojiToRegionMap: Record<
   },
   "🇦🇺": {
     en: "Australia",
-    zh: "澳大利亚",
+    zh: "澳洲",
     aliases: ["au", "australia", "澳大利亚", "澳洲", "AU"],
   },
   "🇷🇺": {
     en: "Russia",
-    zh: "俄罗斯",
+    zh: "俄羅斯",
     aliases: ["ru", "russia", "俄罗斯", "俄國", "RU"],
   },
   "🇮🇳": {
@@ -98,12 +98,12 @@ export const emojiToRegionMap: Record<
   },
   "🇳🇱": {
     en: "Netherlands",
-    zh: "荷兰",
+    zh: "荷蘭",
     aliases: ["nl", "netherlands", "holland", "荷兰", "荷蘭", "NL"],
   },
   "🇮🇹": {
     en: "Italy",
-    zh: "意大利",
+    zh: "義大利",
     aliases: ["it", "italy", "意大利", "IT"],
   },
   "🇪🇸": {
@@ -123,7 +123,7 @@ export const emojiToRegionMap: Record<
   },
   "🇫🇮": {
     en: "Finland",
-    zh: "芬兰",
+    zh: "芬蘭",
     aliases: ["fi", "finland", "芬兰", "芬蘭", "FI"],
   },
   "🇨🇭": {
@@ -133,12 +133,12 @@ export const emojiToRegionMap: Record<
   },
   "🇦🇹": {
     en: "Austria",
-    zh: "奥地利",
+    zh: "奧地利",
     aliases: ["at", "austria", "奥地利", "奧地利", "AT"],
   },
   "🇧🇪": {
     en: "Belgium",
-    zh: "比利时",
+    zh: "比利時",
     aliases: ["be", "belgium", "比利时", "比利時", "BE"],
   },
   "🇵🇹": {
@@ -148,7 +148,7 @@ export const emojiToRegionMap: Record<
   },
   "🇬🇷": {
     en: "Greece",
-    zh: "希腊",
+    zh: "希臘",
     aliases: ["gr", "greece", "希腊", "希臘", "GR"],
   },
   "🇹🇷": {
@@ -158,7 +158,7 @@ export const emojiToRegionMap: Record<
   },
   "🇵🇱": {
     en: "Poland",
-    zh: "波兰",
+    zh: "波蘭",
     aliases: ["pl", "poland", "波兰", "波蘭", "PL"],
   },
   "🇨🇿": {
@@ -173,22 +173,22 @@ export const emojiToRegionMap: Record<
   },
   "🇷🇴": {
     en: "Romania",
-    zh: "罗马尼亚",
+    zh: "羅馬尼亞",
     aliases: ["ro", "romania", "罗马尼亚", "羅馬尼亞", "RO"],
   },
   "🇧🇬": {
     en: "Bulgaria",
-    zh: "保加利亚",
+    zh: "保加利亞",
     aliases: ["bg", "bulgaria", "保加利亚", "保加利亞", "BG"],
   },
   "🇭🇷": {
     en: "Croatia",
-    zh: "克罗地亚",
-    aliases: ["hr", "croatia", "克罗地亚", "克羅地亞", "HR"],
+    zh: "克羅埃西亞",
+    aliases: ["hr", "croatia", "克罗地亚", "克羅地亚", "HR"],
   },
   "🇸🇮": {
     en: "Slovenia",
-    zh: "斯洛文尼亚",
+    zh: "斯洛維尼亞",
     aliases: ["si", "slovenia", "斯洛文尼亚", "斯洛文尼亞", "SI"],
   },
   "🇸🇰": {
@@ -198,7 +198,7 @@ export const emojiToRegionMap: Record<
   },
   "🇱🇻": {
     en: "Latvia",
-    zh: "拉脱维亚",
+    zh: "拉脫維亞",
     aliases: ["lv", "latvia", "拉脱维亚", "拉脫維亞", "LV"],
   },
   "🇱🇹": {
@@ -208,7 +208,7 @@ export const emojiToRegionMap: Record<
   },
   "🇪🇪": {
     en: "Estonia",
-    zh: "爱沙尼亚",
+    zh: "愛沙尼亞",
     aliases: ["ee", "estonia", "爱沙尼亚", "愛沙尼亞", "EE"],
   },
   "🇲🇽": {
@@ -228,32 +228,32 @@ export const emojiToRegionMap: Record<
   },
   "🇨🇴": {
     en: "Colombia",
-    zh: "哥伦比亚",
+    zh: "哥倫比亞",
     aliases: ["co", "colombia", "哥伦比亚", "哥倫比亞", "CO"],
   },
   "🇵🇪": {
     en: "Peru",
-    zh: "秘鲁",
+    zh: "祕魯",
     aliases: ["pe", "peru", "秘鲁", "秘魯", "PE"],
   },
   "🇻🇪": {
     en: "Venezuela",
-    zh: "委内瑞拉",
+    zh: "委內瑞拉",
     aliases: ["ve", "venezuela", "委内瑞拉", "委內瑞拉", "VE"],
   },
   "🇺🇾": {
     en: "Uruguay",
-    zh: "乌拉圭",
+    zh: "烏拉圭",
     aliases: ["uy", "uruguay", "乌拉圭", "烏拉圭", "UY"],
   },
   "🇪🇨": {
     en: "Ecuador",
-    zh: "厄瓜多尔",
+    zh: "厄瓜多",
     aliases: ["ec", "ecuador", "厄瓜多尔", "厄瓜多爾", "EC"],
   },
   "🇧🇴": {
     en: "Bolivia",
-    zh: "玻利维亚",
+    zh: "玻利維亞",
     aliases: ["bo", "bolivia", "玻利维亚", "玻利維亞", "BO"],
   },
   "🇵🇾": {
@@ -263,32 +263,32 @@ export const emojiToRegionMap: Record<
   },
   "🇬🇾": {
     en: "Guyana",
-    zh: "圭亚那",
+    zh: "圭亞那",
     aliases: ["gy", "guyana", "圭亚那", "圭亞那", "GY"],
   },
   "🇸🇷": {
     en: "Suriname",
-    zh: "苏里南",
+    zh: "蘇利南",
     aliases: ["sr", "suriname", "苏里南", "蘇里南", "SR"],
   },
   "🇫🇰": {
     en: "Falkland Islands",
-    zh: "福克兰群岛",
+    zh: "福克蘭群島",
     aliases: ["fk", "falkland", "福克兰", "福克蘭", "FK"],
   },
   "🇬🇫": {
     en: "French Guiana",
-    zh: "法属圭亚那",
+    zh: "法屬圭亞那",
     aliases: ["gf", "french guiana", "法属圭亚那", "法屬圭亞那", "GF"],
   },
   "🇵🇦": {
     en: "Panama",
-    zh: "巴拿马",
+    zh: "巴拿馬",
     aliases: ["pa", "panama", "巴拿马", "巴拿馬", "PA"],
   },
   "🇨🇷": {
     en: "Costa Rica",
-    zh: "哥斯达黎加",
+    zh: "哥斯大黎加",
     aliases: ["cr", "costa rica", "哥斯达黎加", "哥斯達黎加", "CR"],
   },
   "🇳🇮": {
@@ -298,27 +298,27 @@ export const emojiToRegionMap: Record<
   },
   "🇭🇳": {
     en: "Honduras",
-    zh: "洪都拉斯",
+    zh: "宏都拉斯",
     aliases: ["hn", "honduras", "洪都拉斯", "HN"],
   },
   "🇬🇹": {
     en: "Guatemala",
-    zh: "危地马拉",
+    zh: "瓜地馬拉",
     aliases: ["gt", "guatemala", "危地马拉", "危地馬拉", "GT"],
   },
   "🇧🇿": {
     en: "Belize",
-    zh: "伯利兹",
+    zh: "貝里斯",
     aliases: ["bz", "belize", "伯利兹", "伯利茲", "BZ"],
   },
   "🇸🇻": {
     en: "El Salvador",
-    zh: "萨尔瓦多",
+    zh: "薩爾瓦多",
     aliases: ["sv", "el salvador", "萨尔瓦多", "薩爾瓦多", "SV"],
   },
   "🇯🇲": {
     en: "Jamaica",
-    zh: "牙买加",
+    zh: "牙買加",
     aliases: ["jm", "jamaica", "牙买加", "牙買加", "JM"],
   },
   "🇨🇺": {
@@ -338,27 +338,27 @@ export const emojiToRegionMap: Record<
   },
   "🇧🇸": {
     en: "Bahamas",
-    zh: "巴哈马",
+    zh: "巴哈馬",
     aliases: ["bs", "bahamas", "巴哈马", "巴哈馬", "BS"],
   },
   "🇧🇧": {
     en: "Barbados",
-    zh: "巴巴多斯",
+    zh: "巴貝多",
     aliases: ["bb", "barbados", "巴巴多斯", "BB"],
   },
   "🇹🇹": {
     en: "Trinidad and Tobago",
-    zh: "特立尼达和多巴哥",
+    zh: "千里達及托巴哥",
     aliases: ["tt", "trinidad", "特立尼达", "特立尼達", "TT"],
   },
   "🇵🇭": {
     en: "Philippines",
-    zh: "菲律宾",
+    zh: "菲律賓",
     aliases: ["ph", "philippines", "菲律宾", "菲律賓", "PH"],
   },
   "🇹🇭": {
     en: "Thailand",
-    zh: "泰国",
+    zh: "泰國",
     aliases: ["th", "thailand", "泰国", "泰國", "TH"],
   },
   "🇻🇳": {
@@ -368,17 +368,17 @@ export const emojiToRegionMap: Record<
   },
   "🇲🇾": {
     en: "Malaysia",
-    zh: "马来西亚",
+    zh: "馬來西亞",
     aliases: ["my", "malaysia", "马来西亚", "馬來西亞", "MY"],
   },
   "🇮🇩": {
     en: "Indonesia",
-    zh: "印度尼西亚",
+    zh: "印尼",
     aliases: ["id", "indonesia", "印度尼西亚", "印尼", "ID"],
   },
   "🇱🇦": {
     en: "Laos",
-    zh: "老挝",
+    zh: "寮國",
     aliases: ["la", "laos", "老挝", "老撾", "LA"],
   },
   "🇰🇭": {
@@ -388,12 +388,12 @@ export const emojiToRegionMap: Record<
   },
   "🇲🇲": {
     en: "Myanmar",
-    zh: "缅甸",
+    zh: "緬甸",
     aliases: ["mm", "myanmar", "burma", "缅甸", "緬甸", "MM"],
   },
   "🇧🇳": {
     en: "Brunei",
-    zh: "文莱",
+    zh: "汶萊",
     aliases: ["bn", "brunei", "文莱", "汶萊", "BN"],
   },
   "🇪🇬": {
@@ -408,57 +408,57 @@ export const emojiToRegionMap: Record<
   },
   "🇳🇬": {
     en: "Nigeria",
-    zh: "尼日利亚",
+    zh: "奈及利亞",
     aliases: ["ng", "nigeria", "尼日利亚", "尼日利亞", "NG"],
   },
   "🇰🇪": {
     en: "Kenya",
-    zh: "肯尼亚",
+    zh: "肯亞",
     aliases: ["ke", "kenya", "肯尼亚", "肯亞", "KE"],
   },
   "🇪🇹": {
     en: "Ethiopia",
-    zh: "埃塞俄比亚",
+    zh: "衣索比亞",
     aliases: ["et", "ethiopia", "埃塞俄比亚", "埃塞俄比亞", "ET"],
   },
   "🇬🇭": {
     en: "Ghana",
-    zh: "加纳",
+    zh: "迦納",
     aliases: ["gh", "ghana", "加纳", "迦納", "GH"],
   },
   "🇺🇬": {
     en: "Uganda",
-    zh: "乌干达",
+    zh: "烏干達",
     aliases: ["ug", "uganda", "乌干达", "烏干達", "UG"],
   },
   "🇹🇿": {
     en: "Tanzania",
-    zh: "坦桑尼亚",
+    zh: "坦尚尼亞",
     aliases: ["tz", "tanzania", "坦桑尼亚", "坦尚尼亞", "TZ"],
   },
   "🇷🇼": {
     en: "Rwanda",
-    zh: "卢旺达",
+    zh: "盧安達",
     aliases: ["rw", "rwanda", "卢旺达", "盧旺達", "RW"],
   },
   "🇿🇼": {
     en: "Zimbabwe",
-    zh: "津巴布韦",
+    zh: "辛巴威",
     aliases: ["zw", "zimbabwe", "津巴布韦", "辛巴威", "ZW"],
   },
   "🇿🇲": {
     en: "Zambia",
-    zh: "赞比亚",
+    zh: "尚比亞",
     aliases: ["zm", "zambia", "赞比亚", "尚比亞", "ZM"],
   },
   "🇧🇼": {
     en: "Botswana",
-    zh: "博茨瓦纳",
+    zh: "波札那",
     aliases: ["bw", "botswana", "博茨瓦纳", "波札那", "BW"],
   },
   "🇳🇦": {
     en: "Namibia",
-    zh: "纳米比亚",
+    zh: "納米比亞",
     aliases: ["na", "namibia", "纳米比亚", "納米比亞", "NA"],
   },
   "🇲🇦": {
@@ -468,102 +468,102 @@ export const emojiToRegionMap: Record<
   },
   "🇩🇿": {
     en: "Algeria",
-    zh: "阿尔及利亚",
+    zh: "阿爾及利亞",
     aliases: ["dz", "algeria", "阿尔及利亚", "阿爾及利亞", "DZ"],
   },
   "🇹🇳": {
     en: "Tunisia",
-    zh: "突尼斯",
+    zh: "突尼西亞",
     aliases: ["tn", "tunisia", "突尼斯", "TN"],
   },
   "🇱🇾": {
     en: "Libya",
-    zh: "利比亚",
+    zh: "利比亞",
     aliases: ["ly", "libya", "利比亚", "利比亞", "LY"],
   },
   "🇸🇩": {
     en: "Sudan",
-    zh: "苏丹",
+    zh: "蘇丹",
     aliases: ["sd", "sudan", "苏丹", "蘇丹", "SD"],
   },
   "🇸🇸": {
     en: "South Sudan",
-    zh: "南苏丹",
+    zh: "南蘇丹",
     aliases: ["ss", "south sudan", "南苏丹", "南蘇丹", "SS"],
   },
   "🇨🇩": {
     en: "Democratic Republic of Congo",
-    zh: "刚果民主共和国",
+    zh: "剛果民主共和國",
     aliases: ["cd", "congo", "drc", "刚果", "剛果", "CD"],
   },
   "🇨🇬": {
     en: "Republic of Congo",
-    zh: "刚果共和国",
+    zh: "剛果共和國",
     aliases: ["cg", "congo", "刚果", "剛果", "CG"],
   },
   "🇨🇫": {
     en: "Central African Republic",
-    zh: "中非共和国",
+    zh: "中非共和國",
     aliases: ["cf", "central african", "中非", "CF"],
   },
   "🇨🇲": {
     en: "Cameroon",
-    zh: "喀麦隆",
+    zh: "喀麥隆",
     aliases: ["cm", "cameroon", "喀麦隆", "喀麥隆", "CM"],
   },
   "🇹🇩": {
     en: "Chad",
-    zh: "乍得",
+    zh: "查德",
     aliases: ["td", "chad", "乍得", "TD"],
   },
   "🇳🇪": {
     en: "Niger",
-    zh: "尼日尔",
+    zh: "尼日",
     aliases: ["ne", "niger", "尼日尔", "尼日爾", "NE"],
   },
   "🇲🇱": {
     en: "Mali",
-    zh: "马里",
+    zh: "馬利",
     aliases: ["ml", "mali", "马里", "馬利", "ML"],
   },
   "🇧🇫": {
     en: "Burkina Faso",
-    zh: "布基纳法索",
+    zh: "布吉納法索",
     aliases: ["bf", "burkina", "布基纳法索", "布吉納法索", "BF"],
   },
   "🇸🇳": {
     en: "Senegal",
-    zh: "塞内加尔",
+    zh: "塞內加爾",
     aliases: ["sn", "senegal", "塞内加尔", "塞內加爾", "SN"],
   },
   "🇬🇲": {
     en: "Gambia",
-    zh: "冈比亚",
+    zh: "甘比亞",
     aliases: ["gm", "gambia", "冈比亚", "甘比亞", "GM"],
   },
   "🇬🇼": {
     en: "Guinea-Bissau",
-    zh: "几内亚比绍",
+    zh: "幾內亞比索",
     aliases: ["gw", "guinea-bissau", "几内亚比绍", "幾內亞比索", "GW"],
   },
   "🇬🇳": {
     en: "Guinea",
-    zh: "几内亚",
+    zh: "幾內亞",
     aliases: ["gn", "guinea", "几内亚", "幾內亞", "GN"],
   },
   "🇸🇱": {
     en: "Sierra Leone",
-    zh: "塞拉利昂",
+    zh: "獅子山",
     aliases: ["sl", "sierra leone", "塞拉利昂", "SL"],
   },
   "🇱🇷": {
     en: "Liberia",
-    zh: "利比里亚",
+    zh: "賴比瑞亞",
     aliases: ["lr", "liberia", "利比里亚", "賴比瑞亞", "LR"],
   },
   "🇨🇮": {
     en: "Ivory Coast",
-    zh: "科特迪瓦",
+    zh: "象牙海岸",
     aliases: ["ci", "ivory coast", "科特迪瓦", "象牙海岸", "CI"],
   },
   "🇹🇬": {
@@ -573,16 +573,16 @@ export const emojiToRegionMap: Record<
   },
   "🇧🇯": {
     en: "Benin",
-    zh: "贝宁",
+    zh: "貝南",
     aliases: ["bj", "benin", "贝宁", "貝寧", "BJ"],
   },
 };
 
 /**
- * 检查地区emoji是否匹配搜索词
- * @param regionEmoji 地区emoji（如：🇭🇰）
- * @param searchTerm 搜索词
- * @returns 是否匹配
+ * 檢查地區 emoji 是否符合搜尋字詞
+ * @param regionEmoji 地區 emoji（如：🇭🇰）
+ * @param searchTerm 搜尋字詞
+ * @returns 是否符合
  */
 export const isRegionMatch = (
   regionEmoji: string,
@@ -590,39 +590,39 @@ export const isRegionMatch = (
 ): boolean => {
   const lowerSearchTerm = searchTerm.toLowerCase().trim();
 
-  // 直接匹配emoji
+  // 直接比對 emoji
   if (regionEmoji === searchTerm) {
     return true;
   }
 
-  // 从映射表中查找
+  // 從對照表中尋找
   const regionInfo = emojiToRegionMap[regionEmoji];
   if (!regionInfo) {
-    // 如果映射表中没有，则只进行简单的包含匹配
+    // 若對照表中沒有，則僅進行簡單的包含比對
     return regionEmoji.toLowerCase().includes(lowerSearchTerm);
   }
 
-  // 检查英文名称
+  // 檢查英文名稱
   if (regionInfo.en.toLowerCase().includes(lowerSearchTerm)) {
     return true;
   }
 
-  // 检查中文名称
+  // 檢查中文名稱
   if (regionInfo.zh.includes(lowerSearchTerm)) {
     return true;
   }
 
-  // 检查别名
+  // 檢查別名
   return regionInfo.aliases.some((alias) =>
     alias.toLowerCase().includes(lowerSearchTerm)
   );
 };
 
 /**
- * 获取地区的显示名称
- * @param regionEmoji 地区emoji
- * @param language 语言 ('en' | 'zh')
- * @returns 地区名称
+ * 取得地區的顯示名稱
+ * @param regionEmoji 地區 emoji
+ * @param language 語言 ('en' | 'zh')
+ * @returns 地區名稱
  */
 export const getRegionDisplayName = (
   regionEmoji: string,
@@ -637,8 +637,8 @@ export const getRegionDisplayName = (
 };
 
 /**
- * 获取所有支持的地区emoji列表
- * @returns 地区emoji数组
+ * 取得所有支援的地區 emoji 清單
+ * @returns 地區 emoji 陣列
  */
 export const getSupportedRegions = (): string[] => {
   return Object.keys(emojiToRegionMap);

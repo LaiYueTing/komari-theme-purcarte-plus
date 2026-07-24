@@ -13,7 +13,7 @@ import { useTranslation } from "react-i18next";
 import { resources } from "@/i18n/config";
 import { useAppConfig } from "@/config";
 
-// 仅显示配置了 name 字段的语言
+// 僅顯示設定了 name 欄位的語言
 const availableLanguages = Object.entries(resources)
   .filter(
     ([, res]) =>

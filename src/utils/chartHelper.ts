@@ -1,10 +1,10 @@
 import type { PingTask } from "@/types/node";
 
 /**
- * 根据任务名称和任务列表生成颜色
- * @param taskName - 任务名称
- * @param sortedTasks - 已排序的任务列表
- * @returns CSS 颜色字符串
+ * 根據任務名稱和任務清單產生顏色
+ * @param taskName - 任務名稱
+ * @param sortedTasks - 已排序的任務清單
+ * @returns CSS 顏色字串
  */
 export const generateColor = (taskName: string, sortedTasks: PingTask[]) => {
   const index = sortedTasks.findIndex((t) => t.name === taskName);
@@ -13,13 +13,13 @@ export const generateColor = (taskName: string, sortedTasks: PingTask[]) => {
   const total = sortedTasks.length;
   const hue = (index * (360 / total)) % 360;
 
-  // 使用OKLCH色彩空间，优化折线图的颜色区分度
+  // 使用 OKLCH 色彩空間，最佳化折線圖的顏色區分度
   const oklchColor = `oklch(0.7 0.2 ${hue} / .8)`;
 
-  // 为不支持OKLCH的浏览器提供HSL备用色
+  // 為不支援 OKLCH 的瀏覽器提供 HSL 備用色
   const hslFallback = `hsl(${hue}, 50%, 60%)`;
 
-  // 检查浏览器是否支持OKLCH
+  // 檢查瀏覽器是否支援 OKLCH
   if (
     typeof window !== "undefined" &&
     window.CSS &&
@@ -32,10 +32,10 @@ export const generateColor = (taskName: string, sortedTasks: PingTask[]) => {
 };
 
 /**
- * 格式化图表X轴的标签
- * @param value - 时间戳
- * @param hours - 当前选择的时间范围（小时）
- * @returns 格式化后的时间字符串
+ * 格式化圖表 X 軸的標籤
+ * @param value - 時間戳記
+ * @param hours - 目前選擇的時間範圍（小時）
+ * @returns 格式化後的時間字串
  */
 export const lableFormatter = (value: any, hours: number) => {
   const date = new Date(value);
@@ -55,11 +55,11 @@ export const lableFormatter = (value: any, hours: number) => {
 };
 
 /**
- * 格式化负载图表X轴的时间标签
- * @param value - 时间戳
+ * 格式化負載圖表 X 軸的時間標籤
+ * @param value - 時間戳記
  * @param index - 索引
- * @param dataLength - 数据总长度
- * @returns 格式化后的时间字符串 (只显示首尾)
+ * @param dataLength - 資料總長度
+ * @returns 格式化後的時間字串 (只顯示首尾)
  */
 export const loadChartTimeFormatter = (
   value: any,

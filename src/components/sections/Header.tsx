@@ -316,7 +316,7 @@ const SearchBar = ({
   if (isMobile) {
     return (
       <>
-        {/* 高级搜索启用时隐藏普通搜索，两者互斥 */}
+        {/* 進階搜尋啟用時隱藏普通搜尋，兩者互斥 */}
         {enableAdvancedSearch && onOpenAdvancedSearch ? (
           <Button
             variant="ghost"
@@ -362,7 +362,7 @@ const SearchBar = ({
 
   return (
     <>
-      {/* 高级搜索启用时隐藏普通搜索，两者互斥 */}
+      {/* 進階搜尋啟用時隱藏普通搜尋，兩者互斥 */}
       {enableAdvancedSearch && onOpenAdvancedSearch ? (
         <Button
           variant="ghost"
@@ -458,7 +458,7 @@ export const Header = forwardRef<HTMLElement, HeaderProps>((props, ref) => {
           <div className="flex items-center theme-text-shadow text-accent-foreground">
             <a href="/" className="flex items-center gap-2 text-2xl font-bold">
               {enableLogo && logoUrl && (
-                <img src={logoUrl} alt="logo" className={logoShape === "original" ? "h-8 w-auto object-contain" : "h-8 w-8 rounded-full object-cover"} />
+                <img src={logoUrl} alt="logo" className={logoShape === "original" ? "h-10 w-auto object-contain" : "h-10 w-10 rounded-full object-cover"} />
               )}
               {enableTitle && <span>{titleText}</span>}
             </a>

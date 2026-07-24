@@ -13,7 +13,7 @@ export interface ConfigContextType extends ConfigOptions {
   reloadConfig: () => Promise<void>;
 }
 
-// 创建配置上下文
+// 建立設定上下文
 export const ConfigContext = createContext<ConfigContextType>({
   ...DEFAULT_CONFIG,
   publicSettings: null,

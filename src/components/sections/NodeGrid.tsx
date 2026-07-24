@@ -271,7 +271,7 @@ export const NodeGrid = ({
             </div>
           </div>
           {selectTrafficProgressStyle === "circular" && (
-            <div className="flex items-center justify-between text-xs mt-2">
+            <div className="flex items-center justify-between text-xs mt-3">
               <span className="w-1/5">{t("node.traffic")}</span>
               <div className="flex items-center justify-between w-4/5">
                 <div className="flex items-center justify-center w-1/4 h-8">
@@ -321,7 +321,7 @@ export const NodeGrid = ({
           const showExpiry = gridExpiredAtDisplay === "show" ||
             (gridExpiredAtDisplay === "hideUnset" && expired_at !== t("node.notSet"));
           const showUptime = gridUptimeDisplay === "show" ||
-            (gridUptimeDisplay === "hideUnset" && (isOnline ? stats : stats?.time));
+            (gridUptimeDisplay === "hideUnset" && (isOnline ? !!stats : true));
           if (!showExpiry && !showUptime) return null;
           return (
             <div className="flex justify-between text-xs">

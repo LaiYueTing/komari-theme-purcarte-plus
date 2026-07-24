@@ -54,7 +54,7 @@ const PingChart = memo(({ node, hours }: PingChartProps) => {
   const { t } = useLocale();
   const { chartContentRef, handleChartMouseMove, tooltipProps } = useTooltipScrollLock();
 
-  // 管理员 Ping 任务数据（用于按 target/type/weight 排序）
+  // 管理員 Ping 任務資料（用於按 target/type/weight 排序）
   const [pingTasksFull, setPingTasksFull] = useState<PingTaskFull[]>([]);
   useEffect(() => {
     const needsAdminData = ["target_asc", "target_desc", "type_asc", "type_desc", "weight_asc", "weight_desc"].includes(monitorNodeSortMode);
@@ -102,7 +102,7 @@ const PingChart = memo(({ node, hours }: PingChartProps) => {
       Math.max(800, Math.floor(fallbackIntervalSec * 1000 * 0.25))
     );
 
-    // 使用分桶匹配替代线性扫描 O(n*m) -> O(n)
+    // 使用分桶比對取代線性掃描 O(n*m) -> O(n)
     const bucketSize = toleranceMs * 2;
     const grouped: Record<number, any> = {};
     const bucketToAnchor = new Map<number, number>();
@@ -160,7 +160,7 @@ const PingChart = memo(({ node, hours }: PingChartProps) => {
 
     const keys = tasks.map((t) => String(t.id));
 
-    // 使用 Uint8Array 替代 Set<string> 标记 null 值
+    // 使用 Uint8Array 取代 Set<string> 標記 null 值
     const keyCount = keys.length;
     const preservedNulls = new Uint8Array(full.length * keyCount);
     for (let i = 0; i < full.length; i++) {
@@ -177,7 +177,7 @@ const PingChart = memo(({ node, hours }: PingChartProps) => {
       maxCapMs: 30 * 60_000,
     });
 
-    // 恢复原始 null 值
+    // 恢復原始 null 值
     for (let i = 0; i < full.length; i++) {
       for (let ki = 0; ki < keyCount; ki++) {
         if (preservedNulls[i * keyCount + ki] === 1) {
@@ -186,7 +186,7 @@ const PingChart = memo(({ node, hours }: PingChartProps) => {
       }
     }
 
-    // 自动智能降采样
+    // 自動智慧降採樣
     const autoMax = calculateAutoMaxPoints(full.length, keys.length);
     const effectiveMax = pingChartMaxPoints > 0 ? pingChartMaxPoints : autoMax;
 
@@ -225,7 +225,7 @@ const PingChart = memo(({ node, hours }: PingChartProps) => {
     if (!pingHistory?.tasks) return [];
     const tasks = [...pingHistory.tasks];
 
-    // 构建 admin API 数据查找表（用于 target/type 排序）
+    // 建構 admin API 資料查找表（用於 target/type 排序）
     const adminTaskMap = new Map<number, PingTaskFull>();
     for (const task of pingTasksFull) {
       adminTaskMap.set(task.id, task);
@@ -348,7 +348,7 @@ const PingChart = memo(({ node, hours }: PingChartProps) => {
     });
   }, [pingHistory?.records, sortedTasks, timeRange]);
 
-  // 仅可见的任务（条件渲染替代 hide 属性）
+  // 僅可見的任務（條件渲染取代 hide 屬性）
   const visibleSortedTasks = useMemo(
     () => sortedTasks.filter((t) => visiblePingTasks.includes(t.id)),
     [sortedTasks, visiblePingTasks]

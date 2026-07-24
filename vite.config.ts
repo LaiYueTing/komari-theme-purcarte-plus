@@ -45,22 +45,32 @@ export default defineConfig(({ mode }) => {
         },
       },
     },
-    server: {
-      host: "0.0.0.0",
-      proxy: {
-        "/api": {
-          target: env.VITE_API_TARGET || "http://localhost:3000",
-          changeOrigin: true,
-          ws: true,
-          secure: false,
+    server: (() => {
+      const target = env.VITE_API_TARGET || "http://localhost:3000";
+      // 把轉發出去的 Origin 改寫成後端網址，
+      // 否則後端開啟「來源檢查」(cors_origin_check) 時會擋掉 WebSocket 升級，導致即時資料收不到
+      const rewriteOrigin = (proxy: any) => {
+        proxy.on("proxyReq", (proxyReq: any) => {
+          proxyReq.setHeader("origin", target);
+        });
+        proxy.on("proxyReqWs", (proxyReq: any) => {
+          proxyReq.setHeader("origin", target);
+        });
+      };
+      const proxyOptions = {
+        target,
+        changeOrigin: true,
+        ws: true,
+        secure: false,
+        configure: rewriteOrigin,
+      };
+      return {
+        host: "0.0.0.0",
+        proxy: {
+          "/api": proxyOptions,
+          "/themes": proxyOptions,
         },
-        "/themes": {
-          target: env.VITE_API_TARGET || "http://localhost:3000",
-          changeOrigin: true,
-          ws: true,
-          secure: false,
-        },
-      },
-    },
+      };
+    })(),
   };
 });

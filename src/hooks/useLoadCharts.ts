@@ -122,7 +122,7 @@ export const useLoadCharts = (node: NodeData | null, hours: number) => {
       time: new Date(d.time).toISOString(),
     }));
 
-    // 确定与当前采样方案匹配的间隔，以便进行时间差比较
+    // 確定與目前採樣方案相符的間隔，以便進行時間差比較
     const intervalSeconds =
       hours === 1
         ? minute
@@ -132,7 +132,7 @@ export const useLoadCharts = (node: NodeData | null, hours: number) => {
         ? hour
         : minute * 15;
 
-    // 如果最后一个数据点的时间与当前时间相差超过一个间隔，则在末尾添加一个当前时间的空点
+    // 如果最後一個資料點的時間與目前時間相差超過一個間隔，則在末尾新增一個目前時間的空點
     const now = new Date();
     if (stringifiedData.length > 0) {
       const lastDataTime = new Date(

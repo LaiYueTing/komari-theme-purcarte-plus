@@ -1,8 +1,8 @@
 /**
- * 高级搜索过滤逻辑
+ * 進階搜尋過濾邏輯
  *
- * 纯函数模块：接收 AdvancedSearchState 和节点数组，返回过滤后的节点数组。
- * 每个 match 函数对应一种字段类型的过滤逻辑。
+ * 純函式模組：接收 AdvancedSearchState 和節點陣列，回傳過濾後的節點陣列。
+ * 每個 match 函式對應一種欄位型別的過濾邏輯。
  */
 
 import type { NodeData } from "@/types/node";
@@ -22,8 +22,8 @@ import type { ExchangeRates } from "@/components/enhanced/useExchangeRates";
 import { parsePriceToCNY } from "@/components/enhanced/financeUtils";
 
 /**
- * 单位转换为字节
- * NodeData 中 mem_total/disk_total/swap_total/traffic_limit 存储单位为字节
+ * 單位轉換為位元組
+ * NodeData 中 mem_total/disk_total/swap_total/traffic_limit 儲存單位為位元組
  */
 const UNIT_MULTIPLIERS: Record<string, number> = {
   MB: 1024 ** 2,
@@ -37,11 +37,11 @@ function convertToBytes(value: number, unit: string): number {
 }
 
 /**
- * 文本字段匹配
- * - 空值：不参与过滤（返回 true）
- * - none（单关键词）：模糊匹配
- * - and（& 分隔）：所有关键词必须匹配
- * - or（| 分隔）：任一关键词匹配即可
+ * 文字欄位比對
+ * - 空值：不參與過濾（回傳 true）
+ * - none（單關鍵字）：模糊比對
+ * - and（& 分隔）：所有關鍵字必須符合
+ * - or（| 分隔）：任一關鍵字符合即可
  */
 function matchTextField(nodeValue: string, filter: TextFieldFilter): boolean {
   if (!filter.value.trim()) return true;
@@ -55,14 +55,14 @@ function matchTextField(nodeValue: string, filter: TextFieldFilter): boolean {
   if (filter.operator === "or") {
     return filter.keywords.some((kw) => lowerNode.includes(kw.toLowerCase()));
   }
-  // 单关键词模糊匹配
+  // 單關鍵字模糊比對
   return lowerNode.includes(filter.keywords[0].toLowerCase());
 }
 
 /**
- * 布尔字段匹配
- * - "any"：不参与过滤
- * - "true"/"false"：精确匹配
+ * 布林欄位比對
+ * - "any"：不參與過濾
+ * - "true"/"false"：精確比對
  */
 function matchBooleanField(
   nodeValue: boolean,
@@ -73,23 +73,23 @@ function matchBooleanField(
 }
 
 /**
- * 流量统计方式枚举匹配
- * - "any"：不参与过滤
- * - 其他值：精确匹配
+ * 流量統計方式列舉比對
+ * - "any"：不參與過濾
+ * - 其他值：精確比對
  */
 function matchEnumField(
   nodeValue: string | undefined,
   filter: TrafficLimitTypeFilter
 ): boolean {
   if (filter === "any") return true;
-  // 当节点未设置 traffic_limit_type 时，默认行为是 "max"
+  // 當節點未設定 traffic_limit_type 時，預設行為是 "max"
   const effectiveValue = nodeValue || "max";
   return effectiveValue === filter;
 }
 
 /**
- * 将搜索输入的价格（货币代码）转换为 CNY
- * 与 parsePriceToCNY 互补：parsePriceToCNY 处理节点的货币符号，此函数处理搜索下拉的货币代码
+ * 將搜尋輸入的價格（貨幣代碼）轉換為 CNY
+ * 與 parsePriceToCNY 互補：parsePriceToCNY 處理節點的貨幣符號，此函式處理搜尋下拉的貨幣代碼
  */
 function searchPriceToCNY(
   price: number,
@@ -103,16 +103,17 @@ function searchPriceToCNY(
     case "EUR": return price / (rates.EUR || 0.12);
     case "GBP": return price / (rates.GBP || 0.11);
     case "JPY": return price / (rates.JPY || 22.23);
+    case "TWD": return price / (rates.TWD || 4.34);
     default: return price;
   }
 }
 
 /**
- * 价格字段匹配（货币感知）
- * - isFreeSearch=true：匹配 price === -1（不受货币影响）
- * - 有汇率时：将搜索价格和节点价格统一转换为 CNY 后比较
- * - 无汇率时：直接比较原始数值（向后兼容）
- * - isExact 精确匹配使用 0.01 容差（汇率转换浮点误差）
+ * 價格欄位比對（貨幣感知）
+ * - isFreeSearch=true：比對 price === -1（不受貨幣影響）
+ * - 有匯率時：將搜尋價格和節點價格統一轉換為 CNY 後比較
+ * - 無匯率時：直接比較原始數值（向後相容）
+ * - isExact 精確比對使用 0.01 容差（匯率轉換浮點誤差）
  */
 function matchPriceField(
   node: NodeData,
@@ -123,13 +124,13 @@ function matchPriceField(
     return node.price === -1;
   }
 
-  // 获取节点价格（转 CNY 或直接使用）
+  // 取得節點價格（轉 CNY 或直接使用）
   const getNodePriceCNY = (): number => {
     if (rates) return parsePriceToCNY(node, rates).price;
     return node.price;
   };
 
-  // 获取搜索价格（转 CNY 或直接使用）
+  // 取得搜尋價格（轉 CNY 或直接使用）
   const getSearchPriceCNY = (val: number): number => {
     if (rates) return searchPriceToCNY(val, filter.currency, rates);
     return val;
@@ -143,7 +144,7 @@ function matchPriceField(
     const searchCNY = getSearchPriceCNY(target);
     return Math.abs(nodeCNY - searchCNY) < 0.01;
   }
-  // 范围模式
+  // 範圍模式
   const hasFrom = filter.rangeFrom.trim() !== "";
   const hasTo = filter.rangeTo.trim() !== "";
   if (!hasFrom && !hasTo) return true;
@@ -163,10 +164,10 @@ function matchPriceField(
 }
 
 /**
- * CPU 核心数匹配
- * - isExact=true 且 exactValue 为空：不参与过滤
- * - isExact=true 且 exactValue 有值：精确匹配（整数）
- * - isExact=false：范围匹配（from/to）
+ * CPU 核心數比對
+ * - isExact=true 且 exactValue 為空：不參與過濾
+ * - isExact=true 且 exactValue 有值：精確比對（整數）
+ * - isExact=false：範圍比對（from/to）
  */
 function matchCpuCores(nodeCores: number, filter: CpuCoresFilter): boolean {
   if (filter.isExact) {
@@ -175,7 +176,7 @@ function matchCpuCores(nodeCores: number, filter: CpuCoresFilter): boolean {
     if (isNaN(target)) return true;
     return nodeCores === target;
   }
-  // 范围模式
+  // 範圍模式
   const hasFrom = filter.rangeFrom.trim() !== "";
   const hasTo = filter.rangeTo.trim() !== "";
   if (!hasFrom && !hasTo) return true;
@@ -194,28 +195,28 @@ function matchCpuCores(nodeCores: number, filter: CpuCoresFilter): boolean {
 }
 
 /**
- * 将用户输入的 UTC+8 日期字符串转换为 UTC 的 Date 对象
- * 用户输入 "2025-03-15" 表示北京时间该日期的开始
+ * 將使用者輸入的 UTC+8 日期字串轉換為 UTC 的 Date 物件
+ * 使用者輸入 "2025-03-15" 表示該日期 UTC+8 時間的開始
  */
 function userDateToUtcStart(dateStr: string): Date {
   return new Date(dateStr + "T00:00:00+08:00");
 }
 
 /**
- * 将用户输入的 UTC+8 日期字符串转换为该日结束时间的 UTC Date 对象
+ * 將使用者輸入的 UTC+8 日期字串轉換為該日結束時間的 UTC Date 物件
  */
 function userDateToUtcEnd(dateStr: string): Date {
   return new Date(dateStr + "T23:59:59.999+08:00");
 }
 
 /**
- * 日期字段匹配
- * - exact 模式：检查 expired_at 是否在同一 UTC+8 日历日内
+ * 日期欄位比對
+ * - exact 模式：檢查 expired_at 是否在同一 UTC+8 日曆日內
  * - range 模式：
- *   - 只有 from：>= from 日开始
- *   - 只有 to：<= to 日结束
- *   - 两者都有：范围内
- * - 日期为空：不参与过滤
+ *   - 只有 from：>= from 日開始
+ *   - 只有 to：<= to 日結束
+ *   - 兩者都有：範圍內
+ * - 日期為空：不參與過濾
  */
 function matchDateField(
   nodeDate: string | null,
@@ -253,11 +254,11 @@ function matchDateField(
 }
 
 /**
- * 范围字段匹配（mem_total/disk_total/swap_total/traffic_limit）
- * - from 和 to 都为空：不参与过滤
- * - 只有 from：>= from（转换单位后比较）
- * - 只有 to：<= to（转换单位后比较）
- * - 两者都有：范围内
+ * 範圍欄位比對（mem_total/disk_total/swap_total/traffic_limit）
+ * - from 和 to 都為空：不參與過濾
+ * - 只有 from：>= from（轉換單位後比較）
+ * - 只有 to：<= to（轉換單位後比較）
+ * - 兩者都有：範圍內
  */
 function matchRangeField(
   nodeValue: number | undefined,
@@ -287,9 +288,9 @@ function matchRangeField(
 }
 
 /**
- * 交换空间匹配
- * - isDisabledSearch=true：匹配 swap_total === 0（已关闭 SWAP）
- * - isDisabledSearch=false：使用范围匹配
+ * 交換空間比對
+ * - isDisabledSearch=true：比對 swap_total === 0（已關閉 SWAP）
+ * - isDisabledSearch=false：使用範圍比對
  */
 function matchSwapField(
   nodeValue: number | undefined,
@@ -302,8 +303,8 @@ function matchSwapField(
 }
 
 /**
- * 主过滤函数：应用所有高级搜索条件过滤节点数组
- * @param rates 可选汇率数据，用于价格字段的跨币种匹配
+ * 主過濾函式：套用所有進階搜尋條件過濾節點陣列
+ * @param rates 可選匯率資料，用於價格欄位的跨幣別比對
  */
 export function applyAdvancedFilters(
   nodes: (NodeData & { stats?: any })[],
@@ -311,7 +312,7 @@ export function applyAdvancedFilters(
   rates?: ExchangeRates
 ): (NodeData & { stats?: any })[] {
   return nodes.filter((node) => {
-    // 1. 统一文本搜索：跨所有文本字段模糊匹配
+    // 1. 統一文字搜尋：跨所有文字欄位模糊比對
     if (state.textSearch.value.trim() && state.textSearch.keywords.length > 0) {
       const allTextValues = TEXT_FIELD_KEYS
         .map(key => String(node[key as keyof NodeData] || ""))
@@ -321,24 +322,24 @@ export function applyAdvancedFilters(
       }
     }
 
-    // 2. 布尔字段匹配
+    // 2. 布林欄位比對
     if (!matchBooleanField(node.auto_renewal, state.auto_renewal)) return false;
     if (!matchBooleanField(node.hidden, state.hidden)) return false;
 
-    // 3. 枚举字段匹配
+    // 3. 列舉欄位比對
     if (!matchEnumField(node.traffic_limit_type, state.traffic_limit_type))
       return false;
 
-    // 4. 价格字段匹配（货币感知）
+    // 4. 價格欄位比對（貨幣感知）
     if (!matchPriceField(node, state.price, rates)) return false;
 
-    // 5. CPU 核心数匹配
+    // 5. CPU 核心數比對
     if (!matchCpuCores(node.cpu_cores, state.cpu_cores)) return false;
 
-    // 6. 日期字段匹配
+    // 6. 日期欄位比對
     if (!matchDateField(node.expired_at, state.expired_at)) return false;
 
-    // 7. 范围字段匹配
+    // 7. 範圍欄位比對
     if (!matchRangeField(node.mem_total, state.mem_total)) return false;
     if (!matchRangeField(node.disk_total, state.disk_total)) return false;
     if (!matchSwapField(node.swap_total, state.swap_total)) return false;

@@ -8,11 +8,11 @@ import { useTranslation } from "react-i18next";
 import { parseCustomTexts, unflattenObject } from "@/utils/localeUtils";
 
 /**
- * 安全地获取嵌套对象的属性
- * @param obj 要查询的对象
- * @param path 属性路径
- * @param defaultValue 如果解析值为 undefined，则返回此值
- * @returns 解析后的值
+ * 安全地取得巢狀物件的屬性
+ * @param obj 要查詢的物件
+ * @param path 屬性路徑
+ * @param defaultValue 如果解析值為 undefined，則回傳此值
+ * @returns 解析後的值
  */
 const get = (obj: any, path: string, defaultValue: any = undefined) => {
   const keys = path.split(".");
@@ -38,13 +38,13 @@ type MergedTexts = typeof defaultTexts & typeof otherTexts;
 type LocaleKeys = Paths<MergedTexts>;
 
 /**
- * 使用全局配置 Hook，用于获取当前应用配置
- * @returns 配置对象（合并了默认配置，确保所有属性都有值）
+ * 使用全域設定 Hook，用於取得目前應用設定
+ * @returns 設定物件（合併了預設設定，確保所有屬性都有值）
  */
 export function useAppConfig(): ConfigContextType {
   const config = useContext(ConfigContext);
-  // 从上下文中过滤掉 undefined/null 值，以防止
-  // 覆盖 DEFAULT_CONFIG 的默认值（修复 React 错误 #130）
+  // 從上下文中過濾掉 undefined/null 值，以防止
+  // 覆蓋 DEFAULT_CONFIG 的預設值（修復 React 錯誤 #130）
   const safeConfig = Object.fromEntries(
     Object.entries(config).filter(([, v]) => v !== undefined && v !== null)
   );
@@ -52,9 +52,9 @@ export function useAppConfig(): ConfigContextType {
 }
 
 /**
- * 使用本地化文本 Hook（桥接 i18next）
- * 优先级：i18next 翻译 > 自定义文本覆盖 > locales.ts 默认值
- * @returns t 函数用于获取翻译文本，i18n 实例用于语言切换
+ * 使用在地化文字 Hook（橋接 i18next）
+ * 優先順序：i18next 翻譯 > 自訂文字覆蓋 > locales.ts 預設值
+ * @returns t 函式用於取得翻譯文字，i18n 實例用於語言切換
  */
 export function useLocale() {
   const appConfig = useAppConfig();
@@ -63,8 +63,8 @@ export function useLocale() {
   const { i18n } = useTranslation();
   const prevCustomTextsRef = useRef<string | null>(null);
 
-  // 仅注入后台自定义文本覆盖到 i18next，而非完整的中文默认文本
-  // 旧版注入完整 texts 会污染非中文语言包，导致切换语言后回退中文
+  // 僅注入後台自訂文字覆蓋到 i18next，而非完整的中文預設文字
+  // 舊版注入完整 texts 會汙染非中文語言包，導致切換語言後回退中文
   useEffect(() => {
     if (rawCustomTexts === prevCustomTextsRef.current) return;
     prevCustomTextsRef.current = rawCustomTexts;
@@ -73,7 +73,7 @@ export function useLocale() {
     const parsed = parseCustomTexts(rawCustomTexts);
     if (Object.keys(parsed).length === 0) return;
 
-    // 转换 {param} 为 {{param}} 以适配 i18next 插值格式
+    // 轉換 {param} 為 {{param}} 以相容 i18next 插值格式
     const converted: Record<string, string> = {};
     for (const [k, v] of Object.entries(parsed)) {
       if (typeof v === "string") {
@@ -84,7 +84,7 @@ export function useLocale() {
     }
     const nested = unflattenObject(converted);
 
-    // 注入到所有语言包，使管理员覆盖全局生效
+    // 注入到所有語言包，使管理員覆蓋全域生效
     const languages = Object.keys(i18next.options?.resources || {});
     for (const lang of languages) {
       i18next.addResourceBundle(lang, "translation", nested, true, true);
@@ -93,10 +93,10 @@ export function useLocale() {
 
   const t = useCallback(
     (key: LocaleKeys | (string & {}), params?: Record<string, string | number>): string => {
-      // 使用 i18next 翻译（已包含 JSON locale + customTexts 覆盖）
+      // 使用 i18next 翻譯（已包含 JSON locale + customTexts 覆蓋）
       const result = i18next.t(key as string, params as any);
 
-      // 如果 i18next 返回了 key 本身（未找到翻译），回退到 texts 对象
+      // 如果 i18next 回傳了 key 本身（找不到翻譯），回退到 texts 物件
       if (result === key) {
         const text = get(texts, key, key);
         if (typeof text !== "string") return key as string;

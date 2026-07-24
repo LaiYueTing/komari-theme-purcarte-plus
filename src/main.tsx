@@ -267,7 +267,7 @@ export const AppContent = () => {
   const headerRef = useRef<HTMLElement | null>(null);
   const [headerHeight, setHeaderHeight] = useState(0);
 
-  // 高级搜索 hook（必须无条件调用，遵循 React hooks 规则）
+  // 進階搜尋 hook（必須無條件呼叫，遵循 React hooks 規則）
   const advancedSearch = useAdvancedSearch();
   const isAuthenticated =
     siteStatus === "authenticated" || siteStatus === "private-authenticated";
@@ -388,7 +388,7 @@ export const AppContent = () => {
         ) : (
           <EnhancedFeatures />
         )}
-        {/* 高级搜索模态框 */}
+        {/* 進階搜尋對話框 */}
         {enableAdvancedSearch && advancedSearch.isModalOpen && (
           <AdvancedSearchModal
             state={advancedSearch.state}

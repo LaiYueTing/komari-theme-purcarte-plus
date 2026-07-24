@@ -1,7 +1,7 @@
-/* ========== 高级搜索模态框样式 ========== */
-/* 遵循 enhanced.css 的设计规范，使用 Radix 主题 CSS 变量 */
+/* ========== 進階搜尋對話框樣式 ========== */
+/* 遵循 enhanced.css 的設計規範，使用 Radix 主題 CSS 變數 */
 
-/* 遮罩层 */
+/* 遮罩層 */
 .advanced-search-overlay {
   position: fixed;
   top: 0;
@@ -60,17 +60,17 @@
   }
 }
 
-/* 遮罩层关闭动画 */
+/* 遮罩層關閉動畫 */
 .advanced-search-overlay.closing {
   animation: advSearchFadeOut 0.2s ease-in forwards;
 }
 
-/* 模态框关闭动画 */
+/* 對話框關閉動畫 */
 .advanced-search-modal.closing {
   animation: advSearchSlideOut 0.2s ease-in forwards;
 }
 
-/* 模态框容器 */
+/* 對話框容器 */
 .advanced-search-modal {
   max-width: 900px;
   width: 90%;
@@ -88,7 +88,7 @@
   animation: advSearchSlideIn 0.25s ease-out;
 }
 
-/* 内容区域 */
+/* 內容區域 */
 .advanced-search-content {
   flex: 1;
   overflow-y: auto;
@@ -96,7 +96,7 @@
   padding: 16px 20px;
 }
 
-/* 自定义滚动条 */
+/* 自訂捲軸 */
 .advanced-search-content::-webkit-scrollbar {
   width: 6px;
 }
@@ -114,7 +114,7 @@
   background: var(--gray-a7);
 }
 
-/* 底部操作栏 */
+/* 底部操作列 */
 .advanced-search-footer {
   display: flex;
   justify-content: flex-end;
@@ -123,8 +123,8 @@
   border-top: 1px solid var(--gray-a5);
 }
 
-/* ========== 分区样式 ========== */
-/* 遵循 ServerTradeModal 的 trade-section 设计 */
+/* ========== 分區樣式 ========== */
+/* 遵循 ServerTradeModal 的 trade-section 設計 */
 
 .search-section {
   margin-bottom: 20px;
@@ -146,8 +146,8 @@
   border-bottom: 1px solid var(--gray-a4);
 }
 
-/* ========== 字段网格布局 ========== */
-/* 桌面端两列，移动端单列 */
+/* ========== 欄位網格佈局 ========== */
+/* 桌面端兩欄，行動端單欄 */
 
 .search-fields-grid {
   display: grid;
@@ -155,7 +155,7 @@
   gap: 12px 20px;
 }
 
-/* ========== 单个字段项样式 ========== */
+/* ========== 單個欄位項樣式 ========== */
 
 .search-field-item {
   display: flex;
@@ -183,7 +183,7 @@
   opacity: 0.85;
 }
 
-/* ========== 范围字段行布局 ========== */
+/* ========== 範圍欄位列佈局 ========== */
 
 .search-range-row {
   display: flex;
@@ -207,7 +207,7 @@
   width: 80px;
 }
 
-/* ========== 价格/日期切换行 ========== */
+/* ========== 價格/日期切換列 ========== */
 
 .search-toggle-row {
   display: flex;
@@ -222,7 +222,7 @@
   user-select: none;
 }
 
-/* ========== 日期字段 ========== */
+/* ========== 日期欄位 ========== */
 
 .search-date-inputs {
   display: flex;
@@ -235,14 +235,14 @@
   min-width: 0;
 }
 
-/* ========== 输入框错误状态 ========== */
+/* ========== 輸入框錯誤狀態 ========== */
 
 .search-input-error {
   border-color: var(--red-8) !important;
   box-shadow: 0 0 0 1px var(--red-8) !important;
 }
 
-/* ========== 响应式设计 ========== */
+/* ========== 響應式設計 ========== */
 
 /* 平板 */
 @media (max-width: 768px) {
@@ -262,7 +262,7 @@
   }
 }
 
-/* 手机 */
+/* 手機 */
 @media (max-width: 576px) {
   .advanced-search-modal {
     width: 98%;

@@ -31,15 +31,15 @@ const InstancePage = () => {
     "idle" | "fading-out" | "fading-in"
   >("fading-in");
   const [loadHours, setLoadHours] = useState<number>(0);
-  const [pingHours, setPingHours] = useState<number>(1); // 默认1小时
+  const [pingHours, setPingHours] = useState<number>(1); // 預設 1 小時
   const { enableInstanceDetail, enablePingChart, publicSettings } =
     useAppConfig();
   const isMobile = useIsMobile();
   const { t } = useLocale();
 
-  const maxRecordPreserveTime = publicSettings?.record_preserve_time || 0; // 默认0表示关闭
+  const maxRecordPreserveTime = publicSettings?.record_preserve_time || 0; // 預設 0 表示關閉
   const maxPingRecordPreserveTime =
-    publicSettings?.ping_record_preserve_time || 24; // 默认1天
+    publicSettings?.ping_record_preserve_time || 24; // 預設 1 天
 
   const timeRanges = useMemo(() => {
     return [

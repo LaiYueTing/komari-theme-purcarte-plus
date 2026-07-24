@@ -1,5 +1,5 @@
-/* ========== 共享样式 ========== */
-/* 气泡/模态框通用容器样式 */
+/* ========== 共享樣式 ========== */
+/* 氣泡/對話框通用容器樣式 */
 .welcome-bubble,
 .custom-alert-modal,
 .finance-widget {
@@ -11,7 +11,7 @@
   color: var(--gray-12);
 }
 
-/* 通用头部样式 */
+/* 通用頭部樣式 */
 .bubble-header {
   display: flex;
   justify-content: space-between;
@@ -49,7 +49,7 @@
   padding: 15px;
 }
 
-/* 信息行 */
+/* 資訊行 */
 .bubble-info {
   margin-bottom: 8px;
   font-size: 0.85rem;
@@ -68,7 +68,7 @@
   margin-bottom: 0;
 }
 
-/* Logo 图片 */
+/* Logo 圖片 */
 .bubble-logo-image {
   height: 32px;
   width: 32px;
@@ -76,14 +76,14 @@
   object-fit: cover;
 }
 
-/* Logo 原图等比缩放样式 */
+/* Logo 原圖等比縮放樣式 */
 .bubble-logo-image.bubble-logo-original {
   width: auto;
   border-radius: 0;
   object-fit: contain;
 }
 
-/* 剧透文本 */
+/* 劇透文字 */
 .spoiler {
   background: var(--accent-9);
   color: transparent !important;
@@ -98,7 +98,7 @@
   opacity: 0.8;
 }
 
-/* 帮助图标/工具提示 */
+/* 說明圖示/工具提示 */
 .help-icon {
   cursor: help;
   color: var(--gray-10);
@@ -148,7 +148,18 @@
   transform: translateY(-5px) scale(1);
 }
 
-/* ========== 欢迎气泡 ========== */
+/* 向下展開的工具提示（用於捲動容器頂部附近、向上會被裁切的情況） */
+.help-icon.help-icon-down::after {
+  bottom: auto;
+  top: 100%;
+  transform: translateY(10px) scale(0.95);
+}
+
+.help-icon.help-icon-down.active::after {
+  transform: translateY(5px) scale(1);
+}
+
+/* ========== 歡迎氣泡 ========== */
 .welcome-bubble {
   position: fixed;
   left: 5px;
@@ -171,7 +182,45 @@
   backface-visibility: hidden;
 }
 
-/* ========== 资产统计 ========== */
+/* 歡迎氣泡懸浮按鈕（收合後顯示） */
+.welcome-ball {
+  position: fixed;
+  left: 20px;
+  bottom: 50px;
+  width: 45px;
+  height: 45px;
+  border-radius: 50%;
+  background-color: var(--purcarte-card-color);
+  border: 1px solid var(--gray-a5);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  box-shadow: 0 4px 12px var(--gray-a4);
+  z-index: 1045;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  padding: 0;
+  transition: all 0.3s ease;
+  opacity: 0;
+  transform: scale(0);
+  pointer-events: none;
+  color: var(--accent-11);
+}
+
+.welcome-ball.show {
+  opacity: 1;
+  transform: scale(1);
+  pointer-events: auto;
+}
+
+.welcome-ball:hover {
+  transform: scale(1.1);
+  color: var(--accent-9);
+  border-color: var(--accent-9);
+}
+
+/* ========== 資產統計 ========== */
 .finance-widget {
   position: fixed;
   right: 20px;
@@ -203,7 +252,7 @@
   min-height: 0;
 }
 
-/* 资产悬浮球 */
+/* 資產懸浮球 */
 .finance-ball {
   position: fixed;
   right: 20px;
@@ -239,7 +288,7 @@
   color: var(--accent-9);
 }
 
-/* 统计行 */
+/* 統計行 */
 .finance-row {
   display: flex;
   justify-content: space-between;
@@ -372,7 +421,7 @@
   font-weight: 500;
 }
 
-/* ========== 服务器交易模态框 ========== */
+/* ========== 伺服器交易對話框 ========== */
 .server-trade-modal {
   max-width: 800px;
   width: 90%;
@@ -546,7 +595,7 @@
   pointer-events: auto !important;
 }
 
-/* ========== 自定义警告模态框 ========== */
+/* ========== 自訂警告對話框 ========== */
 .custom-alert-overlay {
   position: fixed;
   top: 0;
@@ -586,9 +635,9 @@
   color: var(--red-9);
 }
 
-/* ========== 地球组件 ========== */
+/* ========== 地球元件 ========== */
 
-/* 地球模态框 打开/关闭动画 */
+/* 地球對話框 開啟/關閉動畫 */
 .earth-modal-overlay {
   animation: earthOverlayFadeIn 0.3s ease-out forwards;
 }
@@ -625,7 +674,7 @@
   to { opacity: 0; transform: scale(0.9); }
 }
 
-/* 服务器交易模态框 打开/关闭动画 */
+/* 伺服器交易對話框 開啟/關閉動畫 */
 .server-trade-modal {
   animation: tradeModalSlideIn 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
@@ -709,7 +758,7 @@
   border-radius: 50%;
 }
 
-/* 原图等比缩放样式 */
+/* 原圖等比縮放樣式 */
 .earth-user-marker.earth-user-marker-shape-original {
   width: auto;
   border-radius: 8px;
@@ -722,7 +771,7 @@
   border-radius: 0;
 }
 
-/* Logo 留空时的文字标记 */
+/* Logo 留空時的文字標記 */
 .earth-user-marker-text {
   font-size: 12px;
   font-weight: bold;
@@ -838,9 +887,10 @@
   font-weight: 800;
   color: var(--accent-9);
   line-height: 1;
+  text-align: center;
 }
 
-/* ========== 滚动辅助按钮 ========== */
+/* ========== 捲動輔助按鈕 ========== */
 .scroll-helper-btn {
   position: fixed;
   right: 20px;
@@ -884,7 +934,7 @@
   bottom: 70px;
 }
 
-/* ========== 响应式 ========== */
+/* ========== 響應式 ========== */
 @media (max-width: 576px) {
   .welcome-bubble {
     max-width: calc(100vw - 30px);

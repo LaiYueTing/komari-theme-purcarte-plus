@@ -40,19 +40,19 @@ export function ServerTradeModal({
   const sym = CURRENCY_SYMBOLS[userCurrency] || userCurrency;
   const regionCode = EMOJI_MAP[node.region] || node.region || "UN";
 
-  // 日期和金额
+  // 日期和金額
   const now = new Date();
   const utc8 = new Date(now.getTime() + 8 * 60 * 60 * 1000);
   const todayStr = `${utc8.getUTCFullYear()}-${String(utc8.getUTCMonth() + 1).padStart(2, "0")}-${String(utc8.getUTCDate()).padStart(2, "0")}`;
   const [tradeDate, setTradeDate] = useState(initialTradeDate || todayStr);
   const [tradeAmount, setTradeAmount] = useState(initialTradeAmount || "");
 
-  // 计算剩余价值（已经是用户选择的基准货币）
+  // 計算剩餘價值（已經是使用者選擇的基準貨幣）
   const displayRemainValue = parseFloat(
     calculateRemainValueForDate(node, rates, tradeDate).toFixed(2)
   );
 
-  // 溢价计算
+  // 溢價計算
   const amount = parseFloat(tradeAmount);
   const hasAmount = !isNaN(amount) && amount >= 0;
   const premium = hasAmount ? amount - displayRemainValue : NaN;
@@ -61,23 +61,29 @@ export function ServerTradeModal({
       ? (premium / displayRemainValue) * 100
       : 0;
 
-  // 到期时间处理
+  // 到期時間處理
   let expiredText = "-";
   if (node.expired_at) {
     const expiryDate = new Date(node.expired_at);
-    const dateOnlyString = expiryDate.toLocaleDateString(i18n.language, {
-      year: "numeric",
-      month: "2-digit",
-      day: "2-digit",
-      timeZone: "Asia/Shanghai",
-    });
     const now = new Date();
     const diffMs = expiryDate.getTime() - now.getTime();
-    const diffDays = Math.ceil(diffMs / (1000 * 60 * 60 * 24));
-    if (diffDays > 0) expiredText = `${dateOnlyString} ${t("enhanced.trade.remainingDays", { days: diffDays })}`;
-    else if (diffDays === 0) expiredText = `${dateOnlyString} ${t("enhanced.trade.expiresToday")}`;
-    else
-      expiredText = `${dateOnlyString} ${t("enhanced.trade.expiredDays", { days: Math.abs(diffDays) })}`;
+    const diffYears = diffMs / (1000 * 60 * 60 * 24 * 365);
+    // 一次性付費或到期時間 > 100 年視為長期，不顯示遙遠的具體日期
+    if (node.billing_cycle === -1 || diffYears > 100) {
+      expiredText = t("enhanced.trade.longTerm");
+    } else {
+      const dateOnlyString = expiryDate.toLocaleDateString(i18n.language, {
+        year: "numeric",
+        month: "2-digit",
+        day: "2-digit",
+        timeZone: "Asia/Taipei",
+      });
+      const diffDays = Math.ceil(diffMs / (1000 * 60 * 60 * 24));
+      if (diffDays > 0) expiredText = `${dateOnlyString} ${t("enhanced.trade.remainingDays", { days: diffDays })}`;
+      else if (diffDays === 0) expiredText = `${dateOnlyString} ${t("enhanced.trade.expiresToday")}`;
+      else
+        expiredText = `${dateOnlyString} ${t("enhanced.trade.expiredDays", { days: Math.abs(diffDays) })}`;
+    }
   }
 
   // tags & remarks
@@ -94,7 +100,7 @@ export function ServerTradeModal({
         .map((r) => r.trim())
     : [];
 
-  // 拖拽逻辑
+  // 拖曳邏輯
   const modalRef = useRef<HTMLDivElement>(null);
   const isDragging = useRef(false);
   const dragInitial = useRef({ x: 0, y: 0 });
@@ -172,40 +178,53 @@ export function ServerTradeModal({
   );
 
   const handleShare = useCallback(() => {
-    // 如果没有开启高级搜索功能，禁止分享并弹出 Toast 提示
+    // 如果沒有開啟進階搜尋功能，禁止分享並彈出 Toast 提示
     if (!isAdvancedSearchEnabled) {
       toast.warning(t("enhanced.trade.shareDisabled"));
       return;
     }
     const params = new URLSearchParams();
-    // 使用 t_q=uuid 实现唯一搜索
+    // 使用 t_q=uuid 實現唯一搜尋
     params.set("t_q", node.uuid);
-    // 交易模态框参数
+    // 交易對話框參數
     if (tradeDate) {
       params.set("tm_date", tradeDate);
     }
     if (tradeAmount) {
       params.set("tm_amount", tradeAmount);
     }
-    // 货币单位
+    // 貨幣單位
     if (userCurrency && userCurrency !== "CNY") {
       params.set("tm_cur", userCurrency);
     }
     const shareUrl = `${window.location.origin}/?${params.toString()}`;
-    navigator.clipboard.writeText(shareUrl).then(() => {
-      toast.success(t("enhanced.trade.shareCopied"));
-    }).catch(() => {
-      // 回退方案：创建临时输入框复制
+
+    // 回退方案：建立臨時輸入框複製（非 HTTPS 等不安全環境下 navigator.clipboard 不存在）
+    const fallbackCopy = () => {
       const textarea = document.createElement("textarea");
       textarea.value = shareUrl;
       textarea.style.position = "fixed";
       textarea.style.opacity = "0";
       document.body.appendChild(textarea);
       textarea.select();
-      document.execCommand("copy");
+      try {
+        document.execCommand("copy");
+        toast.success(t("enhanced.trade.shareCopied"));
+      } catch {
+        toast.error(t("enhanced.trade.shareFail"));
+      }
       document.body.removeChild(textarea);
-      toast.success(t("enhanced.trade.shareCopied"));
-    });
+    };
+
+    // navigator.clipboard 在不安全環境（HTTP）下為 undefined，需先判斷再呼叫
+    if (navigator.clipboard?.writeText) {
+      navigator.clipboard
+        .writeText(shareUrl)
+        .then(() => toast.success(t("enhanced.trade.shareCopied")))
+        .catch(fallbackCopy);
+    } else {
+      fallbackCopy();
+    }
   }, [isAdvancedSearchEnabled, node.uuid, tradeDate, tradeAmount, userCurrency, t]);
 
   const handleExportImage = useCallback(async () => {
@@ -222,20 +241,20 @@ export function ServerTradeModal({
     ) as HTMLElement | null;
     const origBtnDisplay = headerBtnGroup?.style.display;
 
-    // 覆盖半透明子元素
+    // 覆蓋半透明子元素
     const semiEls = Array.from(
       modal.querySelectorAll<HTMLElement>(".trade-input, .trade-result-box")
     );
 
     const inputPairs: { input: HTMLInputElement; placeholder: HTMLDivElement }[] = [];
-    // 旗帜：用内联 <svg> 替换 <img>，截图后再换回
+    // 旗幟：用內聯 <svg> 替換 <img>，截圖後再換回
     const flagPairs: { img: HTMLImageElement; svgEl: Element; parent: Node }[] = [];
-    // 标签元素（try 内赋值，finally 内恢复）
+    // 標籤元素（try 內賦值，finally 內恢復）
     let tagEls: HTMLElement[] = [];
 
     try {
-      // 1) 将 SVG flag <img> 替换为内联 <svg> 元素
-      //    html2canvas 无法渲染外部 SVG <img>，但能渲染内联 <svg>
+      // 1) 將 SVG flag <img> 替換為內聯 <svg> 元素
+      //    html2canvas 無法渲染外部 SVG <img>，但能渲染內聯 <svg>
       const flagImgs = modal.querySelectorAll<HTMLImageElement>('img[src$=".svg"]');
       await Promise.all(
         Array.from(flagImgs).map(async (img) => {
@@ -253,12 +272,12 @@ export function ServerTradeModal({
             parent.replaceChild(svgEl, img);
             flagPairs.push({ img, svgEl, parent });
           } catch {
-            // 加载失败则保持原样
+            // 載入失敗則保持原樣
           }
         })
       );
 
-      // 2) 将 <input> 替换为文本 <div>（html2canvas 渲染 input value 有偏移）
+      // 2) 將 <input> 替換為文字 <div>（html2canvas 渲染 input value 有偏移）
       const inputs = modal.querySelectorAll<HTMLInputElement>("input.trade-input");
       inputs.forEach((input) => {
         const computed = window.getComputedStyle(input);
@@ -280,7 +299,7 @@ export function ServerTradeModal({
         inputPairs.push({ input, placeholder: div });
       });
 
-      // 3) 标签去省略：Tag 组件带 overflow-hidden + text-ellipsis，截图时宽度偏差会截断文字
+      // 3) 標籤去省略：Tag 元件帶 overflow-hidden + text-ellipsis，截圖時寬度偏差會截斷文字
       tagEls = Array.from(
           modal.querySelectorAll<HTMLElement>(".rt-Badge")
       );
@@ -290,7 +309,7 @@ export function ServerTradeModal({
         el.style.setProperty("white-space", "nowrap", "important");
       });
 
-      // 4) 样式覆盖 — CSS 用了 !important，必须用 setProperty 才能覆盖
+      // 4) 樣式覆蓋 — CSS 用了 !important，必須用 setProperty 才能覆蓋
       modal.style.setProperty("background-color", opaqueBg, "important");
       modal.style.setProperty("backdrop-filter", "none", "important");
       modal.style.setProperty("-webkit-backdrop-filter", "none", "important");
@@ -320,8 +339,8 @@ export function ServerTradeModal({
         scrollY: -window.scrollY,
       });
 
-      // 二次绘制：给截图添加圆角
-      const radius = 16 * 2; // 匹配 CSS border-radius: 16px，scale: 2
+      // 二次繪製：為截圖加上圓角
+      const radius = 16 * 2; // 對應 CSS border-radius: 16px，scale: 2
       const w = canvas.width;
       const h = canvas.height;
       const rounded = document.createElement("canvas");
@@ -359,7 +378,7 @@ export function ServerTradeModal({
     } catch {
       toast.error(t("enhanced.trade.exportFail"));
     } finally {
-      // removeProperty 让 CSS !important 规则重新生效
+      // removeProperty 讓 CSS !important 規則重新生效
       modal.style.removeProperty("background-color");
       modal.style.removeProperty("backdrop-filter");
       modal.style.removeProperty("-webkit-backdrop-filter");
@@ -375,16 +394,16 @@ export function ServerTradeModal({
         contentEl.style.removeProperty("max-height");
         contentEl.style.removeProperty("overflow");
       }
-      // 恢复 input
+      // 恢復 input
       inputPairs.forEach(({ input, placeholder }) => {
         input.style.display = "";
         placeholder.remove();
       });
-      // 恢复旗帜：内联 <svg> 换回 <img>
+      // 恢復旗幟：內聯 <svg> 換回 <img>
       flagPairs.forEach(({ img, svgEl, parent }) => {
         parent.replaceChild(img, svgEl);
       });
-      // 恢复标签省略样式
+      // 恢復標籤省略樣式
       tagEls.forEach((el) => {
         el.style.removeProperty("overflow");
         el.style.removeProperty("text-overflow");
@@ -512,7 +531,7 @@ export function ServerTradeModal({
         </div>
 
         <div className="bubble-content server-trade-content">
-          {/* 服务器信息 */}
+          {/* 伺服器資訊 */}
           <div className="trade-section">
             <div className="trade-section-title">
               <svg
@@ -631,7 +650,7 @@ export function ServerTradeModal({
 
           <div className="finance-separator" />
 
-          {/* 交易计算 */}
+          {/* 交易計算 */}
           <div className="trade-section">
             <div className="trade-section-title">
               <svg

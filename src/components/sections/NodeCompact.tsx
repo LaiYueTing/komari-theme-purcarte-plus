@@ -154,7 +154,7 @@ export const NodeCompact = ({ node, onShowDetails }: NodeCompactProps) => {
           const showExpiry = compactExpiredAtDisplay === "show" ||
             (compactExpiredAtDisplay === "hideUnset" && expired_at !== t("node.notSet"));
           const showUptime = compactUptimeDisplay === "show" ||
-            (compactUptimeDisplay === "hideUnset" && (isOnline ? stats : stats?.time));
+            (compactUptimeDisplay === "hideUnset" && (isOnline ? !!stats : true));
           if (!showExpiry && !showUptime) return null;
           return (
             <div className={`flex grid ${showExpiry && showUptime ? "grid-cols-2" : "grid-cols-1"}`}>

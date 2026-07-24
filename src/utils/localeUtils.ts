@@ -1,10 +1,10 @@
 // src/utils/localeUtils.ts
 
 /**
- * 将自定义文本字符串解析为对象。
- * 值应该是经过 URL 编码的。
- * @param customTexts 要解析的字符串 (例如, "key1:value%201,key2:value%2C2")。
- * @returns 自定义文本的记录。
+ * 將自訂文字字串解析為物件。
+ * 值應該是經過 URL 編碼的。
+ * @param customTexts 要解析的字串 (例如, "key1:value%201,key2:value%2C2")。
+ * @returns 自訂文字的記錄。
  */
 export const parseCustomTexts = (
   customTexts: string
@@ -27,8 +27,8 @@ export const parseCustomTexts = (
       try {
         result[key] = decodeURIComponent(value);
       } catch (e) {
-        console.error(`无法解码自定义文本值: ${value}`, e);
-        result[key] = value; // 回退到原始值
+        console.error(`無法解碼自訂文字值: ${value}`, e);
+        result[key] = value; // 退回原始值
       }
     }
   }
@@ -37,9 +37,9 @@ export const parseCustomTexts = (
 };
 
 /**
- * 将自定义文本记录序列化为 URL 编码的字符串。
- * @param customTextsRecord 自定义文本的记录。
- * @returns 一个 URL 编码的字符串 (例如, "key1:value%201,key2:value%2C2")。
+ * 將自訂文字記錄序列化為 URL 編碼的字串。
+ * @param customTextsRecord 自訂文字的記錄。
+ * @returns 一個 URL 編碼的字串 (例如, "key1:value%201,key2:value%2C2")。
  */
 export const serializeCustomTexts = (
   customTextsRecord: Record<string, string>
@@ -50,11 +50,11 @@ export const serializeCustomTexts = (
 };
 
 /**
- * 将嵌套对象扁平化为单层对象。
- * @param obj 要扁平化的对象。
- * @param parentKey 当前递归级别的父键。
- * @param separator 用于在键之间分隔的分隔符。
- * @returns 一个扁平化的对象。
+ * 將巢狀物件扁平化為單層物件。
+ * @param obj 要扁平化的物件。
+ * @param parentKey 當前遞迴層級的父鍵。
+ * @param separator 用於在鍵之間分隔的分隔符。
+ * @returns 一個扁平化的物件。
  */
 export const flattenObject = (
   obj: any,
@@ -82,10 +82,10 @@ export const flattenObject = (
 };
 
 /**
- * 将自定义文本合并到默认文本中。
- * @param defaultTexts 默认文本对象。
- * @param customTexts 自定义文本字符串 (例如, "key1:value%201,key2:value%2C2")。
- * @returns 包含合并后文本的新对象。
+ * 將自訂文字合併到預設文字中。
+ * @param defaultTexts 預設文字物件。
+ * @param customTexts 自訂文字字串 (例如, "key1:value%201,key2:value%2C2")。
+ * @returns 包含合併後文字的新物件。
  */
 export const mergeTexts = (defaultTexts: any, customTexts: string): any => {
   const parsedCustomTexts = parseCustomTexts(customTexts);
@@ -110,10 +110,10 @@ export const mergeTexts = (defaultTexts: any, customTexts: string): any => {
 };
 
 /**
- * 获取在自定义文本中被修改的键。
- * @param defaultTexts 默认文本对象。
- * @param customTexts 自定义文本字符串 (例如, "key1:value%201,key2:value%2C2")。
- * @returns 一个包含被修改键的数组。
+ * 取得在自訂文字中被修改的鍵。
+ * @param defaultTexts 預設文字物件。
+ * @param customTexts 自訂文字字串 (例如, "key1:value%201,key2:value%2C2")。
+ * @returns 一個包含被修改鍵的陣列。
  */
 export const getModifiedKeys = (
   defaultTexts: any,
@@ -135,19 +135,19 @@ export const getModifiedKeys = (
 };
 
 /**
- * 检查一个值是否为对象。
- * @param item 要检查的值。
- * @returns 如果值是对象则返回 true，否则返回 false。
+ * 檢查一個值是否為物件。
+ * @param item 要檢查的值。
+ * @returns 如果值是物件則回傳 true，否則回傳 false。
  */
 const isObject = (item: any): item is Record<string, any> => {
   return item && typeof item === "object" && !Array.isArray(item);
 };
 
 /**
- * 深度合并两个对象。
- * @param target 要合并到的目标对象。
- * @param source 要从中合并的源对象。
- * @returns 合并后的对象。
+ * 深度合併兩個物件。
+ * @param target 要合併到的目標物件。
+ * @param source 要從中合併的來源物件。
+ * @returns 合併後的物件。
  */
 export const deepMerge = <T extends object, S extends object>(
   target: T,
@@ -177,9 +177,9 @@ export const deepMerge = <T extends object, S extends object>(
 };
 
 /**
- * 将扁平化的 dot-path 对象还原为嵌套对象。
- * @param obj 扁平化对象（键以 . 分隔）
- * @returns 嵌套对象
+ * 將扁平化的 dot-path 物件還原為巢狀物件。
+ * @param obj 扁平化物件（鍵以 . 分隔）
+ * @returns 巢狀物件
  */
 export const unflattenObject = (
   obj: Record<string, string>

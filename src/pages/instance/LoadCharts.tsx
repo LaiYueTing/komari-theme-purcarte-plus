@@ -37,12 +37,12 @@ const LoadCharts = memo(
     const chartDataLengthRef = useRef(0);
     chartDataLengthRef.current = chartData.length;
 
-    // 样式和颜色
+    // 樣式和顏色
     const cn = "flex flex-col w-full overflow-hidden";
     const chartMargin = { top: 8, right: 16, bottom: 8, left: 16 };
     const colors = ["#F38181", "#FCE38A", "#EAFFD0", "#95E1D3"];
 
-    // 图表配置
+    // 圖表設定
     const chartConfigs = [
       {
         id: "cpu",
@@ -205,16 +205,16 @@ const LoadCharts = memo(
       },
     ];
 
-    // 根据配置渲染图表
+    // 根據設定渲染圖表
     const renderChart = (config: any) => {
       const ChartComponent = config.type === "area" ? AreaChart : LineChart;
       const DataComponent =
         config.type === "area" ? Area : (Line as React.ComponentType<any>);
 
-      // 只指定高度，让宽度自适应
+      // 只指定高度，讓寬度自適應
       const chartProps = {
-        height: 140, // 更小的高度以确保完全适应容器
-        style: { overflow: "visible" }, // 通过内联样式解决Safari溢出问题
+        height: 140, // 更小的高度以確保完全適應容器
+        style: { overflow: "visible" }, // 透過內聯樣式解決 Safari 溢出問題
       };
 
       const chartConfig = config.series

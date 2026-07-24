@@ -36,7 +36,7 @@ export const useRowHeightAlignment = ({
         if (traffic) traffic.style.height = "";
       });
 
-      // 计算每行的卡片
+      // 計算每行的卡片
       const rows: HTMLElement[][] = [];
       let currentRow: HTMLElement[] = [];
       let currentTop = cards[0]?.offsetTop;
@@ -52,7 +52,7 @@ export const useRowHeightAlignment = ({
       });
       if (currentRow.length > 0) rows.push(currentRow);
 
-      // 对每行统一高度
+      // 對每行統一高度
       rows.forEach(row => {
         let maxTagsHeight = 0;
         let maxTrafficHeight = 0;
@@ -82,10 +82,10 @@ export const useRowHeightAlignment = ({
       }, 100);
     };
 
-    // 初始对齐
+    // 初始對齊
     rafRef.current = requestAnimationFrame(alignHeights);
 
-    // ResizeObserver 监听容器大小变化
+    // ResizeObserver 監聽容器大小變化
     const resizeObserver = new ResizeObserver(scheduleAlign);
     const container = document.querySelector(containerSelector);
     if (container) resizeObserver.observe(container);

@@ -7,7 +7,7 @@ import zh_TW from "./locales/zh_TW.json";
 import ja_JP from "./locales/ja_JP.json";
 import id_ID from "./locales/id_ID.json";
 
-// 不添加 name 字段的语言将不会在语言切换菜单中显示
+// 不添加 name 欄位的語言將不會在語言切換選單中顯示
 // not adding the name field will hide the language from the language switcher menu
 const resources = {
     "en-US": {

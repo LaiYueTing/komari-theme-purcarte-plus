@@ -8,7 +8,7 @@ interface CacheEntry {
 }
 
 const cache = new Map<string, CacheEntry>();
-const CACHE_TTL_MS = 5 * 60 * 1000; // 5 分钟
+const CACHE_TTL_MS = 5 * 60 * 1000; // 5 分鐘
 
 export const usePingChart = (node: NodeData | null, hours: number) => {
   const { getPingHistory } = useNodeData();

@@ -24,7 +24,7 @@ function useNodesInternal() {
       const sortedNodes = nodeData.sort((a, b) => a.weight - b.weight);
       setStaticNodes(sortedNodes);
     } catch (err) {
-      setError(err instanceof Error ? err.message : "获取节点数据失败");
+      setError(err instanceof Error ? err.message : "取得節點資料失敗");
     } finally {
       setLoading(false);
     }

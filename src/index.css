@@ -133,7 +133,7 @@
   }
 }
 
-/* 全局统一滚动条样式（亮色/暗色模式自动适配） */
+/* 全域統一捲軸樣式（淺色/深色模式自動適配） */
 ::-webkit-scrollbar {
   width: 5px;
   height: 5px;
@@ -210,13 +210,13 @@
   background-size: 60px 60px;
 }
 
-/* 动画效果 */
+/* 動畫效果 */
 .fade-in {
   animation: fadeIn 0.5s ease-out;
 }
 
-/* 主内容层隔离：将服务器卡片实时更新的重绘限制在此层内，
-   避免触发兄弟增强组件的 backdrop-filter 重合成导致闪烁 */
+/* 主內容層隔離：將伺服器卡片即時更新的重繪限制在此層內，
+   避免觸發兄弟增強元件的 backdrop-filter 重新合成導致閃爍 */
 .main-content-layer {
   isolation: isolate;
   contain: layout style;
@@ -249,7 +249,7 @@
   }
 }
 
-/* ========== 节点详情模态框 ========== */
+/* ========== 節點詳情對話框 ========== */
 .node-detail-overlay {
   position: fixed;
   inset: 0;
@@ -294,4 +294,10 @@
 @keyframes nodeDetailModalOut {
   from { opacity: 1; transform: scale(1) translateY(0); }
   to { opacity: 0; transform: scale(0.95) translateY(10px); }
+}
+
+/* 統計區塊文字沿用自訂游標，避免觸碰文字時退回系統預設游標 */
+.stat-chip,
+.stat-chip * {
+  cursor: inherit;
 }

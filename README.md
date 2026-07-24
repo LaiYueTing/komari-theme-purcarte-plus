@@ -4,786 +4,786 @@
 
 ## ✨ PurCarte-Plus ✨
 
-一款为 [Komari](https://github.com/komari-monitor/komari) 设计的磨砂玻璃风格个性化增强版主题
+一款為 [Komari](https://github.com/komari-monitor/komari) 設計的磨砂玻璃風格個人化增強版主題
 
 </div>
 
 ---
 
 > [!WARNING]
-> ### 🚨 使用前请务必阅读
-> **本项目是个人兴趣驱动的开源作品，不是商业产品，不是外包项目，更不欠任何人**
+> ### 🚨 使用前請務必閱讀
+> **本專案是個人興趣驅動的開源作品，不是商業產品，不是外包專案，更不欠任何人**
 >
-> - 我只针对 **我自己发现的问题**、**我自己用着不爽的地方**、**我自己喜欢的方向** 进行开发和修复
-> - 我没有义务兼容每一种设备、每一个浏览器、每一个奇葩环境
-> - 我不会因为你「不用但是喜欢到处说不行」就去改任何东西
-> - **觉得有 BUG？** 善意反馈我很欢迎；阴阳怪气、到处抹黑，恕不奉陪
+> - 我只針對 **我自己發現的問題**、**我自己用著不爽的地方**、**我自己喜歡的方向** 進行開發和修復
+> - 我沒有義務相容每一種裝置、每一個瀏覽器、每一個奇葩環境
+> - 我不會因為你「不用但是喜歡到處說不行」就去改任何東西
+> - **覺得有 BUG？** 善意回饋我很歡迎；陰陽怪氣、到處抹黑，恕不奉陪
 >
-> **开源 ≠ 免费客服 ≠ 有求必应。尊重是双向的**
+> **開源 ≠ 免費客服 ≠ 有求必應。尊重是雙向的**
 
 ---
 
 > [!NOTE]
-> 本主题在 [原作者:Montia37 v1.2.5](https://github.com/Montia37/komari-theme-purcarte/releases/tag/v1.2.5) 版本基础上进行二次开发的主题，且是在 Claude 的辅助下完成
+> 本主題在 [原作者:Montia37 v1.2.5](https://github.com/Montia37/komari-theme-purcarte/releases/tag/v1.2.5) 版本基礎上進行二次開發的主題，且是在 Claude 的輔助下完成
 >
-> 本主题的增强功能（欢迎气泡、资产统计、3D 地球、访客保护等）源自 [KomariBeautify](https://github.com/YoungYannick/KomariBeautify) 自定义代码版本（后台 自定义头部 & 自定义 Body），后为便于使用与维护整合至本主题包中
+> 本主題的增強功能（歡迎氣泡、資產統計、3D 地球、訪客保護等）源自 [KomariBeautify](https://github.com/YoungYannick/KomariBeautify) 自訂程式碼版本（後台 自訂頭部 & 自訂 Body），後為便於使用與維護整合至本主題包中
 > 
-> **此版本肯定不会满足所有人的需求,我只针对我发现的问题，我用着不好的，或者喜欢的方向开发，如果介意，请使用原版**
+> **此版本肯定不會滿足所有人的需求，我只針對我發現的問題，我用著不好的，或者喜歡的方向開發，如果介意，請使用原版**
 
-## 🆕 相比原版增强了什么
+## 🆕 相比原版增強了什麼
 
 <details>
 <summary><b>✨ 新增功能</b></summary>
 
-- **欢迎气泡 (WelcomeBubble)** — 左下角展示访客 IP、地理位置及 ISP 信息，支持自定义站点名称与 Logo
-- **资产统计 (FinanceWidget)** — 标题栏入口按钮（延迟总览左侧），查看服务器总价值、月均支出、剩余价值，支持多币种汇率换算与交易溢价计算，交易模态框支持分享链接（自动生成含搜索+交易参数的URL并复制到剪贴板，接收方打开链接自动搜索服务器、加载交易参数与货币单位）及导出为图片（自动处理毛玻璃背景，确保导出图片文字清晰可读），交易模态框标签与备注标签采用多颜色模式（复用服务器卡片的标签颜色池）
-- **3D 地球 (EarthGlobe)** — 标题栏入口按钮（延迟总览左侧），集成 globe.gl 可视化节点地理分布，支持亮暗模式独立贴图/背景、"伪点亮全球"演示模式
-- **全局延迟总览 (PingOverview)** — 同时展示所有服务器和监测节点的延迟数据，支持时间范围筛选、服务器排序、分组筛选与统计联动，监测节点排序由后台配置控制（支持按 ID/权重/名称/目标/类型排序以及自定义顺序，同时作用于延迟总览和服务器详情页）
-- **滚动辅助 (ScrollHelpers)** — 页面右下角回到顶部/底部按钮
-- **多语言支持 (i18n)** — 集成 i18next 国际化框架，标题栏内置语言切换器，支持简中/繁中/英/日/印尼五种语言，增强组件（欢迎气泡、资产统计、交易面板、3D地球、访客保护）全面接入 i18n
-- **访客保护 (Protection)** — 对未登录用户启用反调试保护，禁止右键菜单与开发者工具
-- **高级搜索 (AdvancedSearch)** — 多条件搜索模态框，支持统一全文模糊搜索（一个输入框搜索 UUID/名称/CPU/系统/地区/分组/标签等13个字段，AND/OR逻辑）、布尔/枚举下拉（带滑动动画）、价格与CPU核心数精确/范围双模式切换（默认范围搜索，可切换精确匹配）、价格货币选择与汇率自动转换（支持 CNY/USD/HKD/EUR/GBP/JPY，自动按实时汇率跨币种匹配）、价格免费切换、日期精确/范围、内存/磁盘/流量范围+单位选择、交换空间关闭搜索开关（搜索 swap=0 的节点），输入校正（失焦时自动更正非法负数/零值），搜索参数同步至URL实现链接分享，后台可配置开关；开启高级搜索时自动隐藏普通搜索栏
+- **歡迎氣泡 (WelcomeBubble)** — 左下角展示訪客 IP、地理位置及 ISP 資訊，支援自訂站點名稱與 Logo
+- **資產統計 (FinanceWidget)** — 標題列入口按鈕（延遲總覽左側），檢視伺服器總價值、月均支出、剩餘價值，支援多幣別匯率換算與交易溢價計算，交易對話框支援分享連結（自動產生含搜尋+交易參數的 URL 並複製到剪貼簿，接收方開啟連結自動搜尋伺服器、載入交易參數與貨幣單位）及匯出為圖片（自動處理毛玻璃背景，確保匯出圖片文字清晰可讀），交易對話框標籤與備註標籤採用多顏色模式（複用伺服器卡片的標籤顏色池）
+- **3D 地球 (EarthGlobe)** — 標題列入口按鈕（延遲總覽左側），整合 globe.gl 視覺化節點地理分布，支援淺色與深色模式獨立貼圖/背景、「偽點亮全球」展示模式
+- **全域延遲總覽 (PingOverview)** — 同時展示所有伺服器和監測節點的延遲資料，支援時間範圍篩選、伺服器排序、分組篩選與統計連動，監測節點排序由後台設定控制（支援按 ID/權重/名稱/目標/類型排序以及自訂順序，同時作用於延遲總覽和伺服器詳情頁）
+- **捲動輔助 (ScrollHelpers)** — 頁面右下角回到頂部/底部按鈕
+- **多語言支援 (i18n)** — 整合 i18next 國際化框架，標題列內建語言切換器，支援簡中/繁中/英/日/印尼五種語言，增強元件（歡迎氣泡、資產統計、交易面板、3D 地球、訪客保護）全面接入 i18n
+- **訪客保護 (Protection)** — 對未登入使用者啟用反偵錯保護，禁止右鍵選單與開發者工具（預設停用，可於後台開啟）
+- **進階搜尋 (AdvancedSearch)** — 多條件搜尋對話框，支援統一全文模糊搜尋（一個輸入框搜尋 UUID/名稱/CPU/系統/地區/分組/標籤等 13 個欄位，AND/OR 邏輯）、布林/列舉下拉（帶滑動動畫）、價格與 CPU 核心數精確/範圍雙模式切換（預設範圍搜尋，可切換精確比對）、價格貨幣選擇與匯率自動轉換（支援 CNY/USD/HKD/EUR/GBP/JPY，自動按即時匯率跨幣別比對）、價格免費切換、日期精確/範圍、記憶體/磁碟/流量範圍+單位選擇、交換空間關閉搜尋開關（搜尋 swap=0 的節點），輸入校正（失焦時自動更正非法負數/零值），搜尋參數同步至 URL 實現連結分享，後台可設定開關；開啟進階搜尋時自動隱藏普通搜尋列
 
 </details>
 
 <details>
-<summary><b>🎨 UI/UX 改进</b></summary>
+<summary><b>🎨 UI/UX 改進</b></summary>
 
-- **背景系统增强** — 支持图片/视频/纯色三种背景模式互斥切换，支持多张随机背景图（逗号分隔）、亮暗模式独立配置（竖线分隔）、移动端独立背景
-- **底栏增强** — 支持隐藏原始内容、服务器运行时间计时器（可自定义模板）、自定义多行内容（支持 Markdown 链接与图片）
-- **到期/在线时间显示控制** — 网格、表格、紧凑三种视图模式独立控制到期时间与在线时间的显示（显示/隐藏全部/隐藏未设置）
-- **离线节点增强** — 离线节点显示"最后上线: X分钟前"相对时间，而非仅显示"离线"
-- **标签自动解析** — 自动解析 `public_remark`（分号分隔）为可视化标签，支持自定义颜色池
-- **Logo 样式控制** — 标题栏 Logo、欢迎气泡 Logo、访客保护弹窗 Logo 均支持圆形固定缩放（32×32）和原图等比缩放（32×自适应）两种样式，应对非正方形 Logo
-- **统一滚动条样式** — 全局 Webkit 滚动条自动适配亮暗模式
-- **移动端优化** — 修复悬浮球遮挡、网速数值换行错位等移动端问题
-- **多分组标签支持** — 打破单节点单分组限制，支持解析 `group` 字段（英文分号`;`分隔）为多个分组标签，首页及延迟总览页面均支持按多分组灵活筛选显示 ***注意: 此功能目前仅在本主题包有效***
-
-</details>
-
-<details>
-<summary><b>⚙️ 配置与架构</b></summary>
-
-- **前端配置编辑** — 支持管理员登录后通过标题栏按钮直接编辑主题配置，无需进入后台
-- **多语言配置声明** — `komari-theme.json` 支持中/繁/英/日/印尼五语言
-- **localStorage 配置** — 视图、外观等偏好设置可存储到浏览器本地，也可强制使用后台配置
-- **JSON-RPC2 API 适配** — 支持 Komari >=1.0.7 的 JSON-RPC2 API，涵盖节点数据、实时状态、负载/延迟历史、用户认证、公开设置等全部数据接口
-- **自定义 UI 文本** — 可视化编辑器自定义界面文本，无需手动填写配置
-- **向后兼容** — 旧版 `enableVideoBackground` 自动映射为新版 `backgroundMode`
+- **背景系統增強** — 支援圖片/影片/純色三種背景模式互斥切換，支援多張隨機背景圖（逗號分隔）、淺色與深色模式獨立設定（豎線分隔）、行動端獨立背景
+- **底列增強** — 支援隱藏原始內容、伺服器運行時間計時器（可自訂模板）、自訂多行內容（支援 Markdown 連結與圖片）
+- **到期/上線時間顯示控制** — 網格、表格、緊湊三種檢視模式獨立控制到期時間與上線時間的顯示（顯示/隱藏全部/隱藏未設定）
+- **離線節點增強** — 離線節點顯示「最後上線: X 分鐘前」相對時間，而非僅顯示「離線」
+- **標籤自動解析** — 自動解析 `public_remark`（分號分隔）為視覺化標籤，支援自訂顏色池
+- **Logo 樣式控制** — 標題列 Logo、歡迎氣泡 Logo、訪客保護彈窗 Logo 均支援圓形固定縮放（32×32）和原圖等比縮放（32×自適應）兩種樣式，因應非正方形 Logo
+- **統一捲軸樣式** — 全域 Webkit 捲軸自動適配淺色與深色模式
+- **行動端最佳化** — 修復懸浮球遮擋、網速數值換行錯位等行動端問題
+- **多分組標籤支援** — 打破單節點單分組限制，支援解析 `group` 欄位（英文分號`;`分隔）為多個分組標籤，首頁及延遲總覽頁面均支援按多分組靈活篩選顯示 ***注意: 此功能目前僅在本主題包有效***
 
 </details>
 
 <details>
-<summary><b>🐛 Bug 修复</b></summary>
+<summary><b>⚙️ 設定與架構</b></summary>
 
-- 修复部分设备/环境下 React error #130 崩溃问题（配置空值覆盖默认值）
-- 新增前端设置面板 richtext 类型设置项支持（底栏自定义内容等多行输入框可正常渲染）
-- 修复进入探针后服务器卡片闪烁问题（WebSocket 数据未到达时的离线误判）
-- 修复多视图下服务器节点长名称溢出不换行问题
-- 修复加载动画不垂直居中问题
+- **前端設定編輯** — 支援管理員登入後透過標題列按鈕直接編輯主題設定，無需進入後台
+- **多語言設定宣告** — `komari-theme.json` 支援中/繁/英/日/印尼五語言
+- **localStorage 設定** — 檢視、外觀等偏好設定可儲存到瀏覽器本機，也可強制使用後台設定
+- **JSON-RPC2 API 轉接** — 支援 Komari >=1.0.7 的 JSON-RPC2 API，涵蓋節點資料、即時狀態、負載/延遲歷史、使用者認證、公開設定等全部資料介面
+- **自訂 UI 文字** — 視覺化編輯器自訂介面文字，無需手動填寫設定
+- **向後相容** — 舊版 `enableVideoBackground` 自動對應為新版 `backgroundMode`
 
 </details>
 
-## 🚀 快速开始
+<details>
+<summary><b>🐛 Bug 修復</b></summary>
 
-### 安装与启用
+- 修復部分裝置/環境下 React error #130 崩潰問題（設定空值覆蓋預設值）
+- 新增前端設定面板 richtext 型別設定項支援（底列自訂內容等多行輸入框可正常渲染）
+- 修復進入探針後伺服器卡片閃爍問題（WebSocket 資料未到達時的離線誤判）
+- 修復多檢視下伺服器節點長名稱溢出不換行問題
+- 修復載入動畫不垂直置中問題
 
-1.  前往 [Releases](https://github.com/YoungYannick/komari-theme-purcarte-plus/releases) 页面下载最新的 `komari-theme-purcarte-plus.zip` 文件。
-2.  进入 Komari 后台，上传 `zip` 压缩包并启用本主题。
+</details>
+
+## 🚀 快速開始
+
+### 安裝與啟用
+
+1.  前往 [Releases](https://github.com/YoungYannick/komari-theme-purcarte-plus/releases) 頁面下載最新的 `komari-theme-purcarte-plus.zip` 檔案。
+2.  進入 Komari 後台，上傳 `zip` 壓縮包並啟用本主題。
 
 > [!NOTE]
 >
-> 本主题支持通过 Komari 后台或前端进行详细配置，所有可用选项如下
+> 本主題支援透過 Komari 後台或前端進行詳細設定，所有可用選項如下
 
 <details>
-<summary><b>前端管理开关</b></summary>
+<summary><b>前端管理開關</b></summary>
 
-- **是否在登录时显示配置编辑按钮** (`isShowConfigEditButtonInLogined`)
-  - **类型:** `switch`
-  - **默认值:** `false`
-  - **说明:** 启用后将在登录时在标题栏最右侧显示配置编辑按钮，方便管理员进行主题配置
+- **是否在登入時顯示設定編輯按鈕** (`isShowConfigEditButtonInLogined`)
+  - **型別:** `switch`
+  - **預設值:** `false`
+  - **說明:** 啟用後將在登入時在標題列最右側顯示設定編輯按鈕，方便管理員進行主題設定
 
 </details>
 
 <details>
-<summary><b>样式调整</b></summary>
+<summary><b>樣式調整</b></summary>
 
-- **主要内容宽度** (`mainWidth`)
-  - **类型:** `number`
-  - **默认值:** `85`
-  - **说明:** 调整主要内容的最大宽度，单位为视口宽度的百分比（vw），建议值为 80-90
+- **主要內容寬度** (`mainWidth`)
+  - **型別:** `number`
+  - **預設值:** `85`
+  - **說明:** 調整主要內容的最大寬度，單位為視口寬度的百分比（vw），建議值為 80-90
 
-- **桌面端背景图片链接** (`backgroundImage`)
-  - **类型:** `string`
-  - **默认值:** `/assets/default-background-image.jpg`
-  - **说明:** 支持多张背景图片或图片api，使用“,”分割，使用“|”分隔亮色模式和暗色模式，填写单个则同时用于亮暗模式
+- **桌面端背景圖片連結** (`backgroundImage`)
+  - **型別:** `string`
+  - **預設值:** `/assets/default-background-image.jpg`
+  - **說明:** 支援多張背景圖片或圖片 api，使用「,」分割，使用「|」分隔淺色模式和深色模式，填寫單個則同時用於淺色與深色模式
 
-- **移动端背景图片链接** (`backgroundImageMobile`)
-  - **类型:** `string`
-  - **默认值:** `(空)`
-  - **说明:** 移动端背景图片链接，与桌面端一样区分亮暗模式，留空则使用桌面端背景
+- **行動端背景圖片連結** (`backgroundImageMobile`)
+  - **型別:** `string`
+  - **預設值:** `(空)`
+  - **說明:** 行動端背景圖片連結，與桌面端一樣區分淺色與深色模式，留空則使用桌面端背景
 
 - **背景模式** (`backgroundMode`)
-  - **类型:** `select`
-  - **可选项:** `image`, `video`, `solidColor`
-  - **默认值:** `image`
-  - **说明:** 选择背景模式：image（图片背景）、video（视频背景）、solidColor（纯色背景）
+  - **型別:** `select`
+  - **可選項:** `image`, `video`, `solidColor`
+  - **預設值:** `image`
+  - **說明:** 選擇背景模式：image（圖片背景）、video（影片背景）、solidColor（純色背景）
 
-- **纯色背景颜色值** (`solidColorBackground`)
-  - **类型:** `string`
-  - **默认值:** `(空)`
-  - **说明:** 纯色背景颜色值，支持 rgb（如 `rgb(255,0,0)`）、rgba（如 `rgba(255,0,0,0.5)`）、hex（如 `#ff0000`）、颜色单词（如 `red`），仅在背景模式为 solidColor 时生效
+- **純色背景顏色值** (`solidColorBackground`)
+  - **型別:** `string`
+  - **預設值:** `(空)`
+  - **說明:** 純色背景顏色值，支援 rgb（如 `rgb(255,0,0)`）、rgba（如 `rgba(255,0,0,0.5)`）、hex（如 `#ff0000`）、顏色單字（如 `red`），僅在背景模式為 solidColor 時生效
 
-- **桌面端视频背景链接** (`videoBackgroundUrl`)
-  - **类型:** `string`
-  - **默认值:** `/assets/LanternRivers_1080p15fps2Mbps3s.mp4`
-  - **说明:** 视频背景链接，使用“|”分隔亮色模式和暗色模式，填写单个则同时用于亮暗模式，建议使用无声视频，且视频文件较大时可能会影响加载速度
+- **桌面端影片背景連結** (`videoBackgroundUrl`)
+  - **型別:** `string`
+  - **預設值:** `/assets/LanternRivers_1080p15fps2Mbps3s.mp4`
+  - **說明:** 影片背景連結，使用「|」分隔淺色模式和深色模式，填寫單個則同時用於淺色與深色模式，建議使用無聲影片，且影片檔案較大時可能會影響載入速度
 
-- **移动端视频背景链接** (`videoBackgroundUrlMobile`)
-  - **类型:** `string`
-  - **默认值:** `(空)`
-  - **说明:** 移动端视频背景链接，多个使用“,”分割，与桌面端一样区分亮暗模式，留空则使用桌面端视频
+- **行動端影片背景連結** (`videoBackgroundUrlMobile`)
+  - **型別:** `string`
+  - **預設值:** `(空)`
+  - **說明:** 行動端影片背景連結，多個使用「,」分割，與桌面端一樣區分淺色與深色模式，留空則使用桌面端影片
 
-- **背景对齐方式** (`backagroundAlignment`)
-  - **类型:** `string`
-  - **默认值:** `cover,top`
-  - **说明:** 调整背景图片和视频的对齐方式，使用“,”分隔背景大小和位置两个属性，背景大小可选 cover（覆盖）,contain（包含）,fill（填充）；背景位置可选 center（居中）,top（顶部）,bottom（底部）,left（左侧）,right（右侧），eg: cover,top
+- **背景對齊方式** (`backagroundAlignment`)
+  - **型別:** `string`
+  - **預設值:** `cover,top`
+  - **說明:** 調整背景圖片和影片的對齊方式，使用「,」分隔背景大小和位置兩個屬性，背景大小可選 cover（覆蓋）,contain（包含）,fill（填滿）；背景位置可選 center（置中）,top（頂部）,bottom（底部）,left（左側）,right（右側），eg: cover,top
 
-- **启用磨砂玻璃效果** (`enableBlur`)
-  - **类型:** `switch`
-  - **默认值:** `true`
-  - **说明:** 启用后将使主要容器拥有磨砂玻璃效果
+- **啟用磨砂玻璃效果** (`enableBlur`)
+  - **型別:** `switch`
+  - **預設值:** `true`
+  - **說明:** 啟用後將使主要容器擁有磨砂玻璃效果
 
 - **磨砂玻璃模糊值** (`blurValue`)
-  - **类型:** `number`
-  - **默认值:** `5`
-  - **说明:** 调整模糊值大小，数值越大模糊效果越明显，建议值为 5-20，为 0 则表示不启用模糊效果
+  - **型別:** `number`
+  - **預設值:** `5`
+  - **說明:** 調整模糊值大小，數值越大模糊效果越明顯，建議值為 5-20，為 0 則表示不啟用模糊效果
 
 - **磨砂玻璃背景色** (`blurBackgroundColor`)
-  - **类型:** `string`
-  - **默认值:** `rgba(255, 255, 255, 0.5)|rgba(0, 0, 0, 0.5)`
-  - **说明:** 调整模糊背景色，推荐 rgba 颜色值（eg: rgba(255, 255, 255, 0.5)|rgba(0, 0, 0, 0.5)），使用“|”分隔亮色模式和暗色模式的颜色值，填写单个则同时用于亮暗模式
+  - **型別:** `string`
+  - **預設值:** `rgba(255, 255, 255, 0.5)|rgba(0, 0, 0, 0.5)`
+  - **說明:** 調整模糊背景色，推薦 rgba 顏色值（eg: rgba(255, 255, 255, 0.5)|rgba(0, 0, 0, 0.5)），使用「|」分隔淺色模式和深色模式的顏色值，填寫單個則同時用於淺色與深色模式
 
-- **启用标签透明背景** (`enableTransparentTags`)
-  - **类型:** `switch`
-  - **默认值:** `true`
-  - **说明:** 启用后标签将使用较为透明的背景色，当背景情况复杂导致标签难以辨识时建议关闭
+- **啟用標籤透明背景** (`enableTransparentTags`)
+  - **型別:** `switch`
+  - **預設值:** `true`
+  - **說明:** 啟用後標籤將使用較為透明的背景色，當背景情況複雜導致標籤難以辨識時建議關閉
 
-- **标签默认颜色列表** (`tagDefaultColorList`)
-  - **类型:** `string`
-  - **默认值:** `lime,cyan,pink,crimson,iris,violet,plum,indigo,blue,jade,mint,grass,teal,sky,red,ruby,tomato,orange,amber,yellow,green,purple,gold,bronze,brown,gray,mauve,slate`
-  - **说明:** 标签默认颜色列表，展示的标签将按顺序调用该颜色池，逗号分隔（可用的颜色列表请参考：[Radix Color](https://www.radix-ui.com/themes/docs/theme/color)，改完没有生效则说明填写有误）
+- **標籤預設顏色清單** (`tagDefaultColorList`)
+  - **型別:** `string`
+  - **預設值:** `lime,cyan,pink,crimson,iris,violet,plum,indigo,blue,jade,mint,grass,teal,sky,red,ruby,tomato,orange,amber,yellow,green,purple,gold,bronze,brown,gray,mauve,slate`
+  - **說明:** 標籤預設顏色清單，展示的標籤將按順序套用該顏色池，逗號分隔（可用的顏色清單請參考：[Radix Color](https://www.radix-ui.com/themes/docs/theme/color)，改完沒有生效則表示填寫有誤）
 
-- **默认主题颜色** (`selectThemeColor`)
-  - **类型:** `select`
-  - **可选项:** `gray`, `gold`, `bronze`, `brown`, `yellow`, `amber`, `orange`, `tomato`, `red`, `ruby`, `crimson`, `pink`, `plum`, `purple`, `violet`, `iris`, `indigo`, `blue`, `cyan`, `teal`, `jade`, `green`, `grass`, `lime`, `mint`, `sky`
-  - **默认值:** `violet`
-  - **说明:** 设置默认主题颜色，颜色对照请参考：[Radix Color](https://www.radix-ui.com/themes/docs/theme/color)
-
-</details>
-
-<details>
-<summary><b>浏览器本地存储配置</b></summary>
-
-- **启用 localStorage 配置** (`enableLocalStorage`)
-  - **类型:** `switch`
-  - **默认值:** `true`
-  - **说明:** 启用后将优先使用用户浏览器本地配置的视图和外观设置。关闭后将强制使用下方的主题配置，本地可调整但刷新即恢复
-
-- **桌面端默认展示视图** (`selectedDefaultView`)
-  - **类型:** `select`
-  - **可选项:** `grid`, `table`, `compact`
-  - **默认值:** `grid`
-  - **说明:** 设置默认展示视图为网格、表格或紧凑型
-
-- **默认外观** (`selectedDefaultAppearance`)
-  - **类型:** `select`
-  - **可选项:** `system`, `light`, `dark`
-  - **默认值:** `system`
-  - **说明:** 设置默认外观为浅色、深色或系统主题
-
-- **状态卡片显示控制** (`statusCardsVisibility`)
-  - **类型:** `string`
-  - **默认值:** `currentTime:true,currentOnline:true,regionOverview:true,trafficOverview:true,networkSpeed:true`
-  - **说明:** 控制状态卡片的显示与隐藏，格式为 卡片名称:显示状态（true/false），多个卡片使用逗号分隔，支持的卡片名称包括 currentTime（当前时间）, currentOnline（当前在线）, regionOverview（点亮地区）, trafficOverview（流量概览）, networkSpeed（网络速率）
+- **預設主題顏色** (`selectThemeColor`)
+  - **型別:** `select`
+  - **可選項:** `gray`, `gold`, `bronze`, `brown`, `yellow`, `amber`, `orange`, `tomato`, `red`, `ruby`, `crimson`, `pink`, `plum`, `purple`, `violet`, `iris`, `indigo`, `blue`, `cyan`, `teal`, `jade`, `green`, `grass`, `lime`, `mint`, `sky`
+  - **預設值:** `violet`
+  - **說明:** 設定預設主題顏色，顏色對照請參考：[Radix Color](https://www.radix-ui.com/themes/docs/theme/color)
 
 </details>
 
 <details>
-<summary><b>标题栏设置</b></summary>
+<summary><b>瀏覽器本機儲存設定</b></summary>
 
-- **标题栏样式** (`selectedHeaderStyle`)
-  - **类型:** `select`
-  - **可选项:** `fixed`, `levitation`
-  - **默认值:** `fixed`
-  - **说明:** 设置标题栏样式为 fixed（固定）或 levitation（悬浮）
+- **啟用 localStorage 設定** (`enableLocalStorage`)
+  - **型別:** `switch`
+  - **預設值:** `true`
+  - **說明:** 啟用後將優先使用使用者瀏覽器本機設定的檢視和外觀設定。關閉後將強制使用下方的主題設定，本機可調整但重新整理即恢復
 
-- **启用标题栏左侧 Logo** (`enableLogo`)
-  - **类型:** `switch`
-  - **默认值:** `true`
-  - **说明:** 启用后默认在标题栏左侧显示 Logo
+- **桌面端預設展示檢視** (`selectedDefaultView`)
+  - **型別:** `select`
+  - **可選項:** `grid`, `table`, `compact`
+  - **預設值:** `grid`
+  - **說明:** 設定預設展示檢視為網格、表格或緊湊型
 
-- **Logo 图片链接** (`logoUrl`)
-  - **类型:** `string`
-  - **默认值:** `/assets/logo.png`
-  - **说明:** Logo 图片链接（eg: `https://test.com/logo.png`）
+- **預設外觀** (`selectedDefaultAppearance`)
+  - **型別:** `select`
+  - **可選項:** `system`, `light`, `dark`
+  - **預設值:** `system`
+  - **說明:** 設定預設外觀為淺色、深色或系統主題
 
-- **标题栏 Logo 样式** (`logoShape`)
-  - **类型:** `select`
-  - **可选项:** `circle`, `original`
-  - **默认值:** `circle`
-  - **说明:** circle: 圆形固定缩放（32×32）；original: 原图等比缩放（高32px，宽度自适应），应对 Logo 不是正方形的情况
-
-- **启用标题栏标题** (`enableTitle`)
-  - **类型:** `switch`
-  - **默认值:** `true`
-  - **说明:** 启用后默认在顶栏左侧显示标题
-
-- **标题栏标题文本** (`titleText`)
-  - **类型:** `string`
-  - **默认值:** `(空)`
-  - **说明:** 标题栏左侧显示的文本（留空则使用站点标题）
-
-- **启用搜索按钮** (`enableSearchButton`)
-  - **类型:** `switch`
-  - **默认值:** `true`
-  - **说明:** 启用后默认在标题栏右侧显示搜索按钮
-
-- **启用高级搜索** (`enableAdvancedSearch`)
-  - **类型:** `switch`
-  - **默认值:** `true`
-  - **说明:** 启用后在标题栏显示高级搜索按钮（替代普通搜索栏），支持多条件筛选、URL参数同步等功能
-
-- **启用管理按钮** (`enableAdminButton`)
-  - **类型:** `switch`
-  - **默认值:** `true`
-  - **说明:** 启用后默认在标题栏右侧显示管理按钮
-
-- **启用视图模式切换** (`enableViewModeSwitcher`)
-  - **类型:** `switch`
-  - **默认值:** `true`
-  - **说明:** 启用后在标题栏显示视图模式切换按钮（网格/表格/紧凑）
-
-- **启用全局延迟监测总览** (`enablePingOverview`)
-  - **类型:** `switch`
-  - **默认值:** `true`
-  - **说明:** 启用后在标题栏显示全局延迟监测总览入口按钮，关闭后 /ping-overview 页面也将无法访问
-
-- **启用主题颜色模式切换** (`enableThemeColorSwitcher`)
-  - **类型:** `switch`
-  - **默认值:** `true`
-  - **说明:** 启用后在标题栏显示主题颜色模式切换按钮（亮色/暗色/跟随系统）
-
-- **启用语言切换** (`enableLanguageSwitcher`)
-  - **类型:** `switch`
-  - **默认值:** `true`
-  - **说明:** 启用后在标题栏显示语言切换按钮
-
-- **语言切换** — 标题栏内置语言切换按钮，支持简体中文、繁体中文、English、日本語、Bahasa Indonesia 五种语言，选择后自动保存到浏览器
-
-- **资产统计 & 3D 地球入口** — 标题栏内置资产统计和 3D 地球按钮（位于延迟总览按钮左侧），移动端集成到汉堡菜单中，受后台 `enableFinanceWidget` 和 `enableEarthGlobe` 配置控制
+- **狀態卡片顯示控制** (`statusCardsVisibility`)
+  - **型別:** `string`
+  - **預設值:** `currentTime:true,currentOnline:true,regionOverview:true,trafficOverview:true,networkSpeed:true`
+  - **說明:** 控制狀態卡片的顯示與隱藏，格式為 卡片名稱:顯示狀態（true/false），多個卡片使用逗號分隔，支援的卡片名稱包括 currentTime（目前時間）, currentOnline（目前線上）, regionOverview（點亮地區）, trafficOverview（流量概覽）, networkSpeed（網路速率）
 
 </details>
 
 <details>
-<summary><b>底栏设置</b></summary>
+<summary><b>標題列設定</b></summary>
 
-- **底栏样式** (`selectedFooterStyle`)
-  - **类型:** `select`
-  - **可选项:** `fixed`, `levitation`, `followContent`, `hidden`
-  - **默认值:** `followContent`
-  - **说明:** 设置底栏样式为 fixed（固定）, levitation（悬浮）, followContent（跟随内容）或 hidden（隐藏）
+- **標題列樣式** (`selectedHeaderStyle`)
+  - **型別:** `select`
+  - **可選項:** `fixed`, `levitation`
+  - **預設值:** `fixed`
+  - **說明:** 設定標題列樣式為 fixed（固定）或 levitation（懸浮）
 
-- **隐藏底栏原始内容** (`hideFooterOriginal`)
-  - **类型:** `switch`
-  - **默认值:** `false`
-  - **说明:** 启用后将隐藏底栏中的 'Powered by Komari Monitor | Theme by PurCarte-Plus' 内容
+- **啟用標題列左側 Logo** (`enableLogo`)
+  - **型別:** `switch`
+  - **預設值:** `true`
+  - **說明:** 啟用後預設在標題列左側顯示 Logo
 
-- **启用服务器运行时间** (`enableServerUptime`)
-  - **类型:** `switch`
-  - **默认值:** `false`
-  - **说明:** 启用后将在底栏显示服务器运行时间计时器
+- **Logo 圖片連結** (`logoUrl`)
+  - **型別:** `string`
+  - **預設值:** `/assets/logo.png`
+  - **說明:** Logo 圖片連結（eg: `https://test.com/logo.png`）
 
-- **服务器启动时间（UTC+8）** (`serverStartTime`)
-  - **类型:** `string`
-  - **默认值:** `(空)`
-  - **说明:** 格式: 年,月,日,时,分,秒（eg: 2025,11,5,20,30,5 表示2025年11月5日20时30分5秒），留空则不显示
+- **標題列 Logo 樣式** (`logoShape`)
+  - **型別:** `select`
+  - **可選項:** `circle`, `original`
+  - **預設值:** `circle`
+  - **說明:** circle: 圓形固定縮放（32×32）；original: 原圖等比縮放（高 32px，寬度自適應），因應 Logo 不是正方形的情況
 
-- **运行时间显示模板** (`serverUptimeTemplate`)
-  - **类型:** `string`
-  - **默认值:** `已不稳定运行 {days} 天 {hours} 小时 {minutes} 分钟 {seconds} 秒`
-  - **说明:** 自定义运行时间的显示格式，可用变量: {days}（天）、{hours}（时）、{minutes}（分）、{seconds}（秒），自由排列组合（eg: Running {days}d {hours}h {minutes}m {seconds}s）
+- **啟用標題列標題** (`enableTitle`)
+  - **型別:** `switch`
+  - **預設值:** `true`
+  - **說明:** 啟用後預設在頂列左側顯示標題
 
-- **底栏自定义内容** (`footerCustomContent`)
-  - **类型:** `richtext`
-  - **默认值:** `(空)`
-  - **说明:** 自定义底栏内容，支持直接换行，也兼容 ${n} 分割多行，支持Markdown格式的链接 `[文本](链接)` 和图片 `![描述](图片链接)`
+- **標題列標題文字** (`titleText`)
+  - **型別:** `string`
+  - **預設值:** `(空)`
+  - **說明:** 標題列左側顯示的文字（留空則使用站點標題）
 
-</details>
+- **啟用搜尋按鈕** (`enableSearchButton`)
+  - **型別:** `switch`
+  - **預設值:** `true`
+  - **說明:** 啟用後預設在標題列右側顯示搜尋按鈕
 
-<details>
-<summary><b>内容设置</b></summary>
+- **啟用進階搜尋** (`enableAdvancedSearch`)
+  - **型別:** `switch`
+  - **預設值:** `true`
+  - **說明:** 啟用後在標題列顯示進階搜尋按鈕（取代普通搜尋列），支援多條件篩選、URL 參數同步等功能
 
-- **启用 JSON-RPC2 API 适配** (`enableJsonRPC2Api`)
-  - **类型:** `switch`
-  - **默认值:** `true`
-  - **说明:** 启用后将在支持的 Komari 版本（>=1.0.7）优先使用 JSON-RPC2 API 获取数据，以提升兼容性和性能，若出现问题请关闭此选项
+- **啟用管理按鈕** (`enableAdminButton`)
+  - **型別:** `switch`
+  - **預設值:** `true`
+  - **說明:** 啟用後預設在標題列右側顯示管理按鈕
 
-- **是否在标题栏中显示统计信息** (`isShowStatsInHeader`)
-  - **类型:** `switch`
-  - **默认值:** `false`
-  - **说明:** 启用后将在标题栏中显示统计信息，仅在大屏桌面端有效，当标题栏空间不足时将恢复原统计栏位置
+- **啟用檢視模式切換** (`enableViewModeSwitcher`)
+  - **型別:** `switch`
+  - **預設值:** `true`
+  - **說明:** 啟用後在標題列顯示檢視模式切換按鈕（網格/表格/緊湊）
 
-- **合并分组栏与统计栏** (`mergeGroupsWithStats`)
-  - **类型:** `switch`
-  - **默认值:** `false`
-  - **说明:** 启用后分组栏将合并到统计栏中，并以下拉菜单形式展示
+- **啟用全域延遲監測總覽** (`enablePingOverview`)
+  - **型別:** `switch`
+  - **預設值:** `true`
+  - **說明:** 啟用後在標題列顯示全域延遲監測總覽入口按鈕，關閉後 /ping-overview 頁面也將無法存取
 
-- **启用统计栏** (`enableStatsBar`)
-  - **类型:** `switch`
-  - **默认值:** `true`
-  - **说明:** 启用后默认显示统计栏
+- **啟用主題顏色模式切換** (`enableThemeColorSwitcher`)
+  - **型別:** `switch`
+  - **預設值:** `true`
+  - **說明:** 啟用後在標題列顯示主題顏色模式切換按鈕（淺色/深色/跟隨系統）
 
-- **启用排序控制** (`enableSortControl`)
-  - **类型:** `switch`
-  - **默认值:** `true`
-  - **说明:** 启用后在统计栏添加排序控制下拉菜单选项，分别对流量上下行和网速上下行进行升降排序，仅在启用统计栏时有效
+- **啟用語言切換** (`enableLanguageSwitcher`)
+  - **型別:** `switch`
+  - **預設值:** `true`
+  - **說明:** 啟用後在標題列顯示語言切換按鈕
 
-- **启用离线节点置后显示** (`isOfflineNodesBehind`)
-  - **类型:** `switch`
-  - **默认值:** `false`
-  - **说明:** 启用后离线节点将被自动置后显示
+- **語言切換** — 標題列內建語言切換按鈕，支援簡體中文、繁體中文、English、日本語、Bahasa Indonesia 五種語言，選擇後自動儲存到瀏覽器
 
-- **启用分组栏** (`enableGroupedBar`)
-  - **类型:** `switch`
-  - **默认值:** `true`
-  - **说明:** 启用后默认显示分组栏
-
-- **默认选择展示分组** (`defaultSelectedGroup`)
-  - **类型:** `string`
-  - **默认值:** `(空)`
-  - **说明:** 设置默认选择展示的分组，填写后端设置的分组名，留空则默认展示“所有”分组
-
-- **移动端默认展示视图** (`selectMobileDefaultView`)
-  - **类型:** `select`
-  - **可选项:** `grid`, `table`, `compact`
-  - **默认值:** `grid`
-  - **说明:** 设置移动端默认展示视图为网格、表格或紧凑型
-
-- **启用 SWAP 显示** (`enableSwap`)
-  - **类型:** `switch`
-  - **默认值:** `true`
-  - **说明:** 启用后默认显示 SWAP 信息
-
-- **预览详情的延迟图表时间范围** (`pingChartTimeInPreview`)
-  - **类型:** `number`
-  - **默认值:** `1`
-  - **说明:** 设置卡片右上角弹窗详情和表格下拉详情中延迟图表的时间范围，单位为小时，建议值为 1-24，时间范围太大容易导致页面卡顿
-
-- **是否在卡片中显示硬件信息栏** (`isShowHWBarInCard`)
-  - **类型:** `switch`
-  - **默认值:** `true`
-  - **说明:** 启用后将在节点卡片中标题栏之下显示硬件信息栏（CPU、内存和硬盘总量）
-
-- **是否在流量进度条下方显示数值** (`isShowValueUnderProgressBar`)
-  - **类型:** `switch`
-  - **默认值:** `true`
-  - **说明:** 启用后将在内存、SWAP、硬盘占用情况进度条下方显示实际占用数值
-
-- **流量进度条样式** (`selectTrafficProgressStyle`)
-  - **类型:** `select`
-  - **可选项:** `circular`, `linear`
-  - **默认值:** `circular`
-  - **说明:** 设置流量进度条样式为 circular（环形）或 linear（线形）
-
-- **启用列表视图进度条** (`enableListItemProgressBar`)
-  - **类型:** `switch`
-  - **默认值:** `true`
-  - **说明:** 启用后列表视图中将会显示进度条来表示使用率
-
-- **网格视图 - 到期时间显示** (`gridExpiredAtDisplay`)
-  - **类型:** `select`
-  - **可选项:** `show`, `hideAll`, `hideUnset`
-  - **默认值:** `hideUnset`
-  - **说明:** 控制网格视图中到期时间的显示：show（显示）、hideAll（隐藏全部）、hideUnset（隐藏未设置）
-
-- **网格视图 - 在线时间显示** (`gridUptimeDisplay`)
-  - **类型:** `select`
-  - **可选项:** `show`, `hideAll`, `hideUnset`
-  - **默认值:** `hideUnset`
-  - **说明:** 控制网格视图中在线时间的显示：show（显示）、hideAll（隐藏全部）、hideUnset（隐藏未设置/离线）
-
-- **表格视图 - 到期时间显示** (`tableExpiredAtDisplay`)
-  - **类型:** `select`
-  - **可选项:** `show`, `hideAll`, `hideUnset`
-  - **默认值:** `hideUnset`
-  - **说明:** 控制表格视图中到期时间的显示：show（显示）、hideAll（隐藏全部）、hideUnset（隐藏未设置）
-
-- **表格视图 - 在线时间显示** (`tableUptimeDisplay`)
-  - **类型:** `select`
-  - **可选项:** `show`, `hideAll`, `hideUnset`
-  - **默认值:** `hideUnset`
-  - **说明:** 控制表格视图中在线时间的显示：show（显示）、hideAll（隐藏全部）、hideUnset（隐藏未设置/离线）
-
-- **紧凑视图 - 到期时间显示** (`compactExpiredAtDisplay`)
-  - **类型:** `select`
-  - **可选项:** `show`, `hideAll`, `hideUnset`
-  - **默认值:** `hideUnset`
-  - **说明:** 控制紧凑视图中到期时间的显示：show（显示）、hideAll（隐藏全部）、hideUnset（隐藏未设置）
-
-- **紧凑视图 - 在线时间显示** (`compactUptimeDisplay`)
-  - **类型:** `select`
-  - **可选项:** `show`, `hideAll`, `hideUnset`
-  - **默认值:** `hideUnset`
-  - **说明:** 控制紧凑视图中在线时间的显示：show（显示）、hideAll（隐藏全部）、hideUnset（隐藏未设置/离线）
+- **資產統計 & 3D 地球入口** — 標題列內建資產統計和 3D 地球按鈕（位於延遲總覽按鈕左側），行動端整合到漢堡選單中，受後台 `enableFinanceWidget` 和 `enableEarthGlobe` 設定控制
 
 </details>
 
 <details>
-<summary><b>Instance 设置</b></summary>
+<summary><b>底列設定</b></summary>
 
-- **启用 Instance 详情信息** (`enableInstanceDetail`)
-  - **类型:** `switch`
-  - **默认值:** `true`
-  - **说明:** 启用后默认显示 Instance 详情
+- **底列樣式** (`selectedFooterStyle`)
+  - **型別:** `select`
+  - **可選項:** `fixed`, `levitation`, `followContent`, `hidden`
+  - **預設值:** `followContent`
+  - **說明:** 設定底列樣式為 fixed（固定）, levitation（懸浮）, followContent（跟隨內容）或 hidden（隱藏）
 
-- **启用延迟图表** (`enablePingChart`)
-  - **类型:** `switch`
-  - **默认值:** `true`
-  - **说明:** 启用后默认显示延迟图表
+- **隱藏底列原始內容** (`hideFooterOriginal`)
+  - **型別:** `switch`
+  - **預設值:** `false`
+  - **說明:** 啟用後將隱藏底列中的 'Powered by Komari Monitor | Theme by PurCarte-Plus' 內容
 
-- **启用平滑** (`enableCutPeak`)
-  - **类型:** `switch`
-  - **默认值:** `true`
-  - **说明:** 启用后延迟图表将使用 EWMA 平滑算法消除毛刺和突变值
+- **啟用伺服器運行時間** (`enableServerUptime`)
+  - **型別:** `switch`
+  - **預設值:** `false`
+  - **說明:** 啟用後將在底列顯示伺服器運行時間計時器
 
-- **启用连接断点** (`enableConnectBreaks`)
-  - **类型:** `switch`
-  - **默认值:** `false`
-  - **说明:** 启用后图表中的曲线将会跨过断点形成连续的线条，并使用半透明的垂直参考线来标记断点位置
+- **伺服器啟動時間（UTC+8）** (`serverStartTime`)
+  - **型別:** `string`
+  - **預設值:** `(空)`
+  - **說明:** 格式: 年,月,日,時,分,秒（eg: 2025,11,5,20,30,5 表示 2025 年 11 月 5 日 20 時 30 分 5 秒），留空則不顯示
 
-- **延迟图表最大渲染点数** (`pingChartMaxPoints`)
-  - **类型:** `number`
-  - **默认值:** `0`
-  - **说明:** 设置延迟图表的最大渲染点数，0 表示使用自动智能降采样（根据数据量和线条数自动计算最佳点数，使用 LTTB 算法保留视觉形状），设置正整数则强制使用该值
+- **運行時間顯示模板** (`serverUptimeTemplate`)
+  - **型別:** `string`
+  - **預設值:** `已不穩定運行 {days} 天 {hours} 小時 {minutes} 分鐘 {seconds} 秒`
+  - **說明:** 自訂運行時間的顯示格式，可用變數: {days}（天）、{hours}（時）、{minutes}（分）、{seconds}（秒），自由排列組合（eg: Running {days}d {hours}h {minutes}m {seconds}s）
 
-- **监测节点排序方式** (`monitorNodeSortMode`)
-  - **类型:** `select`
-  - **可选项:** `id_asc`, `id_desc`, `weight_asc`, `weight_desc`, `name_asc`, `name_desc`, `target_asc`, `target_desc`, `type_asc`, `type_desc`, `custom`
-  - **默认值:** `weight_asc`
-  - **说明:** 设置延迟总览页面和服务器详情页延迟监测的监测节点排序方式。选择自定义后在下方输入框填写节点名称
-
-- **监测节点自定义排序** (`monitorNodeCustomOrder`)
-  - **类型:** `richtext`
-  - **默认值:** `(空)`
-  - **说明:** 仅在排序方式为"自定义"时生效。每行填写一个监测节点名称（与后台设置的名称一致），按填写顺序排序。未列出的节点将按 ID 正序排列在最后
+- **底列自訂內容** (`footerCustomContent`)
+  - **型別:** `richtext`
+  - **預設值:** `(空)`
+  - **說明:** 自訂底列內容，支援直接換行，也相容 ${n} 分割多行，支援 Markdown 格式的連結 `[文字](連結)` 和圖片 `![描述](圖片連結)`
 
 </details>
 
 <details>
-<summary><b>UI 自定义</b></summary>
+<summary><b>內容設定</b></summary>
 
-- **自定义 UI 文本（实验性，不推荐手动填写任何东西）** (`customTexts`)
-  - **类型:** `string`
-  - **默认值:** `(空)`
-  - **说明:** 使用 key:value,key2:value2 的格式自定义UI文本，value 使用 URL 编码以避免特殊符号。推荐使用管理员登录后的编辑功能而不是手动填写此项，以避免格式错误导致的问题
+- **啟用 JSON-RPC2 API 轉接** (`enableJsonRPC2Api`)
+  - **型別:** `switch`
+  - **預設值:** `true`
+  - **說明:** 啟用後將在支援的 Komari 版本（>=1.0.7）優先使用 JSON-RPC2 API 取得資料，以提升相容性和效能，若出現問題請關閉此選項
+
+- **是否在標題列中顯示統計資訊** (`isShowStatsInHeader`)
+  - **型別:** `switch`
+  - **預設值:** `false`
+  - **說明:** 啟用後將在標題列中顯示統計資訊，僅在大螢幕桌面端有效，當標題列空間不足時將恢復原統計列位置
+
+- **合併分組列與統計列** (`mergeGroupsWithStats`)
+  - **型別:** `switch`
+  - **預設值:** `false`
+  - **說明:** 啟用後分組列將合併到統計列中，並以下拉選單形式展示
+
+- **啟用統計列** (`enableStatsBar`)
+  - **型別:** `switch`
+  - **預設值:** `true`
+  - **說明:** 啟用後預設顯示統計列
+
+- **啟用排序控制** (`enableSortControl`)
+  - **型別:** `switch`
+  - **預設值:** `true`
+  - **說明:** 啟用後在統計列加入排序控制下拉選單選項，分別對流量上下行和網速上下行進行升降排序，僅在啟用統計列時有效
+
+- **啟用離線節點置後顯示** (`isOfflineNodesBehind`)
+  - **型別:** `switch`
+  - **預設值:** `false`
+  - **說明:** 啟用後離線節點將被自動置後顯示
+
+- **啟用分組列** (`enableGroupedBar`)
+  - **型別:** `switch`
+  - **預設值:** `true`
+  - **說明:** 啟用後預設顯示分組列
+
+- **預設選擇展示分組** (`defaultSelectedGroup`)
+  - **型別:** `string`
+  - **預設值:** `(空)`
+  - **說明:** 設定預設選擇展示的分組，填寫後端設定的分組名，留空則預設展示「全部」分組
+
+- **行動端預設展示檢視** (`selectMobileDefaultView`)
+  - **型別:** `select`
+  - **可選項:** `grid`, `table`, `compact`
+  - **預設值:** `grid`
+  - **說明:** 設定行動端預設展示檢視為網格、表格或緊湊型
+
+- **啟用 SWAP 顯示** (`enableSwap`)
+  - **型別:** `switch`
+  - **預設值:** `true`
+  - **說明:** 啟用後預設顯示 SWAP 資訊
+
+- **預覽詳情的延遲圖表時間範圍** (`pingChartTimeInPreview`)
+  - **型別:** `number`
+  - **預設值:** `1`
+  - **說明:** 設定卡片右上角彈窗詳情和表格下拉詳情中延遲圖表的時間範圍，單位為小時，建議值為 1-24，時間範圍太大容易導致頁面卡頓
+
+- **是否在卡片中顯示硬體資訊列** (`isShowHWBarInCard`)
+  - **型別:** `switch`
+  - **預設值:** `true`
+  - **說明:** 啟用後將在節點卡片中標題列之下顯示硬體資訊列（CPU、記憶體和硬碟總量）
+
+- **是否在流量進度條下方顯示數值** (`isShowValueUnderProgressBar`)
+  - **型別:** `switch`
+  - **預設值:** `true`
+  - **說明:** 啟用後將在記憶體、SWAP、硬碟佔用情況進度條下方顯示實際佔用數值
+
+- **流量進度條樣式** (`selectTrafficProgressStyle`)
+  - **型別:** `select`
+  - **可選項:** `circular`, `linear`
+  - **預設值:** `circular`
+  - **說明:** 設定流量進度條樣式為 circular（環形）或 linear（線形）
+
+- **啟用列表檢視進度條** (`enableListItemProgressBar`)
+  - **型別:** `switch`
+  - **預設值:** `true`
+  - **說明:** 啟用後列表檢視中將會顯示進度條來表示使用率
+
+- **網格檢視 - 到期時間顯示** (`gridExpiredAtDisplay`)
+  - **型別:** `select`
+  - **可選項:** `show`, `hideAll`, `hideUnset`
+  - **預設值:** `hideUnset`
+  - **說明:** 控制網格檢視中到期時間的顯示：show（顯示）、hideAll（隱藏全部）、hideUnset（隱藏未設定）
+
+- **網格檢視 - 上線時間顯示** (`gridUptimeDisplay`)
+  - **型別:** `select`
+  - **可選項:** `show`, `hideAll`, `hideUnset`
+  - **預設值:** `hideUnset`
+  - **說明:** 控制網格檢視中上線時間的顯示：show（顯示）、hideAll（隱藏全部）、hideUnset（隱藏未設定/離線）
+
+- **表格檢視 - 到期時間顯示** (`tableExpiredAtDisplay`)
+  - **型別:** `select`
+  - **可選項:** `show`, `hideAll`, `hideUnset`
+  - **預設值:** `hideUnset`
+  - **說明:** 控制表格檢視中到期時間的顯示：show（顯示）、hideAll（隱藏全部）、hideUnset（隱藏未設定）
+
+- **表格檢視 - 上線時間顯示** (`tableUptimeDisplay`)
+  - **型別:** `select`
+  - **可選項:** `show`, `hideAll`, `hideUnset`
+  - **預設值:** `hideUnset`
+  - **說明:** 控制表格檢視中上線時間的顯示：show（顯示）、hideAll（隱藏全部）、hideUnset（隱藏未設定/離線）
+
+- **緊湊檢視 - 到期時間顯示** (`compactExpiredAtDisplay`)
+  - **型別:** `select`
+  - **可選項:** `show`, `hideAll`, `hideUnset`
+  - **預設值:** `hideUnset`
+  - **說明:** 控制緊湊檢視中到期時間的顯示：show（顯示）、hideAll（隱藏全部）、hideUnset（隱藏未設定）
+
+- **緊湊檢視 - 上線時間顯示** (`compactUptimeDisplay`)
+  - **型別:** `select`
+  - **可選項:** `show`, `hideAll`, `hideUnset`
+  - **預設值:** `hideUnset`
+  - **說明:** 控制緊湊檢視中上線時間的顯示：show（顯示）、hideAll（隱藏全部）、hideUnset（隱藏未設定/離線）
 
 </details>
 
 <details>
-<summary><b>增强功能</b></summary>
+<summary><b>Instance 設定</b></summary>
 
-- **启用欢迎气泡** (`enableWelcomeBubble`)
-  - **类型:** `switch`
-  - **默认值:** `true`
-  - **说明:** 启用后将在页面左下角显示欢迎气泡，展示访客的IP、位置、浏览器等信息
+- **啟用 Instance 詳情資訊** (`enableInstanceDetail`)
+  - **型別:** `switch`
+  - **預設值:** `true`
+  - **說明:** 啟用後預設顯示 Instance 詳情
 
-- **欢迎气泡站点名称** (`welcomeBubbleSiteName`)
-  - **类型:** `string`
-  - **默认值:** `阿米诺斯`
-  - **说明:** 欢迎气泡标题栏显示的站点名称，留空则使用站点标题
+- **啟用延遲圖表** (`enablePingChart`)
+  - **型別:** `switch`
+  - **預設值:** `true`
+  - **說明:** 啟用後預設顯示延遲圖表
 
-- **欢迎气泡 Logo** (`welcomeBubbleLogoUrl`)
-  - **类型:** `string`
-  - **默认值:** `/assets/logo.png`
-  - **说明:** 欢迎气泡标题栏的 Logo 图片链接，留空则不展示
+- **啟用平滑** (`enableCutPeak`)
+  - **型別:** `switch`
+  - **預設值:** `true`
+  - **說明:** 啟用後延遲圖表將使用 EWMA 平滑演算法消除毛刺和突變值
 
-- **欢迎气泡 Logo 样式** (`welcomeBubbleLogoShape`)
-  - **类型:** `select`
-  - **可选项:** `circle`, `original`
-  - **默认值:** `circle`
-  - **说明:** circle: 圆形固定缩放（32×32）；original: 原图等比缩放（高32px，宽度自适应）
+- **啟用連線斷點** (`enableConnectBreaks`)
+  - **型別:** `switch`
+  - **預設值:** `false`
+  - **說明:** 啟用後圖表中的曲線將會跨過斷點形成連續的線條，並使用半透明的垂直參考線來標記斷點位置
 
-- **启用资产统计** (`enableFinanceWidget`)
-  - **类型:** `switch`
-  - **默认值:** `true`
-  - **说明:** 启用后将在标题栏显示资产统计入口按钮，可查看服务器总价值、月均支出、剩余价值等信息，并支持服务器交易计算
+- **延遲圖表最大渲染點數** (`pingChartMaxPoints`)
+  - **型別:** `number`
+  - **預設值:** `0`
+  - **說明:** 設定延遲圖表的最大渲染點數，0 表示使用自動智慧降採樣（根據資料量和線條數自動計算最佳點數，使用 LTTB 演算法保留視覺形狀），設定正整數則強制使用該值
 
-- **启用地球组件** (`enableEarthGlobe`)
-  - **类型:** `switch`
-  - **默认值:** `true`
-  - **说明:** 启用后将在标题栏显示 3D 地球入口按钮，可查看服务器地理分布
+- **監測節點排序方式** (`monitorNodeSortMode`)
+  - **型別:** `select`
+  - **可選項:** `id_asc`, `id_desc`, `weight_asc`, `weight_desc`, `name_asc`, `name_desc`, `target_asc`, `target_desc`, `type_asc`, `type_desc`, `custom`
+  - **預設值:** `weight_asc`
+  - **說明:** 設定延遲總覽頁面和伺服器詳情頁延遲監測的監測節點排序方式。選擇自訂後在下方輸入框填寫節點名稱
 
-- **地球组件 Logo** (`earthGlobeLogoUrl`)
-  - **类型:** `string`
-  - **默认值:** `/assets/logo.png`
-  - **说明:** 地球组件中用户位置标记的 Logo 图片链接，留空则显示 YOU 文字标记
-
-- **地球组件 Logo 样式** (`earthGlobeLogoShape`)
-  - **类型:** `select`
-  - **可选项:** `circle`, `original`
-  - **默认值:** `circle`
-  - **说明:** circle: 圆形固定缩放（32×32）；original: 原图等比缩放（高32px，宽度自适应）
-
-- **地球组件亮色模式背景图** (`earthLightBgImage`)
-  - **类型:** `string`
-  - **默认值:** `(空)`
-  - **说明:** 地球组件亮色模式的背景图片链接，留空则使用透明背景
-
-- **地球组件暗色模式背景图** (`earthDarkBgImage`)
-  - **类型:** `string`
-  - **默认值:** `//upload.wikimedia.org/wikipedia/commons/6/60/ESO_-_Milky_Way.jpg`
-  - **说明:** 地球组件暗色模式的背景图片链接，留空则使用透明背景
-
-- **地球组件亮色模式地球贴图** (`earthLightGlobeImage`)
-  - **类型:** `string`
-  - **默认值:** `//upload.wikimedia.org/wikipedia/commons/0/04/Solarsystemscope_texture_8k_earth_daymap.jpg`
-  - **说明:** 地球组件亮色模式的地球贴图链接
-
-- **地球组件暗色模式地球贴图** (`earthDarkGlobeImage`)
-  - **类型:** `string`
-  - **默认值:** `//upload.wikimedia.org/wikipedia/commons/b/b3/Solarsystemscope_texture_8k_earth_nightmap.jpg`
-  - **说明:** 地球组件暗色模式的地球贴图链接
-
-- **启用伪点亮全球效果** (`enableSoloPlay`)
-  - **类型:** `switch`
-  - **默认值:** `false`
-  - **说明:** 启用后地球组件将使用假数据实现点亮全球
-
-- **启用滚动辅助按钮** (`enableScrollHelpers`)
-  - **类型:** `switch`
-  - **默认值:** `true`
-  - **说明:** 启用后将在页面右下角显示滚动到顶部/底部辅助按钮
-
-- **启用访客保护** (`enableProtection`)
-  - **类型:** `switch`
-  - **默认值:** `true`
-  - **说明:** 启用后将对未登录用户启用反调试保护，禁止右键菜单、开发者工具等操作
-
-- **访客保护弹窗 Logo** (`protectionLogoUrl`)
-  - **类型:** `string`
-  - **默认值:** `/assets/logo.png`
-  - **说明:** 访客保护弹窗标题栏的 Logo 图片链接，留空则不展示
-
-- **访客保护弹窗 Logo 样式** (`protectionLogoShape`)
-  - **类型:** `select`
-  - **可选项:** `circle`, `original`
-  - **默认值:** `circle`
-  - **说明:** circle: 圆形固定缩放（32×32）；original: 原图等比缩放（高32px，宽度自适应）
+- **監測節點自訂排序** (`monitorNodeCustomOrder`)
+  - **型別:** `richtext`
+  - **預設值:** `(空)`
+  - **說明:** 僅在排序方式為「自訂」時生效。每行填寫一個監測節點名稱（與後台設定的名稱一致），按填寫順序排序。未列出的節點將按 ID 正序排列在最後
 
 </details>
 
-## 📁 项目结构
+<details>
+<summary><b>UI 自訂</b></summary>
+
+- **自訂 UI 文字（實驗性，不推薦手動填寫任何東西）** (`customTexts`)
+  - **型別:** `string`
+  - **預設值:** `(空)`
+  - **說明:** 使用 key:value,key2:value2 的格式自訂 UI 文字，value 使用 URL 編碼以避免特殊符號。推薦使用管理員登入後的編輯功能而不是手動填寫此項，以避免格式錯誤導致的問題
+
+</details>
 
 <details>
-<summary><b>点击展开完整目录树</b></summary>
+<summary><b>增強功能</b></summary>
+
+- **啟用歡迎氣泡** (`enableWelcomeBubble`)
+  - **型別:** `switch`
+  - **預設值:** `true`
+  - **說明:** 啟用後將在頁面左下角顯示歡迎氣泡，展示訪客的 IP、位置、瀏覽器等資訊
+
+- **歡迎氣泡站點名稱** (`welcomeBubbleSiteName`)
+  - **型別:** `string`
+  - **預設值:** `阿米諾斯`
+  - **說明:** 歡迎氣泡標題列顯示的站點名稱，留空則使用站點標題
+
+- **歡迎氣泡 Logo** (`welcomeBubbleLogoUrl`)
+  - **型別:** `string`
+  - **預設值:** `/assets/logo.png`
+  - **說明:** 歡迎氣泡標題列的 Logo 圖片連結，留空則不展示
+
+- **歡迎氣泡 Logo 樣式** (`welcomeBubbleLogoShape`)
+  - **型別:** `select`
+  - **可選項:** `circle`, `original`
+  - **預設值:** `circle`
+  - **說明:** circle: 圓形固定縮放（32×32）；original: 原圖等比縮放（高 32px，寬度自適應）
+
+- **啟用資產統計** (`enableFinanceWidget`)
+  - **型別:** `switch`
+  - **預設值:** `true`
+  - **說明:** 啟用後將在標題列顯示資產統計入口按鈕，可檢視伺服器總價值、月均支出、剩餘價值等資訊，並支援伺服器交易計算
+
+- **啟用地球元件** (`enableEarthGlobe`)
+  - **型別:** `switch`
+  - **預設值:** `true`
+  - **說明:** 啟用後將在標題列顯示 3D 地球入口按鈕，可檢視伺服器地理分布
+
+- **地球元件 Logo** (`earthGlobeLogoUrl`)
+  - **型別:** `string`
+  - **預設值:** `/assets/logo.png`
+  - **說明:** 地球元件中使用者位置標記的 Logo 圖片連結，留空則顯示 YOU 文字標記
+
+- **地球元件 Logo 樣式** (`earthGlobeLogoShape`)
+  - **型別:** `select`
+  - **可選項:** `circle`, `original`
+  - **預設值:** `circle`
+  - **說明:** circle: 圓形固定縮放（32×32）；original: 原圖等比縮放（高 32px，寬度自適應）
+
+- **地球元件淺色模式背景圖** (`earthLightBgImage`)
+  - **型別:** `string`
+  - **預設值:** `(空)`
+  - **說明:** 地球元件淺色模式的背景圖片連結，留空則使用透明背景
+
+- **地球元件深色模式背景圖** (`earthDarkBgImage`)
+  - **型別:** `string`
+  - **預設值:** `//upload.wikimedia.org/wikipedia/commons/6/60/ESO_-_Milky_Way.jpg`
+  - **說明:** 地球元件深色模式的背景圖片連結，留空則使用透明背景
+
+- **地球元件淺色模式地球貼圖** (`earthLightGlobeImage`)
+  - **型別:** `string`
+  - **預設值:** `//upload.wikimedia.org/wikipedia/commons/0/04/Solarsystemscope_texture_8k_earth_daymap.jpg`
+  - **說明:** 地球元件淺色模式的地球貼圖連結
+
+- **地球元件深色模式地球貼圖** (`earthDarkGlobeImage`)
+  - **型別:** `string`
+  - **預設值:** `//upload.wikimedia.org/wikipedia/commons/b/b3/Solarsystemscope_texture_8k_earth_nightmap.jpg`
+  - **說明:** 地球元件深色模式的地球貼圖連結
+
+- **啟用偽點亮全球效果** (`enableSoloPlay`)
+  - **型別:** `switch`
+  - **預設值:** `false`
+  - **說明:** 啟用後地球元件將使用假資料實現點亮全球
+
+- **啟用捲動輔助按鈕** (`enableScrollHelpers`)
+  - **型別:** `switch`
+  - **預設值:** `true`
+  - **說明:** 啟用後將在頁面右下角顯示捲動到頂部/底部輔助按鈕
+
+- **啟用訪客保護** (`enableProtection`)
+  - **型別:** `switch`
+  - **預設值:** `false`
+  - **說明:** 啟用後將對未登入使用者啟用反偵錯保護，禁止右鍵選單、開發者工具等操作
+
+- **訪客保護彈窗 Logo** (`protectionLogoUrl`)
+  - **型別:** `string`
+  - **預設值:** `/assets/logo.png`
+  - **說明:** 訪客保護彈窗標題列的 Logo 圖片連結，留空則不展示
+
+- **訪客保護彈窗 Logo 樣式** (`protectionLogoShape`)
+  - **型別:** `select`
+  - **可選項:** `circle`, `original`
+  - **預設值:** `circle`
+  - **說明:** circle: 圓形固定縮放（32×32）；original: 原圖等比縮放（高 32px，寬度自適應）
+
+</details>
+
+## 📁 專案結構
+
+<details>
+<summary><b>點擊展開完整目錄樹</b></summary>
 
 ```
 komari-theme-purcarte-plus/
-├── public/                                  # 静态资源目录
+├── public/                                  # 靜態資源目錄
 │   └── assets/
-│       ├── default-background-image.jpg     # 默认桌面端背景图片
-│       ├── LanternRivers_1080p15fps2Mbps3s.mp4  # 默认视频背景
-│       ├── logo.png                         # 站点 Logo
-│       ├── pwa-icon.png                     # PWA 应用图标
-│       ├── flags/                           # 国家/地区旗帜 SVG 图标集（250+）
-│       └── logo/                            # 操作系统与服务 Logo 图标集（30+）
+│       ├── default-background-image.jpg     # 預設桌面端背景圖片
+│       ├── LanternRivers_1080p15fps2Mbps3s.mp4  # 預設影片背景
+│       ├── logo.png                         # 站點 Logo
+│       ├── pwa-icon.png                     # PWA 應用圖示
+│       ├── flags/                           # 國家/地區旗幟 SVG 圖示集（250+）
+│       └── logo/                            # 作業系統與服務 Logo 圖示集（30+）
 │
-├── src/                                     # 源代码目录
-│   ├── main.tsx                             # 应用入口，挂载 React 根组件，注册 Router/Theme/Config/Data 等 Provider
-│   ├── vite-env.d.ts                        # Vite 环境类型声明
-│   ├── index.css                            # 全局 CSS 样式
-│   ├── palette-rgb.css                      # Radix 主题色 RGB 调色板变量定义
+├── src/                                     # 原始碼目錄
+│   ├── main.tsx                             # 應用入口，掛載 React 根元件，註冊 Router/Theme/Config/Data 等 Provider
+│   ├── vite-env.d.ts                        # Vite 環境型別宣告
+│   ├── index.css                            # 全域 CSS 樣式
+│   ├── palette-rgb.css                      # Radix 主題色 RGB 調色盤變數定義
 │   │
-│   ├── pages/                               # 页面组件
-│   │   ├── Home.tsx                         # 首页仪表盘，展示统计栏、节点网格/表格/紧凑视图
-│   │   ├── Private.tsx                      # 私有站点未认证提示页
-│   │   ├── NotFound.tsx                     # 404 页面
-│   │   ├── PingOverview.tsx                 # 全局延迟监测总览页面
-│   │   └── instance/                        # Instance 详情页
-│   │       ├── index.tsx                    # Instance 页面入口与路由包装
-│   │       ├── Instance.tsx                 # Instance 详情主视图（基本信息、系统指标、网络状态）
-│   │       ├── LoadCharts.tsx               # CPU/负载 历史图表
-│   │       └── PingChart.tsx                # 延迟/丢包 历史图表
+│   ├── pages/                               # 頁面元件
+│   │   ├── Home.tsx                         # 首頁儀表板，展示統計列、節點網格/表格/緊湊檢視
+│   │   ├── Private.tsx                      # 私有站點未認證提示頁
+│   │   ├── NotFound.tsx                     # 404 頁面
+│   │   ├── PingOverview.tsx                 # 全域延遲監測總覽頁面
+│   │   └── instance/                        # Instance 詳情頁
+│   │       ├── index.tsx                    # Instance 頁面入口與路由包裝
+│   │       ├── Instance.tsx                 # Instance 詳情主檢視（基本資訊、系統指標、網路狀態）
+│   │       ├── LoadCharts.tsx               # CPU/負載 歷史圖表
+│   │       └── PingChart.tsx                # 延遲/丟包 歷史圖表
 │   │
-│   ├── components/                          # 组件目录
-│   │   ├── DynamicContent.tsx               # 动态背景内容处理（图片/视频背景切换与主题适配）
-│   │   ├── loading.tsx                      # 加载动画组件
-│   │   ├── Loading.css                      # 加载动画样式
+│   ├── components/                          # 元件目錄
+│   │   ├── DynamicContent.tsx               # 動態背景內容處理（圖片/影片背景切換與主題適配）
+│   │   ├── loading.tsx                      # 載入動畫元件
+│   │   ├── Loading.css                      # 載入動畫樣式
 │   │   │
-│   │   ├── ui/                              # 基础 UI 组件库（基于 Radix UI）
-│   │   │   ├── avatar.tsx                   # 头像组件
-│   │   │   ├── button.tsx                   # 按钮组件
-│   │   │   ├── card.tsx                     # 卡片容器组件
-│   │   │   ├── chart.tsx                    # 图表包装组件（集成 Recharts）
-│   │   │   ├── dropdown-menu.tsx            # 下拉菜单组件
-│   │   │   ├── dropdown-menu.css            # 下拉菜单样式
-│   │   │   ├── input.tsx                    # 输入框组件
-│   │   │   ├── progress-bar.tsx             # 线性进度条组件
-│   │   │   ├── progress-circle.tsx          # 环形进度条组件
-│   │   │   ├── scroll-area.tsx              # 可滚动区域组件
-│   │   │   ├── select.tsx                   # 下拉选择组件
-│   │   │   ├── select.css                   # 下拉选择动画样式
-│   │   │   ├── sonner.tsx                   # Toast 通知组件（集成 Sonner）
-│   │   │   ├── switch.tsx                   # 开关切换组件
-│   │   │   ├── tag.tsx                      # 标签/徽章组件
-│   │   │   ├── textarea.tsx                 # 多行文本输入组件
-│   │   │   ├── tips.tsx                     # 提示气泡组件
-│   │   │   └── tooltip.tsx                  # 工具提示组件（含 ScrollableTooltip 可滚动提示框）
+│   │   ├── ui/                              # 基礎 UI 元件庫（基於 Radix UI）
+│   │   │   ├── avatar.tsx                   # 頭像元件
+│   │   │   ├── button.tsx                   # 按鈕元件
+│   │   │   ├── card.tsx                     # 卡片容器元件
+│   │   │   ├── chart.tsx                    # 圖表包裝元件（整合 Recharts）
+│   │   │   ├── dropdown-menu.tsx            # 下拉選單元件
+│   │   │   ├── dropdown-menu.css            # 下拉選單樣式
+│   │   │   ├── input.tsx                    # 輸入框元件
+│   │   │   ├── progress-bar.tsx             # 線性進度條元件
+│   │   │   ├── progress-circle.tsx          # 環形進度條元件
+│   │   │   ├── scroll-area.tsx              # 可捲動區域元件
+│   │   │   ├── select.tsx                   # 下拉選擇元件
+│   │   │   ├── select.css                   # 下拉選擇動畫樣式
+│   │   │   ├── sonner.tsx                   # Toast 通知元件（整合 Sonner）
+│   │   │   ├── switch.tsx                   # 開關切換元件
+│   │   │   ├── tag.tsx                      # 標籤/徽章元件
+│   │   │   ├── textarea.tsx                 # 多行文字輸入元件
+│   │   │   ├── tips.tsx                     # 提示氣泡元件
+│   │   │   └── tooltip.tsx                  # 工具提示元件（含 ScrollableTooltip 可捲動提示框）
 │   │   │
-│   │   ├── sections/                        # 页面区块组件
-│   │   │   ├── Header.tsx                   # 标题栏（Logo、标题、搜索、视图切换、资产统计、3D地球、延迟总览、主题切换、语言切换、管理入口）
-│   │   │   ├── LanguageSwitcher.tsx          # 语言切换组件（i18next 多语言切换）
-│   │   │   ├── Footer.tsx                   # 底栏（自定义内容、服务器运行时间、Markdown 渲染）
-│   │   │   ├── Flag.tsx                     # 国家旗帜展示组件
-│   │   │   ├── NodeGrid.tsx                 # 节点网格视图（卡片式布局）
-│   │   │   ├── NodeCompact.tsx              # 节点紧凑视图（精简列表）
-│   │   │   ├── NodeDisplay.tsx              # 节点详细信息展示（弹窗/侧栏详情）
-│   │   │   ├── NodeTable.tsx                # 节点表格视图（可展开行详情）
-│   │   │   └── StatsBar/                    # 统计栏组件集
-│   │   │       ├── index.tsx                # 统计栏主组件（在线/离线/流量/网速等聚合统计）
-│   │   │       ├── types.ts                 # 统计栏类型定义
-│   │   │       ├── StatChips.tsx            # 统计数据卡片（当前时间、在线数、地区、流量、网速）
-│   │   │       ├── GroupSelector.tsx         # 分组筛选选择器
-│   │   │       ├── SortToggleMenu.tsx        # 排序选项菜单
-│   │   │       └── StatsToggleMenu.tsx       # 统计卡片显示/隐藏控制菜单
+│   │   ├── sections/                        # 頁面區塊元件
+│   │   │   ├── Header.tsx                   # 標題列（Logo、標題、搜尋、檢視切換、資產統計、3D 地球、延遲總覽、主題切換、語言切換、管理入口）
+│   │   │   ├── LanguageSwitcher.tsx          # 語言切換元件（i18next 多語言切換）
+│   │   │   ├── Footer.tsx                   # 底列（自訂內容、伺服器運行時間、Markdown 渲染）
+│   │   │   ├── Flag.tsx                     # 國家旗幟展示元件
+│   │   │   ├── NodeGrid.tsx                 # 節點網格檢視（卡片式佈局）
+│   │   │   ├── NodeCompact.tsx              # 節點緊湊檢視（精簡列表）
+│   │   │   ├── NodeDisplay.tsx              # 節點詳細資訊展示（彈窗/側欄詳情）
+│   │   │   ├── NodeTable.tsx                # 節點表格檢視（可展開行詳情）
+│   │   │   └── StatsBar/                    # 統計列元件集
+│   │   │       ├── index.tsx                # 統計列主元件（線上/離線/流量/網速等聚合統計）
+│   │   │       ├── types.ts                 # 統計列型別定義
+│   │   │       ├── StatChips.tsx            # 統計資料卡片（目前時間、線上數、地區、流量、網速）
+│   │   │       ├── GroupSelector.tsx         # 分組篩選選擇器
+│   │   │       ├── SortToggleMenu.tsx        # 排序選項選單
+│   │   │       └── StatsToggleMenu.tsx       # 統計卡片顯示/隱藏控制選單
 │   │   │
-│   │   ├── settings/                        # 设置面板组件
-│   │   │   ├── SettingsPanel.tsx             # 主题配置设置面板（管理员使用）
-│   │   │   ├── SettingItem.tsx              # 单项设置控件（switch/select/string/number/richtext）
-│   │   │   ├── i18nHelper.ts               # 配置项 i18n 多语言对象解析工具
-│   │   │   ├── EditButton.tsx               # 配置编辑按钮（标题栏触发入口）
-│   │   │   └── CustomTextsEditor.tsx        # 自定义 UI 文本可视化编辑器
+│   │   ├── settings/                        # 設定面板元件
+│   │   │   ├── SettingsPanel.tsx             # 主題設定面板（管理員使用）
+│   │   │   ├── SettingItem.tsx              # 單項設定控制項（switch/select/string/number/richtext）
+│   │   │   ├── i18nHelper.ts               # 設定項 i18n 多語言物件解析工具
+│   │   │   ├── EditButton.tsx               # 設定編輯按鈕（標題列觸發入口）
+│   │   │   └── CustomTextsEditor.tsx        # 自訂 UI 文字視覺化編輯器
 │   │   │
-│   │   └── enhanced/                        # 增强功能组件集（KomariBeautify）
-│   │       ├── EnhancedFeatures.tsx         # 增强功能总入口（统一管理各增强组件的挂载）
-│   │       ├── WelcomeBubble.tsx             # 欢迎气泡（展示访客 IP、地理位置、浏览器信息）
-│   │       ├── FinanceWidget.tsx             # 资产统计面板（服务器总价值、月均支出、剩余价值，入口在标题栏）
-│   │       ├── ServerTradeModal.tsx          # 服务器交易计算弹窗
-│   │       ├── AdvancedSearchModal.tsx       # 高级搜索模态框（多条件筛选、URL同步）
-│   │       ├── AdvancedSearchModal.css       # 高级搜索模态框样式
-│   │       ├── EarthGlobe.tsx               # 3D 地球组件入口（懒加载，入口在标题栏）
+│   │   └── enhanced/                        # 增強功能元件集（KomariBeautify）
+│   │       ├── EnhancedFeatures.tsx         # 增強功能總入口（統一管理各增強元件的掛載）
+│   │       ├── WelcomeBubble.tsx             # 歡迎氣泡（展示訪客 IP、地理位置、瀏覽器資訊）
+│   │       ├── FinanceWidget.tsx             # 資產統計面板（伺服器總價值、月均支出、剩餘價值，入口在標題列）
+│   │       ├── ServerTradeModal.tsx          # 伺服器交易計算彈窗
+│   │       ├── AdvancedSearchModal.tsx       # 進階搜尋對話框（多條件篩選、URL 同步）
+│   │       ├── AdvancedSearchModal.css       # 進階搜尋對話框樣式
+│   │       ├── EarthGlobe.tsx               # 3D 地球元件入口（延遲載入，入口在標題列）
 │   │       ├── GlobeRenderer.tsx            # Globe.gl 3D 地球渲染器
-│   │       ├── ScrollHelpers.tsx            # 滚动到顶部/底部辅助按钮
-│   │       ├── Protection.tsx               # 访客反调试保护（禁止右键、开发者工具等）
-│   │       ├── emojiMap.ts                  # 国家代码 → Emoji/坐标 映射表
-│   │       ├── useUserGeo.ts                # 用户地理位置检测 Hook（多 API 回退策略）
-│   │       ├── useExchangeRates.ts          # 汇率获取与货币转换 Hook
-│   │       ├── financeUtils.ts              # 资产计算工具函数（价格转换、估值计算）
-│   │       └── enhanced.css                 # 增强功能专用样式
+│   │       ├── ScrollHelpers.tsx            # 捲動到頂部/底部輔助按鈕
+│   │       ├── Protection.tsx               # 訪客反偵錯保護（禁止右鍵、開發者工具等）
+│   │       ├── emojiMap.ts                  # 國家代碼 → Emoji/座標 對照表
+│   │       ├── useUserGeo.ts                # 使用者地理位置偵測 Hook（多 API 回退策略）
+│   │       ├── useExchangeRates.ts          # 匯率取得與貨幣轉換 Hook
+│   │       ├── financeUtils.ts              # 資產計算工具函式（價格轉換、估值計算）
+│   │       └── enhanced.css                 # 增強功能專用樣式
 │   │
-│   ├── config/                              # 配置管理
-│   │   ├── default.ts                       # 默认配置值与 ConfigOptions 类型定义
-│   │   ├── ConfigContext.ts                 # 配置 React Context 定义
-│   │   ├── ConfigProvider.tsx               # 配置 Provider（从后端 API 加载配置并合并默认值）
-│   │   ├── hooks.ts                         # 配置相关 Hooks（useAppConfig、useLocale — 桥接 i18next）
-│   │   ├── locales.ts                       # 国际化文案（中文默认值 & TypeScript 类型定义）
-│   │   └── index.ts                         # 配置模块统一导出
+│   ├── config/                              # 設定管理
+│   │   ├── default.ts                       # 預設設定值與 ConfigOptions 型別定義
+│   │   ├── ConfigContext.ts                 # 設定 React Context 定義
+│   │   ├── ConfigProvider.tsx               # 設定 Provider（從後端 API 載入設定並合併預設值）
+│   │   ├── hooks.ts                         # 設定相關 Hooks（useAppConfig、useLocale — 橋接 i18next）
+│   │   ├── locales.ts                       # 國際化文案（中文預設值 & TypeScript 型別定義）
+│   │   └── index.ts                         # 設定模組統一匯出
 │   │
-│   ├── i18n/                                # i18next 国际化配置
-│   │   ├── config.ts                        # i18next 初始化（LanguageDetector + 资源注册）
-│   │   └── locales/                         # 多语言翻译文件
-│   │       ├── zh_CN.json                   # 简体中文
-│   │       ├── zh_TW.json                   # 繁体中文
+│   ├── i18n/                                # i18next 國際化設定
+│   │   ├── config.ts                        # i18next 初始化（LanguageDetector + 資源註冊）
+│   │   └── locales/                         # 多語言翻譯檔案
+│   │       ├── zh_CN.json                   # 簡體中文
+│   │       ├── zh_TW.json                   # 繁體中文
 │   │       ├── en.json                      # English
 │   │       ├── ja_JP.json                   # 日本語
 │   │       └── id_ID.json                   # Bahasa Indonesia
 │   │
 │   ├── contexts/                            # React Context 提供者
-│   │   ├── NodeDataContext.tsx              # 节点数据 Context（REST/RPC API 数据获取与缓存）
-│   │   ├── LiveDataContext.tsx              # 实时数据 Context（WebSocket 实时推送）
-│   │   └── ThemeContext.tsx                 # 主题 Context（亮色/暗色/跟随系统）
+│   │   ├── NodeDataContext.tsx              # 節點資料 Context（REST/RPC API 資料取得與快取）
+│   │   ├── LiveDataContext.tsx              # 即時資料 Context（WebSocket 即時推送）
+│   │   └── ThemeContext.tsx                 # 主題 Context（淺色/深色/跟隨系統）
 │   │
-│   ├── hooks/                               # 自定义 Hooks
-│   │   ├── useLoadCharts.ts                 # CPU/负载 历史图表数据获取 Hook
-│   │   ├── usePingChart.ts                  # 延迟/丢包 历史图表数据获取 Hook
-│   │   ├── useNodeCommons.ts                # 节点通用工具 Hook（状态判断、运行时间、颜色映射）
-│   │   ├── useAdvancedSearch.ts             # 高级搜索状态管理 Hook（URL同步、校验、搜索执行）
-│   │   ├── useAdvancedSearchFilter.ts       # 高级搜索过滤逻辑（纯函数，多条件匹配）
-│   │   ├── useTooltipScrollLock.ts          # 图表 Tooltip 滚动锁定 Hook（wheel 事件 + 位置冻结）
-│   │   ├── useTheme.ts                      # 主题管理 Hook（切换亮色/暗色/自动模式）
-│   │   └── useMobile.ts                     # 移动端响应式检测 Hook
+│   ├── hooks/                               # 自訂 Hooks
+│   │   ├── useLoadCharts.ts                 # CPU/負載 歷史圖表資料取得 Hook
+│   │   ├── usePingChart.ts                  # 延遲/丟包 歷史圖表資料取得 Hook
+│   │   ├── useNodeCommons.ts                # 節點通用工具 Hook（狀態判斷、運行時間、顏色對應）
+│   │   ├── useAdvancedSearch.ts             # 進階搜尋狀態管理 Hook（URL 同步、校驗、搜尋執行）
+│   │   ├── useAdvancedSearchFilter.ts       # 進階搜尋過濾邏輯（純函式，多條件比對）
+│   │   ├── useTooltipScrollLock.ts          # 圖表 Tooltip 捲動鎖定 Hook（wheel 事件 + 位置凍結）
+│   │   ├── useTheme.ts                      # 主題管理 Hook（切換淺色/深色/自動模式）
+│   │   └── useMobile.ts                     # 行動端響應式偵測 Hook
 │   │
-│   ├── services/                            # 服务层
-│   │   └── api.ts                           # API 服务类（Komari 后端 REST 与 JSON-RPC2 通信）
+│   ├── services/                            # 服務層
+│   │   └── api.ts                           # API 服務類（Komari 後端 REST 與 JSON-RPC2 通訊）
 │   │
-│   ├── types/                               # TypeScript 类型定义
-│   │   ├── node.d.ts                        # 节点数据结构类型（NodeData、NodeStats、ApiResponse 等）
-│   │   ├── rpc.d.ts                         # JSON-RPC2 响应类型
-│   │   ├── LiveData.ts                      # WebSocket 实时数据流类型
-│   │   └── advancedSearch.ts                # 高级搜索类型定义（搜索状态、过滤器、校验）
+│   ├── types/                               # TypeScript 型別定義
+│   │   ├── node.d.ts                        # 節點資料結構型別（NodeData、NodeStats、ApiResponse 等）
+│   │   ├── rpc.d.ts                         # JSON-RPC2 回應型別
+│   │   ├── LiveData.ts                      # WebSocket 即時資料流型別
+│   │   └── advancedSearch.ts                # 進階搜尋型別定義（搜尋狀態、篩選器、校驗）
 │   │
-│   └── utils/                               # 工具函数
-│       ├── index.ts                         # 工具模块统一导出（cn、formatBytes 等）
-│       ├── formatHelper.ts                  # 数据格式化（字节、运行时间、流量限制）
-│       ├── chartHelper.ts                   # 图表工具（OKLCH 颜色生成、标签格式化）
-│       ├── converters.ts                    # 类型转换工具（NodeStats ↔ RpcNodeStatus）
-│       ├── regionHelper.ts                  # 地区 Emoji → 名称映射
-│       ├── localeUtils.ts                   # 国际化工具（深度对象合并、扁平化还原）
-│       ├── osImageHelper.ts                 # 操作系统 Logo 查找工具
-│       ├── downsample.ts                    # LTTB 降采样算法与自动降采样点数计算
-│       └── RecordHelper.tsx                 # 图表数据处理（削峰、插值、空值填充）
+│   └── utils/                               # 工具函式
+│       ├── index.ts                         # 工具模組統一匯出（cn、formatBytes 等）
+│       ├── formatHelper.ts                  # 資料格式化（位元組、運行時間、流量限制）
+│       ├── chartHelper.ts                   # 圖表工具（OKLCH 顏色產生、標籤格式化）
+│       ├── converters.ts                    # 型別轉換工具（NodeStats ↔ RpcNodeStatus）
+│       ├── regionHelper.ts                  # 地區 Emoji → 名稱對應
+│       ├── localeUtils.ts                   # 國際化工具（深度物件合併、扁平化還原）
+│       ├── osImageHelper.ts                 # 作業系統 Logo 查找工具
+│       ├── downsample.ts                    # LTTB 降採樣演算法與自動降採樣點數計算
+│       └── RecordHelper.tsx                 # 圖表資料處理（削峰、插值、空值填補）
 │
-├── index.html                               # HTML 入口文件（含 PWA 元数据）
-├── komari-theme.json                        # Komari 主题配置声明文件（定义后台可配置项）
-├── preview.png                              # 主题预览截图
-├── package.json                             # 项目依赖与脚本定义
-├── package-lock.json                        # npm 依赖锁定文件
-├── yarn.lock                                # Yarn 依赖锁定文件
-├── vite.config.ts                           # Vite 构建配置（React + Tailwind 插件）
-├── tailwind.config.ts                       # Tailwind CSS 配置
-├── tsconfig.json                            # TypeScript 根配置
-├── tsconfig.app.json                        # TypeScript 应用编译配置
-├── tsconfig.node.json                       # TypeScript Node 编译配置
-├── eslint.config.js                         # ESLint 代码检查配置
-├── components.json                          # shadcn/ui 组件配置
-├── .gitignore                               # Git 忽略规则
-├── LICENSE                                  # MIT 开源许可证
-└── README.md                                # 项目说明文档
+├── index.html                               # HTML 入口檔案（含 PWA 中繼資料）
+├── komari-theme.json                        # Komari 主題設定宣告檔案（定義後台可設定項）
+├── preview.png                              # 主題預覽截圖
+├── package.json                             # 專案相依套件與指令稿定義
+├── package-lock.json                        # npm 相依套件鎖定檔案
+├── yarn.lock                                # Yarn 相依套件鎖定檔案
+├── vite.config.ts                           # Vite 建置設定（React + Tailwind 外掛）
+├── tailwind.config.ts                       # Tailwind CSS 設定
+├── tsconfig.json                            # TypeScript 根設定
+├── tsconfig.app.json                        # TypeScript 應用編譯設定
+├── tsconfig.node.json                       # TypeScript Node 編譯設定
+├── eslint.config.js                         # ESLint 程式碼檢查設定
+├── components.json                          # shadcn/ui 元件設定
+├── .gitignore                               # Git 忽略規則
+├── LICENSE                                  # MIT 開源授權條款
+└── README.md                                # 專案說明文件
 ```
 
 </details>
 
-## 🛠️ 本地开发
+## 🛠️ 本機開發
 
-1.  **克隆仓库**
+1.  **複製儲存庫**
 
     ```bash
     git clone https://github.com/YoungYannick/komari-theme-purcarte-plus.git
     cd komari-theme-purcarte-plus
     ```
 
-2.  **安装依赖**
+2.  **安裝相依套件**
 
     ```bash
     yarn install
     ```
 
-3.  **启动开发服务器**
+3.  **啟動開發伺服器**
 
     ```bash
     yarn dev
     ```
 
-4.  在浏览器中打开 `http://localhost:5173` (或 Vite 提示的其他端口) 即可进行预览和调试。
+4.  在瀏覽器中開啟 `http://localhost:5173` (或 Vite 提示的其他連接埠) 即可進行預覽和偵錯。
 
-## 🔗 相关项目
+## 🔗 相關專案
 
-| 项目 | 说明 |
+| 專案 | 說明 |
 |------|------|
-| [KomariBeautify](https://github.com/YoungYannick/KomariBeautify) | 本主题增强功能的前身，通过 Komari 后台自定义代码（后台 自定义头部 & 自定义 Body）实现，无需替换主题即可使用 |
-| [Komari Virtualizer](https://github.com/YoungYannick/Komari_Virtualizer) | 基于 Flask 的 Komari 虚拟探针模拟器，在物理 VPS 资源有限时模拟多个探针客户端，轻松实现"点亮全球" |
+| [KomariBeautify](https://github.com/YoungYannick/KomariBeautify) | 本主題增強功能的前身，透過 Komari 後台自訂程式碼（後台 自訂頭部 & 自訂 Body）實現，無需替換主題即可使用 |
+| [Komari Virtualizer](https://github.com/YoungYannick/Komari_Virtualizer) | 基於 Flask 的 Komari 虛擬探針模擬器，在實體 VPS 資源有限時模擬多個探針用戶端，輕鬆實現「點亮全球」 |
 
-## 📄 许可证
+## 📄 授權條款
 
-本项目采用 [MIT License](LICENSE) 授权。
+本專案採用 [MIT License](LICENSE) 授權。

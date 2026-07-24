@@ -1,15 +1,15 @@
 /**
- * OS Image Helper - 根据字符串匹配返回操作系统图像路径
+ * OS Image Helper - 根據字串比對回傳作業系統圖片路徑
  */
 
-// 操作系统匹配配置
+// 作業系統比對設定
 interface OSConfig {
   name: string;
   image: string;
   keywords: string[];
 }
 
-// 操作系统匹配组
+// 作業系統比對群組
 const osConfigs: OSConfig[] = [
   {
     name: "Alibaba",
@@ -163,7 +163,7 @@ const osConfigs: OSConfig[] = [
   },
 ];
 
-// 默认配置
+// 預設設定
 const defaultOSConfig: OSConfig = {
   name: "Unknown",
   image: "/assets/logo/linux.svg",
@@ -171,9 +171,9 @@ const defaultOSConfig: OSConfig = {
 };
 
 /**
- * 根据输入字符串查找匹配的操作系统配置
- * @param osString - 操作系统相关的字符串
- * @returns 匹配的操作系统配置，如果没有匹配则返回默认配置
+ * 根據輸入字串尋找符合的作業系統設定
+ * @param osString - 作業系統相關的字串
+ * @returns 符合的作業系統設定，如果沒有符合則回傳預設設定
  */
 function findOSConfig(osString: string): OSConfig {
   if (!osString) {
@@ -182,7 +182,7 @@ function findOSConfig(osString: string): OSConfig {
 
   const normalizedInput = osString.toLowerCase().trim();
 
-  // 遍历匹配配置
+  // 走訪比對設定
   for (const config of osConfigs) {
     for (const keyword of config.keywords) {
       if (normalizedInput.includes(keyword)) {
@@ -191,28 +191,28 @@ function findOSConfig(osString: string): OSConfig {
     }
   }
 
-  // 如果没有匹配到，返回默认配置
+  // 如果沒有符合的，回傳預設設定
   return defaultOSConfig;
 }
 
 /**
- * 根据输入字符串匹配返回操作系统图像路径
- * @param osString - 操作系统相关的字符串
- * @returns 匹配的操作系统图像路径，如果没有匹配则返回默认图像
+ * 根據輸入字串比對回傳作業系統圖片路徑
+ * @param osString - 作業系統相關的字串
+ * @returns 符合的作業系統圖片路徑，如果沒有符合則回傳預設圖片
  */
 export function getOSImage(osString: string): string {
   return findOSConfig(osString).image;
 }
 
 /**
- * 获取所有可用的操作系统图像
- * @returns 所有操作系统图像的映射表
+ * 取得所有可用的作業系統圖片
+ * @returns 所有作業系統圖片的對照表
  */
 export function getAllOSImages(): Record<string, string> {
   const imageMap: Record<string, string> = {};
 
   osConfigs.forEach((config) => {
-    const key = config.keywords[0]; // 使用第一个关键词作为键
+    const key = config.keywords[0]; // 使用第一個關鍵字作為鍵
     imageMap[key] = config.image;
   });
 
@@ -222,32 +222,32 @@ export function getAllOSImages(): Record<string, string> {
 }
 
 /**
- * 根据输入字符串匹配返回操作系统名称
- * @param osString - 操作系统相关的字符串
- * @returns 匹配的操作系统名称
+ * 根據輸入字串比對回傳作業系統名稱
+ * @param osString - 作業系統相關的字串
+ * @returns 符合的作業系統名稱
  */
 export function getOSName(osString: string): string {
   const config = findOSConfig(osString);
 
-  // 如果匹配到具体的操作系统，返回其名称
+  // 如果比對到具體的作業系統，回傳其名稱
   if (config !== defaultOSConfig) {
     return config.name;
   }
 
-  // 如果没有匹配到，从输入字符串中提取名称
+  // 如果沒有符合的，從輸入字串中擷取名稱
   if (!osString) {
     return "Unknown";
   }
 
-  // 使用空格或斜杠分割，取第一个部分
+  // 使用空格或斜線分割，取第一個部分
   const parts = osString.trim().split(/[\s/]/);
   return parts[0] || "Unknown";
 }
 
 /**
- * 检查是否为支持的操作系统
- * @param osString - 操作系统相关的字符串
- * @returns 是否为支持的操作系统
+ * 檢查是否為支援的作業系統
+ * @param osString - 作業系統相關的字串
+ * @returns 是否為支援的作業系統
  */
 export function isSupportedOS(osString: string): boolean {
   if (!osString) return false;

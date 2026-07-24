@@ -25,6 +25,20 @@ let fetchPromise: Promise<UserGeoInfo> | null = null;
 
 const strategies = [
   {
+    // 優先使用 IPv4 專用端點，盡量顯示 IPv4 位址
+    url: "https://api-ipv4.ip.sb/geoip",
+    check: (j: any) => "country" in j,
+    map: (j: any) => ({
+      country: j.country || "",
+      region: j.region || "",
+      city: j.city || "",
+      isp: j.asn_organization || "",
+      ip: j.ip || "",
+      lat: j.latitude,
+      lng: j.longitude,
+    }),
+  },
+  {
     url: "https://api.ip.sb/geoip",
     check: (j: any) => "country" in j,
     map: (j: any) => ({

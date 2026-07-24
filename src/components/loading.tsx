@@ -28,7 +28,7 @@ const Loading = ({ text, children, size, className }: LoadingProps) => {
           </svg>
         </div>
       </div>
-      <p className="text-lg font-bold">Loading...</p>
+      <p className="text-lg font-bold">Loading ...</p>
       <p className="text-sm text-muted-foreground mb-4">{text}</p>
       <div>{children}</div>
     </div>

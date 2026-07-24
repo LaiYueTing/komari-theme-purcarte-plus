@@ -1,5 +1,5 @@
-/* ========== Select 下拉菜单动画 ========== */
-/* 参考 dropdown-menu.css 的 slideDownAndFade / slideUpAndFade 动画 */
+/* ========== Select 下拉選單動畫 ========== */
+/* 參考 dropdown-menu.css 的 slideDownAndFade / slideUpAndFade 動畫 */
 
 @keyframes selectSlideDownAndFade {
   from {

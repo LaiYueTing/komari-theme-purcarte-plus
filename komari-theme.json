@@ -10,7 +10,7 @@
         "type": "managed",
         "name": {
             "zh-CN": "PurCart Plus 主题设置",
-            "zh-TW": "PurCart Plus 主題設置",
+            "zh-TW": "PurCart Plus 主題設定",
             "en": "PurCart Plus Theme Settings",
             "ja": "PurCart Plus テーマ設定",
             "id": "Pengaturan Tema PurCart Plus"
@@ -30,7 +30,7 @@
                 "key": "isShowConfigEditButtonInLogined",
                 "name": {
                     "zh-CN": "是否在登录时显示配置编辑按钮",
-                    "zh-TW": "是否在登錄時顯示配置編輯按鈕",
+                    "zh-TW": "是否在登入時顯示設定編輯按鈕",
                     "en": "Show Config Edit Button When Logged In",
                     "ja": "ログイン時に設定編集ボタンを表示",
                     "id": "Tampilkan Tombol Edit Konfigurasi Saat Login"
@@ -39,7 +39,7 @@
                 "default": false,
                 "help": {
                     "zh-CN": "启用后将在登录时在标题栏最右侧显示配置编辑按钮，方便管理员进行主题配置",
-                    "zh-TW": "啟用後將在登錄時在標題欄最右側顯示配置編輯按鈕，方便管理員進行主題配置",
+                    "zh-TW": "啟用後將在登入時在標題列最右側顯示設定編輯按鈕，方便管理員進行主題設定",
                     "en": "Enable to show the config edit button on the right side of the header when logged in.",
                     "ja": "有効にすると、ログイン時にヘッダーの右端に設定編集ボタンが表示されます。",
                     "id": "Aktifkan untuk menampilkan tombol edit konfigurasi di sisi kanan header saat login."
@@ -87,7 +87,7 @@
                 "default": "/assets/default-background-image.jpg",
                 "help": {
                     "zh-CN": "支持多张背景图片或图片api，使用“,”分割，使用“|”分隔亮色模式和暗色模式，填写单个则同时用于亮暗模式",
-                    "zh-TW": "支持多張背景圖片或圖片api，使用“,”分割，使用“|”分隔亮色模式和暗色模式，填寫單個則同時用於亮暗模式",
+                    "zh-TW": "支援多張背景圖片或圖片 api，使用“,”分割，使用“|”分隔淺色模式和深色模式，填寫單個則同時用於淺色與深色模式",
                     "en": "Supports multiple images/APIs separated by comma. Use '|' to separate Light and Dark modes. Single value applies to both.",
                     "ja": "複数の画像/APIに対応（カンマ区切り）。「|」を使用してライトモードとダークモードを区切ります。単一の場合は両方に適用されます。",
                     "id": "Mendukung beberapa gambar/API dipisahkan koma. Gunakan '|' untuk memisahkan mode Terang dan Gelap. Nilai tunggal berlaku untuk keduanya."
@@ -106,7 +106,7 @@
                 "default": "",
                 "help": {
                     "zh-CN": "移动端背景图片链接，与桌面端一样区分亮暗模式，留空则使用桌面端背景",
-                    "zh-TW": "移動端背景圖片連結，與桌面端一樣區分亮暗模式，留空則使用桌面端背景",
+                    "zh-TW": "移動端背景圖片連結，與桌面端一樣區分淺色與深色模式，留空則使用桌面端背景",
                     "en": "Mobile background URL. Supports Light/Dark mode separation like desktop. Uses desktop background if empty.",
                     "ja": "モバイル用背景URL。デスクトップ同様にライト/ダークモードを区別します。空の場合はデスクトップ背景を使用します。",
                     "id": "URL latar mobile. Mendukung pemisahan mode Terang/Gelap seperti desktop. Menggunakan latar desktop jika kosong."
@@ -126,7 +126,7 @@
                 "default": "image",
                 "help": {
                     "zh-CN": "选择背景模式：image（图片）、video（视频）、solidColor（纯色）",
-                    "zh-TW": "選擇背景模式：image（圖片）、video（視頻）、solidColor（純色）",
+                    "zh-TW": "選擇背景模式：image（圖片）、video（影片）、solidColor（純色）",
                     "en": "Select background mode: image, video, or solidColor.",
                     "ja": "背景モードを選択：image（画像）、video（動画）、solidColor（単色）。",
                     "id": "Pilih mode latar belakang: image (gambar), video, atau solidColor (warna solid)."
@@ -145,7 +145,7 @@
                 "default": "",
                 "help": {
                     "zh-CN": "纯色背景颜色值，支持 rgb（如 rgb(255,0,0)）、rgba（如 rgba(255,0,0,0.5)）、hex（如 #ff0000）、颜色单词（如 red），仅在背景模式为'纯色'时生效",
-                    "zh-TW": "純色背景顏色值，支持 rgb（如 rgb(255,0,0)）、rgba（如 rgba(255,0,0,0.5)）、hex（如 #ff0000）、顏色單詞（如 red），僅在背景模式為'純色'時生效",
+                    "zh-TW": "純色背景顏色值，支援 rgb（如 rgb(255,0,0)）、rgba（如 rgba(255,0,0,0.5)）、hex（如 #ff0000）、顏色單詞（如 red），僅在背景模式為'純色'時生效",
                     "en": "Solid background color. Supports rgb (e.g. rgb(255,0,0)), rgba (e.g. rgba(255,0,0,0.5)), hex (e.g. #ff0000), or color names (e.g. red). Only effective when background mode is solidColor.",
                     "ja": "単色背景の色値。rgb（例: rgb(255,0,0)）、rgba（例: rgba(255,0,0,0.5)）、hex（例: #ff0000）、色名（例: red）に対応。背景モードが単色の場合のみ有効。",
                     "id": "Warna latar solid. Mendukung rgb (mis. rgb(255,0,0)), rgba (mis. rgba(255,0,0,0.5)), hex (mis. #ff0000), atau nama warna (mis. red). Hanya efektif saat mode latar solidColor."
@@ -155,7 +155,7 @@
                 "key": "videoBackgroundUrl",
                 "name": {
                     "zh-CN": "桌面端视频背景链接",
-                    "zh-TW": "桌面端視頻背景連結",
+                    "zh-TW": "桌面端影片背景連結",
                     "en": "Desktop Video Background URL",
                     "ja": "デスクトップ動画背景URL",
                     "id": "URL Video Latar Desktop"
@@ -164,7 +164,7 @@
                 "default": "/assets/LanternRivers_1080p15fps2Mbps3s.mp4",
                 "help": {
                     "zh-CN": "视频背景链接，使用“|”分隔亮色模式和暗色模式，填写单个则同时用于亮暗模式，建议使用无声视频，且视频文件较大时可能会影响加载速度",
-                    "zh-TW": "視頻背景連結，使用“|”分隔亮色模式和暗色模式，填寫單個則同時用於亮暗模式，建議使用無聲視頻，且視頻文件較大時可能會影響加載速度",
+                    "zh-TW": "影片背景連結，使用“|”分隔淺色模式和深色模式，填寫單個則同時用於淺色與深色模式，建議使用無聲影片，且影片檔案較大時可能會影響載入速度",
                     "en": "Video URL. Use '|' to separate Light/Dark modes. Silent videos recommended. Large files may affect loading speed.",
                     "ja": "動画URL。「|」でライト/ダークモードを区切ります。無音動画を推奨。ファイルサイズが大きいと読み込み速度に影響する場合があります。",
                     "id": "URL video. Gunakan '|' untuk memisahkan mode Terang/Gelap. Video tanpa suara disarankan. File besar dapat mempengaruhi kecepatan loading."
@@ -174,7 +174,7 @@
                 "key": "videoBackgroundUrlMobile",
                 "name": {
                     "zh-CN": "移动端视频背景链接",
-                    "zh-TW": "移動端視頻背景連結",
+                    "zh-TW": "移動端影片背景連結",
                     "en": "Mobile Video Background URL",
                     "ja": "モバイル動画背景URL",
                     "id": "URL Video Latar Mobile"
@@ -183,7 +183,7 @@
                 "default": "",
                 "help": {
                     "zh-CN": "移动端视频背景链接，多个使用“,”分割，与桌面端一样区分亮暗模式，留空则使用桌面端视频",
-                    "zh-TW": "移動端視頻背景連結，多個使用“,”分割，與桌面端一樣區分亮暗模式，留空則使用桌面端視頻",
+                    "zh-TW": "移動端影片背景連結，多個使用“,”分割，與桌面端一樣區分淺色與深色模式，留空則使用桌面端影片",
                     "en": "Mobile video URL. Separated by comma. Supports Light/Dark mode. Uses desktop video if empty.",
                     "ja": "モバイル動画URL。カンマ区切り。ライト/ダークモード対応。空の場合はデスクトップ動画を使用します。",
                     "id": "URL video mobile. Dipisahkan koma. Mendukung mode Terang/Gelap. Menggunakan video desktop jika kosong."
@@ -202,7 +202,7 @@
                 "default": "cover,top",
                 "help": {
                     "zh-CN": "调整背景图片和视频的对齐方式，使用“,”分隔背景大小和位置两个属性，背景大小可选 cover（覆盖）,contain（包含）,fill（填充）；背景位置可选 center（居中）,top（顶部）,bottom（底部）,left（左侧）,right（右侧），eg: cover,top",
-                    "zh-TW": "調整背景圖片和視頻的對齊方式，使用“,”分隔背景大小和位置兩個屬性，背景大小可選 cover（覆蓋）,contain（包含）,fill（填充）；背景位置可選 center（居中）,top（頂部）,bottom（底部）,left（左側）,right（右側），eg: cover,top",
+                    "zh-TW": "調整背景圖片和影片的對齊方式，使用“,”分隔背景大小和位置兩個屬性，背景大小可選 cover（覆蓋）,contain（包含）,fill（填充）；背景位置可選 center（居中）,top（頂部）,bottom（底部）,left（左側）,right（右側），eg: cover,top",
                     "en": "Adjust background size and position, separated by comma. Size: cover, contain, fill. Position: center, top, bottom, left, right. E.g., cover,top.",
                     "ja": "背景サイズと位置をカンマで区切って調整します。サイズ：cover, contain, fill。位置：center, top, bottom, left, right。例：cover,top。",
                     "id": "Sesuaikan ukuran dan posisi latar, dipisahkan koma. Ukuran: cover, contain, fill. Posisi: center, top, bottom, left, right. Contoh: cover,top."
@@ -259,7 +259,7 @@
                 "default": "rgba(255, 255, 255, 0.5)|rgba(0, 0, 0, 0.5)",
                 "help": {
                     "zh-CN": "调整模糊背景色，推荐 rgba 颜色值，使用“|”分隔亮色模式和暗色模式的颜色值，填写单个则同时用于亮暗模式",
-                    "zh-TW": "調整模糊背景色，推薦 rgba 顏色值，使用“|”分隔亮色模式和暗色模式的顏色值，填寫單個則同時用於亮暗模式",
+                    "zh-TW": "調整模糊背景色，推薦 rgba 顏色值，使用“|”分隔淺色模式和深色模式的顏色值，填寫單個則同時用於淺色與深色模式",
                     "en": "Adjust blur background color. RGBA recommended. Use '|' to separate Light/Dark modes.",
                     "ja": "ぼかしの背景色を調整します。RGBA推奨。「|」でライト/ダークモードを区切ります。",
                     "id": "Sesuaikan warna latar blur. RGBA disarankan. Gunakan '|' untuk memisahkan mode Terang/Gelap."
@@ -288,7 +288,7 @@
                 "key": "tagDefaultColorList",
                 "name": {
                     "zh-CN": "标签默认颜色列表",
-                    "zh-TW": "標籤默認顏色列表",
+                    "zh-TW": "標籤預設顏色列表",
                     "en": "Default Tag Color List",
                     "ja": "デフォルトタグ色リスト",
                     "id": "Daftar Warna Tag Bawaan"
@@ -297,7 +297,7 @@
                 "default": "lime,cyan,pink,crimson,iris,violet,plum,indigo,blue,jade,mint,grass,teal,sky,red,ruby,tomato,orange,amber,yellow,green,purple,gold,bronze,brown,gray,mauve,slate",
                 "help": {
                     "zh-CN": "标签默认颜色列表，展示的标签将按顺序调用该颜色池，逗号分隔",
-                    "zh-TW": "標籤默認顏色列表，展示的標籤將按順序調用該顏色池，逗號分隔",
+                    "zh-TW": "標籤預設顏色列表，展示的標籤將按順序調用該顏色池，逗號分隔",
                     "en": "List of default colors for tags, separated by comma. Tags will cycle through this pool.",
                     "ja": "タグのデフォルト色リスト（カンマ区切り）。タグはこの色プールを順に使用します。",
                     "id": "Daftar warna bawaan untuk tag, dipisahkan koma. Tag akan bergilir melalui daftar ini."
@@ -307,7 +307,7 @@
                 "key": "selectThemeColor",
                 "name": {
                     "zh-CN": "默认主题颜色",
-                    "zh-TW": "默認主題顏色",
+                    "zh-TW": "預設主題顏色",
                     "en": "Default Theme Color",
                     "ja": "デフォルトテーマ色",
                     "id": "Warna Tema Bawaan"
@@ -317,16 +317,54 @@
                 "default": "violet",
                 "help": {
                     "zh-CN": "设置默认主题颜色，颜色对照请参考 Radix UI 颜色文档",
-                    "zh-TW": "設置默認主題顏色，顏色對照請參考 Radix UI 顏色文檔",
+                    "zh-TW": "設定預設主題顏色，顏色對照請參考 Radix UI 顏色說明文件",
                     "en": "Set default theme color. Refer to Radix UI docs for colors.",
                     "ja": "デフォルトのテーマ色を設定します。色の詳細はRadix UIドキュメントを参照してください。",
                     "id": "Atur warna tema bawaan. Lihat dokumentasi Radix UI untuk daftar warna."
                 }
             },
             {
+                "key": "globalFontFamily",
+                "name": {
+                    "zh-CN": "全局字体",
+                    "zh-TW": "全域字型",
+                    "en": "Global Font Family",
+                    "ja": "グローバルフォント",
+                    "id": "Font Global"
+                },
+                "type": "string",
+                "default": "'Harmony Hans', 'Noto Sans TC', 'Noto Sans SC', Ubuntu, -apple-system, BlinkMacSystemFont, 'PingFang TC', 'PingFang SC', 'Microsoft JhengHei', 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif",
+                "help": {
+                    "zh-CN": "全局字体的 font-family 堆叠，按顺序回退。系统会依次尝试 Harmony Hans、Noto Sans TC、Ubuntu、Mac/Windows 系统字体等。多个字体用逗号分隔，含空格的字体名需用单引号包裹。留空则使用主题默认字体。",
+                    "zh-TW": "全域字型的 font-family 堆疊，依序回退。系統會依序嘗試 Harmony Hans、Noto Sans TC、Ubuntu、Mac/Windows 系統字型等。多個字型用逗號分隔，含空格的字型名需用單引號包裹。留空則使用主題預設字型。",
+                    "en": "The global font-family stack with sequential fallback (e.g. Harmony Hans, Noto Sans TC, Ubuntu, then Mac/Windows system fonts). Separate fonts with commas; wrap names containing spaces in single quotes. Leave empty to use the theme default.",
+                    "ja": "グローバルフォントの font-family スタック（順にフォールバック）。例：Harmony Hans、Noto Sans TC、Ubuntu、Mac/Windows のシステムフォント。カンマ区切り、空白を含む名前はシングルクォートで囲みます。空欄でテーマ既定のフォントを使用。",
+                    "id": "Tumpukan font-family global dengan fallback berurutan (mis. Harmony Hans, Noto Sans TC, Ubuntu, lalu font sistem Mac/Windows). Pisahkan dengan koma; bungkus nama berspasi dengan tanda kutip tunggal. Kosongkan untuk memakai font bawaan tema."
+                }
+            },
+            {
+                "key": "customFontFaceCss",
+                "name": {
+                    "zh-CN": "自定义 @font-face CSS",
+                    "zh-TW": "自訂 @font-face CSS",
+                    "en": "Custom @font-face CSS",
+                    "ja": "カスタム @font-face CSS",
+                    "id": "CSS @font-face Kustom"
+                },
+                "type": "richtext",
+                "default": "@font-face {\n    font-family: 'Harmony Hans';\n    src: url(https://cdn.jsdelivr.net/gh/IKKI2000/harmonyos-fonts/fonts/HarmonyOS_Sans_TC/HarmonyOS_Sans_TC_Medium.woff2) format('woff2');\n    font-display: swap;\n}",
+                "help": {
+                    "zh-CN": "原样注入的 @font-face CSS，用于加载未安装在系统中的外部字体（如 Harmony Hans）。定义后需在「全局字体」中引用对应的字体名称。留空则不加载外部字体。",
+                    "zh-TW": "原樣注入的 @font-face CSS，用於載入未安裝在系統中的外部字型（如 Harmony Hans）。定義後需在「全域字型」中引用對應的字型名稱。留空則不載入外部字型。",
+                    "en": "Raw @font-face CSS injected as-is, used to load external fonts not installed on the system (e.g. Harmony Hans). Reference the defined font name in 'Global Font Family'. Leave empty to load no external font.",
+                    "ja": "そのまま注入される @font-face CSS。システムに未インストールの外部フォント（例：Harmony Hans）を読み込みます。定義したフォント名は「グローバルフォント」で参照してください。空欄で外部フォントを読み込みません。",
+                    "id": "CSS @font-face yang disuntikkan apa adanya, untuk memuat font eksternal yang tidak terpasang di sistem (mis. Harmony Hans). Rujuk nama font tersebut di 'Font Global'. Kosongkan agar tidak memuat font eksternal."
+                }
+            },
+            {
                 "name": {
                     "zh-CN": "浏览器本地存储配置",
-                    "zh-TW": "瀏覽器本地存儲配置",
+                    "zh-TW": "瀏覽器本地存儲設定",
                     "en": "Local Storage Config",
                     "ja": "ローカルストレージ設定",
                     "id": "Konfigurasi Penyimpanan Lokal"
@@ -337,7 +375,7 @@
                 "key": "enableLocalStorage",
                 "name": {
                     "zh-CN": "启用 localStorage 配置",
-                    "zh-TW": "啟用 localStorage 配置",
+                    "zh-TW": "啟用 localStorage 設定",
                     "en": "Enable localStorage",
                     "ja": "localStorageを有効化",
                     "id": "Aktifkan localStorage"
@@ -346,7 +384,7 @@
                 "default": true,
                 "help": {
                     "zh-CN": "启用后将优先使用用户浏览器本地配置的视图和外观设置。关闭后将强制使用下方的主题配置",
-                    "zh-TW": "啟用後將優先使用用戶瀏覽器本地配置的視圖和外觀設置。關閉後將強制使用下方的主題配置",
+                    "zh-TW": "啟用後將優先使用使用者瀏覽器本地設定的檢視和外觀設定。關閉後將強制使用下方的主題設定",
                     "en": "Prioritize user's local browser settings for view and appearance. If disabled, theme config is enforced.",
                     "ja": "ユーザーのブラウザのローカル設定（表示や外観）を優先します。無効にすると、テーマ設定が強制されます。",
                     "id": "Prioritaskan pengaturan browser lokal pengguna untuk tampilan dan penampilan. Jika dinonaktifkan, konfigurasi tema dipaksakan."
@@ -356,7 +394,7 @@
                 "key": "selectedDefaultView",
                 "name": {
                     "zh-CN": "桌面端默认展示视图",
-                    "zh-TW": "桌面端默認展示視圖",
+                    "zh-TW": "桌面端預設展示檢視",
                     "en": "Desktop Default View",
                     "ja": "デスクトップデフォルト表示",
                     "id": "Tampilan Desktop Bawaan"
@@ -366,7 +404,7 @@
                 "default": "grid",
                 "help": {
                     "zh-CN": "设置默认展示视图为网格、表格或紧凑型",
-                    "zh-TW": "設置默認展示視圖為網格、表格或緊湊型",
+                    "zh-TW": "設定預設展示檢視為網格、表格或緊湊型",
                     "en": "Set default view to Grid, Table, or Compact.",
                     "ja": "デフォルト表示をグリッド、テーブル、またはコンパクトに設定します。",
                     "id": "Atur tampilan bawaan ke Grid, Tabel, atau Ringkas."
@@ -376,7 +414,7 @@
                 "key": "selectedDefaultAppearance",
                 "name": {
                     "zh-CN": "默认外观",
-                    "zh-TW": "默認外觀",
+                    "zh-TW": "預設外觀",
                     "en": "Default Appearance",
                     "ja": "デフォルトの外観",
                     "id": "Penampilan Bawaan"
@@ -386,7 +424,7 @@
                 "default": "system",
                 "help": {
                     "zh-CN": "设置默认外观为浅色、深色或系统主题",
-                    "zh-TW": "設置默認外觀為淺色、深色或系統主題",
+                    "zh-TW": "設定預設外觀為淺色、深色或系統主題",
                     "en": "Set default appearance to Light, Dark, or System.",
                     "ja": "デフォルトの外観をライト、ダーク、またはシステムに設定します。",
                     "id": "Atur penampilan bawaan ke Terang, Gelap, atau Sistem."
@@ -414,7 +452,7 @@
             {
                 "name": {
                     "zh-CN": "标题栏设置",
-                    "zh-TW": "標題欄設置",
+                    "zh-TW": "標題列設定",
                     "en": "Header Settings",
                     "ja": "ヘッダー設定",
                     "id": "Pengaturan Header"
@@ -425,7 +463,7 @@
                 "key": "selectedHeaderStyle",
                 "name": {
                     "zh-CN": "标题栏样式",
-                    "zh-TW": "標題欄樣式",
+                    "zh-TW": "標題列樣式",
                     "en": "Header Style",
                     "ja": "ヘッダースタイル",
                     "id": "Gaya Header"
@@ -435,7 +473,7 @@
                 "default": "fixed",
                 "help": {
                     "zh-CN": "设置标题栏样式为 fixed（固定）或 levitation（悬浮）",
-                    "zh-TW": "設置標題欄樣式為 fixed（固定）或 levitation（懸浮）",
+                    "zh-TW": "設定標題列樣式為 fixed（固定）或 levitation（懸浮）",
                     "en": "Set header style to Fixed or Levitation.",
                     "ja": "ヘッダースタイルを固定（Fixed）または浮遊（Levitation）に設定します。",
                     "id": "Atur gaya header ke Fixed (Tetap) atau Levitation (Melayang)."
@@ -445,7 +483,7 @@
                 "key": "enableLogo",
                 "name": {
                     "zh-CN": "启用标题栏左侧 Logo",
-                    "zh-TW": "啟用標題欄左側 Logo",
+                    "zh-TW": "啟用標題列左側 Logo",
                     "en": "Enable Header Logo",
                     "ja": "ヘッダーロゴを有効化",
                     "id": "Aktifkan Logo Header"
@@ -454,7 +492,7 @@
                 "default": true,
                 "help": {
                     "zh-CN": "启用后默认在标题栏左侧显示 Logo",
-                    "zh-TW": "啟用後默認在標題欄左側顯示 Logo",
+                    "zh-TW": "啟用後預設在標題列左側顯示 Logo",
                     "en": "Enable to show Logo on the left side of the header.",
                     "ja": "有効にすると、ヘッダーの左側にロゴが表示されます。",
                     "id": "Aktifkan untuk menampilkan Logo di sisi kiri header."
@@ -484,7 +522,7 @@
                 "key": "logoShape",
                 "name": {
                     "zh-CN": "标题栏 Logo 样式",
-                    "zh-TW": "標題欄 Logo 樣式",
+                    "zh-TW": "標題列 Logo 樣式",
                     "en": "Header Logo Shape",
                     "ja": "ヘッダーロゴスタイル",
                     "id": "Bentuk Logo Header"
@@ -494,7 +532,7 @@
                 "default": "circle",
                 "help": {
                     "zh-CN": "circle: 圆形固定缩放（32×32）；original: 原图等比缩放（高32px，宽度自适应）",
-                    "zh-TW": "circle: 圓形固定縮放（32×32）；original: 原圖等比縮放（高32px，寬度自適應）",
+                    "zh-TW": "circle: 圓形固定縮放（32×32）；original: 原圖等比縮放（高 32px，寬度自適應）",
                     "en": "circle: Circular fixed scale (32×32); original: Proportional scale (height 32px, auto width).",
                     "ja": "circle: 円形固定スケール（32×32）；original: 等比スケール（高さ32px、幅自動）。",
                     "id": "circle: Skala tetap bulat (32×32); original: Skala proporsional (tinggi 32px, lebar otomatis)."
@@ -504,7 +542,7 @@
                 "key": "enableTitle",
                 "name": {
                     "zh-CN": "启用标题栏标题",
-                    "zh-TW": "啟用標題欄標題",
+                    "zh-TW": "啟用標題列標題",
                     "en": "Enable Header Title",
                     "ja": "ヘッダータイトルを有効化",
                     "id": "Aktifkan Judul Header"
@@ -513,7 +551,7 @@
                 "default": true,
                 "help": {
                     "zh-CN": "启用后默认在顶栏左侧显示标题",
-                    "zh-TW": "啟用後默認在頂欄左側顯示標題",
+                    "zh-TW": "啟用後預設在頂欄左側顯示標題",
                     "en": "Enable to show the title on the left side of the header.",
                     "ja": "有効にすると、ヘッダーの左側にタイトルが表示されます。",
                     "id": "Aktifkan untuk menampilkan judul di sisi kiri header."
@@ -523,7 +561,7 @@
                 "key": "titleText",
                 "name": {
                     "zh-CN": "标题栏标题文本",
-                    "zh-TW": "標題欄標題文本",
+                    "zh-TW": "標題列標題文字",
                     "en": "Header Title Text",
                     "ja": "ヘッダータイトルテキスト",
                     "id": "Teks Judul Header"
@@ -532,7 +570,7 @@
                 "default": "",
                 "help": {
                     "zh-CN": "标题栏左侧显示的文本（留空则使用站点标题）",
-                    "zh-TW": "標題欄左側顯示的文本（留空則使用站點標題）",
+                    "zh-TW": "標題列左側顯示的文字（留空則使用站點標題）",
                     "en": "Text displayed on the left of header. Uses site title if empty.",
                     "ja": "ヘッダー左側に表示されるテキスト（空の場合はサイトタイトルを使用）。",
                     "id": "Teks yang ditampilkan di kiri header. Menggunakan judul situs jika kosong."
@@ -542,7 +580,7 @@
                 "key": "enableSearchButton",
                 "name": {
                     "zh-CN": "启用搜索按钮",
-                    "zh-TW": "啟用搜索按鈕",
+                    "zh-TW": "啟用搜尋按鈕",
                     "en": "Enable Search Button",
                     "ja": "検索ボタンを有効化",
                     "id": "Aktifkan Tombol Pencarian"
@@ -551,7 +589,7 @@
                 "default": true,
                 "help": {
                     "zh-CN": "启用后默认在标题栏右侧显示搜索按钮",
-                    "zh-TW": "啟用後默認在標題欄右側顯示搜索按鈕",
+                    "zh-TW": "啟用後預設在標題列右側顯示搜尋按鈕",
                     "en": "Enable to show search button on the right side of the header.",
                     "ja": "有効にすると、ヘッダーの右側に検索ボタンが表示されます。",
                     "id": "Aktifkan untuk menampilkan tombol pencarian di sisi kanan header."
@@ -570,7 +608,7 @@
                 "default": true,
                 "help": {
                     "zh-CN": "启用后将在搜索区域旁显示高级搜索按钮，支持多条件筛选、URL参数同步等功能",
-                    "zh-TW": "啟用後將在搜尋區域旁顯示進階搜尋按鈕，支援多條件篩選、URL參數同步等功能",
+                    "zh-TW": "啟用後將在搜尋區域旁顯示進階搜尋按鈕，支援多條件篩選、URL 參數同步等功能",
                     "en": "Enable to show advanced search button next to the search bar. Supports multi-condition filtering and URL parameter sync.",
                     "ja": "有効にすると、検索バーの横に高度な検索ボタンが表示されます。複数条件フィルタリングとURLパラメータ同期をサポートします。",
                     "id": "Aktifkan untuk menampilkan tombol pencarian lanjutan di samping bilah pencarian. Mendukung penyaringan multi-kondisi dan sinkronisasi parameter URL."
@@ -589,7 +627,7 @@
                 "default": true,
                 "help": {
                     "zh-CN": "启用后默认在标题栏右侧显示管理按钮",
-                    "zh-TW": "啟用後默認在標題欄右側顯示管理按鈕",
+                    "zh-TW": "啟用後預設在標題列右側顯示管理按鈕",
                     "en": "Enable to show admin button on the right side of the header.",
                     "ja": "有効にすると、ヘッダーの右側に管理ボタンが表示されます。",
                     "id": "Aktifkan untuk menampilkan tombol admin di sisi kanan header."
@@ -599,7 +637,7 @@
                 "key": "enableViewModeSwitcher",
                 "name": {
                     "zh-CN": "启用视图模式切换",
-                    "zh-TW": "啟用視圖模式切換",
+                    "zh-TW": "啟用檢視模式切換",
                     "en": "Enable View Mode Switcher",
                     "ja": "ビューモード切替を有効化",
                     "id": "Aktifkan Pengalih Mode Tampilan"
@@ -608,7 +646,7 @@
                 "default": true,
                 "help": {
                     "zh-CN": "启用后在标题栏显示视图模式切换按钮（网格/表格/紧凑）",
-                    "zh-TW": "啟用後在標題欄顯示視圖模式切換按鈕（網格/表格/緊湊）",
+                    "zh-TW": "啟用後在標題列顯示檢視模式切換按鈕（網格/表格/緊湊）",
                     "en": "Enable to show view mode switcher button in the header (grid/table/compact).",
                     "ja": "有効にすると、ヘッダーにビューモード切替ボタン（グリッド/テーブル/コンパクト）が表示されます。",
                     "id": "Aktifkan untuk menampilkan tombol pengalih mode tampilan di header (grid/tabel/kompak)."
@@ -627,7 +665,7 @@
                 "default": true,
                 "help": {
                     "zh-CN": "启用后在标题栏显示全局延迟监测总览入口按钮，关闭后 /ping-overview 页面也将无法访问",
-                    "zh-TW": "啟用後在標題欄顯示全局延遲監測總覽入口按鈕，關閉後 /ping-overview 頁面也將無法訪問",
+                    "zh-TW": "啟用後在標題列顯示全局延遲監測總覽入口按鈕，關閉後 /ping-overview 頁面也將無法訪問",
                     "en": "Enable to show ping overview entry button in the header. When disabled, /ping-overview page will also be inaccessible.",
                     "ja": "有効にすると、ヘッダーにPing概要入口ボタンが表示されます。無効にすると /ping-overview ページもアクセスできなくなります。",
                     "id": "Aktifkan untuk menampilkan tombol ikhtisar ping di header. Jika dinonaktifkan, halaman /ping-overview juga tidak dapat diakses."
@@ -646,7 +684,7 @@
                 "default": true,
                 "help": {
                     "zh-CN": "启用后在标题栏显示主题颜色模式切换按钮（亮色/暗色/跟随系统）",
-                    "zh-TW": "啟用後在標題欄顯示主題顏色模式切換按鈕（亮色/暗色/跟隨系統）",
+                    "zh-TW": "啟用後在標題列顯示主題顏色模式切換按鈕（淺色/深色/跟隨系統）",
                     "en": "Enable to show theme color mode switcher button in the header (light/dark/system).",
                     "ja": "有効にすると、ヘッダーにテーマカラーモード切替ボタン（ライト/ダーク/システム）が表示されます。",
                     "id": "Aktifkan untuk menampilkan tombol pengalih tema warna di header (terang/gelap/sistem)."
@@ -665,7 +703,7 @@
                 "default": true,
                 "help": {
                     "zh-CN": "启用后在标题栏显示语言切换按钮",
-                    "zh-TW": "啟用後在標題欄顯示語言切換按鈕",
+                    "zh-TW": "啟用後在標題列顯示語言切換按鈕",
                     "en": "Enable to show language switcher button in the header.",
                     "ja": "有効にすると、ヘッダーに言語切替ボタンが表示されます。",
                     "id": "Aktifkan untuk menampilkan tombol pengalih bahasa di header."
@@ -674,7 +712,7 @@
             {
                 "name": {
                     "zh-CN": "底栏设置",
-                    "zh-TW": "底欄設置",
+                    "zh-TW": "底列設定",
                     "en": "Footer Settings",
                     "ja": "フッター設定",
                     "id": "Pengaturan Footer"
@@ -685,7 +723,7 @@
                 "key": "selectedFooterStyle",
                 "name": {
                     "zh-CN": "底栏样式",
-                    "zh-TW": "底欄樣式",
+                    "zh-TW": "底列樣式",
                     "en": "Footer Style",
                     "ja": "フッタースタイル",
                     "id": "Gaya Footer"
@@ -695,7 +733,7 @@
                 "default": "followContent",
                 "help": {
                     "zh-CN": "设置底栏样式为 fixed, levitation, followContent 或 hidden",
-                    "zh-TW": "設置底欄樣式為 fixed, levitation, followContent 或 hidden",
+                    "zh-TW": "設定底列樣式為 fixed, levitation, followContent 或 hidden",
                     "en": "Set footer style: Fixed, Levitation, FollowContent, or Hidden.",
                     "ja": "フッタースタイルを設定：固定、浮遊、内容追従、または非表示。",
                     "id": "Atur gaya footer: Fixed (Tetap), Levitation (Melayang), FollowContent (Ikuti Konten), atau Hidden (Tersembunyi)."
@@ -705,7 +743,7 @@
                 "key": "hideFooterOriginal",
                 "name": {
                     "zh-CN": "隐藏底栏原始内容",
-                    "zh-TW": "隱藏底欄原本內容",
+                    "zh-TW": "隱藏底列原本內容",
                     "en": "Hide Original Footer",
                     "ja": "元のフッターを隠す",
                     "id": "Sembunyikan Footer Asli"
@@ -714,7 +752,7 @@
                 "default": false,
                 "help": {
                     "zh-CN": "启用后将隐藏底栏中的 'Powered by Komari Monitor' 等版权内容",
-                    "zh-TW": "啟用後將隱藏底欄中的 'Powered by Komari Monitor' 等版權內容",
+                    "zh-TW": "啟用後將隱藏底列中的 'Powered by Komari Monitor' 等版權內容",
                     "en": "Hide 'Powered by Komari Monitor' content in the footer.",
                     "ja": "フッターの「Powered by Komari Monitor」等の内容を非表示にします。",
                     "id": "Sembunyikan konten 'Powered by Komari Monitor' di footer."
@@ -733,7 +771,7 @@
                 "default": false,
                 "help": {
                     "zh-CN": "启用后将在底栏显示服务器运行时间计时器",
-                    "zh-TW": "啟用後將在底欄顯示伺服器運行時間計時器",
+                    "zh-TW": "啟用後將在底列顯示伺服器運行時間計時器",
                     "en": "Show server uptime timer in the footer.",
                     "ja": "フッターにサーバー稼働時間タイマーを表示します。",
                     "id": "Tampilkan pengatur waktu aktif server di footer."
@@ -771,7 +809,7 @@
                 "default": "已不稳定运行 {days} 天 {hours} 小时 {minutes} 分钟 {seconds} 秒",
                 "help": {
                     "zh-CN": "自定义运行时间格式，可用变量: {days}, {hours}, {minutes}, {seconds}",
-                    "zh-TW": "自定義運行時間格式，可用變量: {days}, {hours}, {minutes}, {seconds}",
+                    "zh-TW": "自訂運行時間格式，可用變量: {days}, {hours}, {minutes}, {seconds}",
                     "en": "Custom format. Vars: {days}, {hours}, {minutes}, {seconds}",
                     "ja": "カスタム表示形式。変数: {days}, {hours}, {minutes}, {seconds}",
                     "id": "Format kustom. Variabel: {days}, {hours}, {minutes}, {seconds}"
@@ -781,7 +819,7 @@
                 "key": "footerCustomContent",
                 "name": {
                     "zh-CN": "底栏自定义内容",
-                    "zh-TW": "底欄自定義內容",
+                    "zh-TW": "底列自訂內容",
                     "en": "Custom Footer Content",
                     "ja": "カスタムフッター内容",
                     "id": "Konten Footer Kustom"
@@ -789,17 +827,17 @@
                 "type": "richtext",
                 "default": "",
                 "help": {
-                    "zh-CN": "自定义底栏内容，支持Markdown链接和图片，兼容 ${n} 换行",
-                    "zh-TW": "自定義底欄內容，支持Markdown鏈接和圖片，兼容 ${n} 換行",
-                    "en": "Custom footer content. Supports Markdown links/images and ${n} for newlines.",
-                    "ja": "カスタムフッター内容。Markdownリンク/画像および改行コード ${n} に対応。",
-                    "id": "Konten footer kustom. Mendukung tautan/gambar Markdown dan ${n} untuk baris baru."
+                    "zh-CN": "自定义底栏内容，支持Markdown链接和图片，兼容 ${n} 换行，{year} 会替换为当前年份",
+                    "zh-TW": "自訂底列內容，支援 Markdown 連結和圖片，相容 ${n} 換行，{year} 會替換為目前年份",
+                    "en": "Custom footer content. Supports Markdown links/images, ${n} for newlines, and {year} for the current year.",
+                    "ja": "カスタムフッター内容。Markdownリンク/画像、改行コード ${n}、現在の年に置換される {year} に対応。",
+                    "id": "Konten footer kustom. Mendukung tautan/gambar Markdown, ${n} untuk baris baru, dan {year} untuk tahun saat ini."
                 }
             },
             {
                 "name": {
                     "zh-CN": "内容设置",
-                    "zh-TW": "內容設置",
+                    "zh-TW": "內容設定",
                     "en": "Content Settings",
                     "ja": "コンテンツ設定",
                     "id": "Pengaturan Konten"
@@ -819,7 +857,7 @@
                 "default": true,
                 "help": {
                     "zh-CN": "启用后将在支持的 Komari 版本（>=1.0.7）优先使用 JSON-RPC2 API 获取数据，以提升兼容性和性能，若出现问题请关闭此选项",
-                    "zh-TW": "啟用後將在支持的 Komari 版本（>=1.0.7）優先使用 JSON-RPC2 API 獲取數據，以提升兼容性和性能，若出現問題請關閉此選項",
+                    "zh-TW": "啟用後將在支援的 Komari 版本（>=1.0.7）優先使用 JSON-RPC2 API 取得資料，以提升相容性和效能，若出現問題請關閉此選項",
                     "en": "When enabled, prioritizes JSON-RPC2 API for data retrieval on supported Komari versions (>=1.0.7), improving compatibility and performance. Disable if issues occur.",
                     "ja": "有効にすると、対応する Komari バージョン（>=1.0.7）で JSON-RPC2 API を優先使用してデータを取得し、互換性とパフォーマンスを向上させます。問題が発生した場合は無効にしてください。",
                     "id": "Saat diaktifkan, mengutamakan API JSON-RPC2 untuk pengambilan data pada versi Komari yang didukung (>=1.0.7), meningkatkan kompatibilitas dan performa. Nonaktifkan jika terjadi masalah."
@@ -829,7 +867,7 @@
                 "key": "isShowStatsInHeader",
                 "name": {
                     "zh-CN": "是否在标题栏中显示统计信息",
-                    "zh-TW": "是否在標題欄中顯示統計信息",
+                    "zh-TW": "是否在標題列中顯示統計資訊",
                     "en": "Show Stats in Header",
                     "ja": "ヘッダーに統計を表示",
                     "id": "Tampilkan Statistik di Header"
@@ -838,7 +876,7 @@
                 "default": false,
                 "help": {
                     "zh-CN": "启用后将在标题栏中显示统计信息（仅大屏有效）",
-                    "zh-TW": "啟用後將在標題欄中顯示統計信息（僅大屏有效）",
+                    "zh-TW": "啟用後將在標題列中顯示統計資訊（僅大屏有效）",
                     "en": "Show statistics in the header (Desktop only).",
                     "ja": "ヘッダーに統計情報を表示します（デスクトップのみ）。",
                     "id": "Tampilkan statistik di header (Hanya Desktop)."
@@ -848,7 +886,7 @@
                 "key": "mergeGroupsWithStats",
                 "name": {
                     "zh-CN": "合并分组栏与统计栏",
-                    "zh-TW": "合併分組欄與統計欄",
+                    "zh-TW": "合併分組列與統計列",
                     "en": "Merge Groups with Stats",
                     "ja": "グループと統計を統合",
                     "id": "Gabungkan Grup dengan Statistik"
@@ -857,7 +895,7 @@
                 "default": false,
                 "help": {
                     "zh-CN": "启用后分组栏将合并到统计栏中，以下拉菜单展示",
-                    "zh-TW": "啟用後分組欄將合併到統計欄中，以下拉菜單展示",
+                    "zh-TW": "啟用後分組列將合併到統計列中，以下拉選單展示",
                     "en": "Merge group bar into stats bar as a dropdown menu.",
                     "ja": "グループバーを統計バーに統合し、ドロップダウンメニューとして表示します。",
                     "id": "Gabungkan bar grup ke bar statistik sebagai menu dropdown."
@@ -867,7 +905,7 @@
                 "key": "enableStatsBar",
                 "name": {
                     "zh-CN": "启用统计栏",
-                    "zh-TW": "啟用統計欄",
+                    "zh-TW": "啟用統計列",
                     "en": "Enable Stats Bar",
                     "ja": "統計バーを有効化",
                     "id": "Aktifkan Bar Statistik"
@@ -876,7 +914,7 @@
                 "default": true,
                 "help": {
                     "zh-CN": "启用后默认显示统计栏",
-                    "zh-TW": "啟用後默認顯示統計欄",
+                    "zh-TW": "啟用後預設顯示統計列",
                     "en": "Enable to show the statistics bar.",
                     "ja": "統計バーを表示します。",
                     "id": "Aktifkan untuk menampilkan bar statistik."
@@ -895,7 +933,7 @@
                 "default": true,
                 "help": {
                     "zh-CN": "在统计栏添加排序控制下拉菜单（流量/网速排序）",
-                    "zh-TW": "在統計欄添加排序控制下拉菜單（流量/網速排序）",
+                    "zh-TW": "在統計列添加排序控制下拉選單（流量/網速排序）",
                     "en": "Add sort control dropdown in stats bar (Sort by Traffic/Speed).",
                     "ja": "統計バーにソート制御ドロップダウンを追加（通信量/速度でソート）。",
                     "id": "Tambahkan dropdown kontrol pengurutan di bar statistik (Urutkan berdasarkan Lalu Lintas/Kecepatan)."
@@ -924,7 +962,7 @@
                 "key": "enableGroupedBar",
                 "name": {
                     "zh-CN": "启用分组栏",
-                    "zh-TW": "啟用分組欄",
+                    "zh-TW": "啟用分組列",
                     "en": "Enable Group Bar",
                     "ja": "グループバーを有効化",
                     "id": "Aktifkan Bar Grup"
@@ -933,7 +971,7 @@
                 "default": true,
                 "help": {
                     "zh-CN": "启用后默认显示分组栏",
-                    "zh-TW": "啟用後默認顯示分組欄",
+                    "zh-TW": "啟用後預設顯示分組列",
                     "en": "Enable to show the group selection bar.",
                     "ja": "グループ選択バーを表示します。",
                     "id": "Aktifkan untuk menampilkan bar pemilihan grup."
@@ -943,7 +981,7 @@
                 "key": "defaultSelectedGroup",
                 "name": {
                     "zh-CN": "默认选择展示分组",
-                    "zh-TW": "默認選擇展示分組",
+                    "zh-TW": "預設選擇展示分組",
                     "en": "Default Selected Group",
                     "ja": "デフォルト選択グループ",
                     "id": "Grup Terpilih Bawaan"
@@ -952,7 +990,7 @@
                 "default": "",
                 "help": {
                     "zh-CN": "设置默认选择展示的分组，填写分组名，留空则展示“所有”",
-                    "zh-TW": "設置默認選擇展示的分組，填寫分組名，留空則展示“所有”",
+                    "zh-TW": "設定預設選擇展示的分組，填寫分組名，留空則展示“全部”",
                     "en": "Set default group name. Shows 'All' if empty.",
                     "ja": "デフォルトのグループ名を設定します。空の場合は「すべて」を表示。",
                     "id": "Atur nama grup bawaan. Menampilkan 'Semua' jika kosong."
@@ -962,7 +1000,7 @@
                 "key": "selectMobileDefaultView",
                 "name": {
                     "zh-CN": "移动端默认展示视图",
-                    "zh-TW": "移動端默認展示視圖",
+                    "zh-TW": "移動端預設展示檢視",
                     "en": "Mobile Default View",
                     "ja": "モバイルデフォルト表示",
                     "id": "Tampilan Mobile Bawaan"
@@ -972,7 +1010,7 @@
                 "default": "grid",
                 "help": {
                     "zh-CN": "设置移动端默认展示视图为网格、表格或紧凑型",
-                    "zh-TW": "設置移動端默認展示視圖為網格、表格或緊湊型",
+                    "zh-TW": "設定移動端預設展示檢視為網格、表格或緊湊型",
                     "en": "Set default mobile view to Grid, Table, or Compact.",
                     "ja": "モバイルのデフォルト表示をグリッド、テーブル、またはコンパクトに設定します。",
                     "id": "Atur tampilan mobile bawaan ke Grid, Tabel, atau Ringkas."
@@ -991,7 +1029,7 @@
                 "default": true,
                 "help": {
                     "zh-CN": "启用后默认显示 SWAP 信息",
-                    "zh-TW": "啟用後默認顯示 SWAP 信息",
+                    "zh-TW": "啟用後預設顯示 SWAP 資訊",
                     "en": "Enable to show SWAP information.",
                     "ja": "SWAP情報を表示します。",
                     "id": "Aktifkan untuk menampilkan informasi SWAP."
@@ -1010,7 +1048,7 @@
                 "default": 1,
                 "help": {
                     "zh-CN": "设置详情中延迟图表的时间范围（小时），建议 1-24",
-                    "zh-TW": "設置詳情中延遲圖表的時間範圍（小時），建議 1-24",
+                    "zh-TW": "設定詳情中延遲圖表的時間範圍（小時），建議 1-24",
                     "en": "Time range for ping chart in details (hours). Recommended: 1-24.",
                     "ja": "詳細のPingチャートの時間範囲（時間）。推奨：1-24。",
                     "id": "Rentang waktu untuk grafik ping di halaman detail (jam). Disarankan: 1-24."
@@ -1020,7 +1058,7 @@
                 "key": "isShowHWBarInCard",
                 "name": {
                     "zh-CN": "是否在卡片中显示硬件信息栏",
-                    "zh-TW": "是否在卡片中顯示硬件信息欄",
+                    "zh-TW": "是否在卡片中顯示硬體資訊列",
                     "en": "Show Hardware Info in Card",
                     "ja": "カードにハードウェア情報を表示",
                     "id": "Tampilkan Info Hardware di Kartu"
@@ -1029,7 +1067,7 @@
                 "default": true,
                 "help": {
                     "zh-CN": "启用后将在节点卡片中显示硬件信息栏（CPU、内存和硬盘）",
-                    "zh-TW": "啟用後將在節點卡片中顯示硬件信息欄（CPU、內存和硬盤）",
+                    "zh-TW": "啟用後將在節點卡片中顯示硬體資訊列（CPU、記憶體和硬碟）",
                     "en": "Show hardware info (CPU, RAM, Disk) in server cards.",
                     "ja": "サーバーカードにハードウェア情報（CPU、RAM、ディスク）を表示します。",
                     "id": "Tampilkan info hardware (CPU, RAM, Disk) di kartu server."
@@ -1048,7 +1086,7 @@
                 "default": true,
                 "help": {
                     "zh-CN": "启用后将在内存、SWAP、硬盘进度条下方显示实际数值",
-                    "zh-TW": "啟用後將在內存、SWAP、硬盤進度條下方顯示實際數值",
+                    "zh-TW": "啟用後將在記憶體、SWAP、硬碟進度條下方顯示實際數值",
                     "en": "Show actual values below Memory, SWAP, and Disk progress bars.",
                     "ja": "メモリ、SWAP、ディスクのプログレスバーの下に実際の値を表示します。",
                     "id": "Tampilkan nilai aktual di bawah progress bar Memori, SWAP, dan Disk."
@@ -1068,7 +1106,7 @@
                 "default": "circular",
                 "help": {
                     "zh-CN": "设置流量进度条样式为 circular（环形）或 linear（线形）",
-                    "zh-TW": "設置流量進度條樣式為 circular（環形）或 linear（線形）",
+                    "zh-TW": "設定流量進度條樣式為 circular（環形）或 linear（線形）",
                     "en": "Set traffic progress style to Circular or Linear.",
                     "ja": "通信量バーのスタイルを円形（Circular）または線形（Linear）に設定します。",
                     "id": "Atur gaya progress lalu lintas ke Lingkaran atau Linier."
@@ -1078,7 +1116,7 @@
                 "key": "enableListItemProgressBar",
                 "name": {
                     "zh-CN": "启用列表视图进度条",
-                    "zh-TW": "啟用列表視圖進度條",
+                    "zh-TW": "啟用列表檢視進度條",
                     "en": "Enable List View Progress Bar",
                     "ja": "リスト表示のバーを有効化",
                     "id": "Aktifkan Progress Bar Tampilan Daftar"
@@ -1087,7 +1125,7 @@
                 "default": true,
                 "help": {
                     "zh-CN": "启用后列表视图中将会显示进度条来表示使用率",
-                    "zh-TW": "啟用後列表視圖中將會顯示進度條來表示使用率",
+                    "zh-TW": "啟用後列表檢視中將會顯示進度條來表示使用率",
                     "en": "Show progress bars for usage in list view.",
                     "ja": "リスト表示で使用率を表すプログレスバーを表示します。",
                     "id": "Tampilkan progress bar penggunaan di tampilan daftar."
@@ -1097,7 +1135,7 @@
                 "key": "gridExpiredAtDisplay",
                 "name": {
                     "zh-CN": "网格视图 - 到期时间显示",
-                    "zh-TW": "網格視圖 - 到期時間顯示",
+                    "zh-TW": "網格檢視 - 到期時間顯示",
                     "en": "Grid View - Expiry Time Display",
                     "ja": "グリッド表示 - 有効期限の表示",
                     "id": "Tampilan Grid - Tampilkan Waktu Kedaluwarsa"
@@ -1107,7 +1145,7 @@
                 "default": "hideUnset",
                 "help": {
                     "zh-CN": "控制网格视图中到期时间的显示：show（显示）、hideAll（隐藏全部）、hideUnset（隐藏未设置）",
-                    "zh-TW": "控制網格視圖中到期時間的顯示：show（顯示）、hideAll（隱藏全部）、hideUnset（隱藏未設置）",
+                    "zh-TW": "控制網格檢視中到期時間的顯示：show（顯示）、hideAll（隱藏全部）、hideUnset（隱藏未設定）",
                     "en": "Control expiry time display in grid view: show, hideAll, or hideUnset.",
                     "ja": "グリッド表示での有効期限の表示を制御：show（表示）、hideAll（全て非表示）、hideUnset（未設定を非表示）",
                     "id": "Kontrol tampilan waktu kedaluwarsa di tampilan grid: show (tampilkan), hideAll (sembunyikan semua), atau hideUnset (sembunyikan yang belum diatur)."
@@ -1117,7 +1155,7 @@
                 "key": "gridUptimeDisplay",
                 "name": {
                     "zh-CN": "网格视图 - 在线时间显示",
-                    "zh-TW": "網格視圖 - 在線時間顯示",
+                    "zh-TW": "網格檢視 - 線上時間顯示",
                     "en": "Grid View - Uptime Display",
                     "ja": "グリッド表示 - 稼働時間の表示",
                     "id": "Tampilan Grid - Tampilkan Waktu Aktif"
@@ -1127,7 +1165,7 @@
                 "default": "hideUnset",
                 "help": {
                     "zh-CN": "控制网格视图中在线时间的显示：show（显示）、hideAll（隐藏全部）、hideUnset（隐藏未设置/离线）",
-                    "zh-TW": "控制網格視圖中在線時間的顯示：show（顯示）、hideAll（隱藏全部）、hideUnset（隱藏未設置/離線）",
+                    "zh-TW": "控制網格檢視中線上時間的顯示：show（顯示）、hideAll（隱藏全部）、hideUnset（隱藏未設定/離線）",
                     "en": "Control uptime display in grid view: show, hideAll, or hideUnset (hides offline).",
                     "ja": "グリッド表示での稼働時間の表示を制御：show（表示）、hideAll（全て非表示）、hideUnset（オフライン時非表示）",
                     "id": "Kontrol tampilan waktu aktif di tampilan grid: show, hideAll, atau hideUnset (sembunyikan offline)."
@@ -1137,7 +1175,7 @@
                 "key": "tableExpiredAtDisplay",
                 "name": {
                     "zh-CN": "表格视图 - 到期时间显示",
-                    "zh-TW": "表格視圖 - 到期時間顯示",
+                    "zh-TW": "表格檢視 - 到期時間顯示",
                     "en": "Table View - Expiry Time Display",
                     "ja": "テーブル表示 - 有効期限の表示",
                     "id": "Tampilan Tabel - Tampilkan Waktu Kedaluwarsa"
@@ -1147,7 +1185,7 @@
                 "default": "hideUnset",
                 "help": {
                     "zh-CN": "控制表格视图中到期时间的显示：show（显示）、hideAll（隐藏全部）、hideUnset（隐藏未设置）",
-                    "zh-TW": "控制表格視圖中到期時間的顯示：show（顯示）、hideAll（隱藏全部）、hideUnset（隱藏未設置）",
+                    "zh-TW": "控制表格檢視中到期時間的顯示：show（顯示）、hideAll（隱藏全部）、hideUnset（隱藏未設定）",
                     "en": "Control expiry time display in table view: show, hideAll, or hideUnset.",
                     "ja": "テーブル表示での有効期限の表示を制御：show（表示）、hideAll（全て非表示）、hideUnset（未設定を非表示）",
                     "id": "Kontrol tampilan waktu kedaluwarsa di tampilan tabel: show, hideAll, atau hideUnset."
@@ -1157,7 +1195,7 @@
                 "key": "tableUptimeDisplay",
                 "name": {
                     "zh-CN": "表格视图 - 在线时间显示",
-                    "zh-TW": "表格視圖 - 在線時間顯示",
+                    "zh-TW": "表格檢視 - 線上時間顯示",
                     "en": "Table View - Uptime Display",
                     "ja": "テーブル表示 - 稼働時間の表示",
                     "id": "Tampilan Tabel - Tampilkan Waktu Aktif"
@@ -1167,7 +1205,7 @@
                 "default": "hideUnset",
                 "help": {
                     "zh-CN": "控制表格视图中在线时间的显示：show（显示）、hideAll（隐藏全部）、hideUnset（隐藏未设置/离线）",
-                    "zh-TW": "控制表格視圖中在線時間的顯示：show（顯示）、hideAll（隱藏全部）、hideUnset（隱藏未設置/離線）",
+                    "zh-TW": "控制表格檢視中線上時間的顯示：show（顯示）、hideAll（隱藏全部）、hideUnset（隱藏未設定/離線）",
                     "en": "Control uptime display in table view: show, hideAll, or hideUnset (hides offline).",
                     "ja": "テーブル表示での稼働時間の表示を制御：show（表示）、hideAll（全て非表示）、hideUnset（オフライン時非表示）",
                     "id": "Kontrol tampilan waktu aktif di tampilan tabel: show, hideAll, atau hideUnset (sembunyikan offline)."
@@ -1177,7 +1215,7 @@
                 "key": "compactExpiredAtDisplay",
                 "name": {
                     "zh-CN": "紧凑视图 - 到期时间显示",
-                    "zh-TW": "緊湊視圖 - 到期時間顯示",
+                    "zh-TW": "緊湊檢視 - 到期時間顯示",
                     "en": "Compact View - Expiry Time Display",
                     "ja": "コンパクト表示 - 有効期限の表示",
                     "id": "Tampilan Ringkas - Tampilkan Waktu Kedaluwarsa"
@@ -1187,7 +1225,7 @@
                 "default": "hideUnset",
                 "help": {
                     "zh-CN": "控制紧凑视图中到期时间的显示：show（显示）、hideAll（隐藏全部）、hideUnset（隐藏未设置）",
-                    "zh-TW": "控制緊湊視圖中到期時間的顯示：show（顯示）、hideAll（隱藏全部）、hideUnset（隱藏未設置）",
+                    "zh-TW": "控制緊湊檢視中到期時間的顯示：show（顯示）、hideAll（隱藏全部）、hideUnset（隱藏未設定）",
                     "en": "Control expiry time display in compact view: show, hideAll, or hideUnset.",
                     "ja": "コンパクト表示での有効期限の表示を制御：show（表示）、hideAll（全て非表示）、hideUnset（未設定を非表示）",
                     "id": "Kontrol tampilan waktu kedaluwarsa di tampilan ringkas: show, hideAll, atau hideUnset."
@@ -1197,7 +1235,7 @@
                 "key": "compactUptimeDisplay",
                 "name": {
                     "zh-CN": "紧凑视图 - 在线时间显示",
-                    "zh-TW": "緊湊視圖 - 在線時間顯示",
+                    "zh-TW": "緊湊檢視 - 線上時間顯示",
                     "en": "Compact View - Uptime Display",
                     "ja": "コンパクト表示 - 稼働時間の表示",
                     "id": "Tampilan Ringkas - Tampilkan Waktu Aktif"
@@ -1207,7 +1245,7 @@
                 "default": "hideUnset",
                 "help": {
                     "zh-CN": "控制紧凑视图中在线时间的显示：show（显示）、hideAll（隐藏全部）、hideUnset（隐藏未设置/离线）",
-                    "zh-TW": "控制緊湊視圖中在線時間的顯示：show（顯示）、hideAll（隱藏全部）、hideUnset（隱藏未設置/離線）",
+                    "zh-TW": "控制緊湊檢視中線上時間的顯示：show（顯示）、hideAll（隱藏全部）、hideUnset（隱藏未設定/離線）",
                     "en": "Control uptime display in compact view: show, hideAll, or hideUnset (hides offline).",
                     "ja": "コンパクト表示での稼働時間の表示を制御：show（表示）、hideAll（全て非表示）、hideUnset（オフライン時非表示）",
                     "id": "Kontrol tampilan waktu aktif di tampilan ringkas: show, hideAll, atau hideUnset (sembunyikan offline)."
@@ -1216,7 +1254,7 @@
             {
                 "name": {
                     "zh-CN": "Instance 设置",
-                    "zh-TW": "Instance 設置",
+                    "zh-TW": "Instance 設定",
                     "en": "Instance Settings",
                     "ja": "インスタンス設定",
                     "id": "Pengaturan Halaman Detail"
@@ -1227,7 +1265,7 @@
                 "key": "enableInstanceDetail",
                 "name": {
                     "zh-CN": "启用 Instance 详情信息",
-                    "zh-TW": "啟用 Instance 詳情信息",
+                    "zh-TW": "啟用 Instance 詳情資訊",
                     "en": "Enable Instance Details",
                     "ja": "インスタンス詳細を有効化",
                     "id": "Aktifkan Detail Halaman"
@@ -1236,7 +1274,7 @@
                 "default": true,
                 "help": {
                     "zh-CN": "启用后默认显示 Instance 详情",
-                    "zh-TW": "啟用後默認顯示 Instance 詳情",
+                    "zh-TW": "啟用後預設顯示 Instance 詳情",
                     "en": "Enable to show Instance details.",
                     "ja": "インスタンス詳細を表示します。",
                     "id": "Aktifkan untuk menampilkan detail halaman."
@@ -1255,7 +1293,7 @@
                 "default": true,
                 "help": {
                     "zh-CN": "启用后默认显示延迟图表",
-                    "zh-TW": "啟用後默認顯示延遲圖表",
+                    "zh-TW": "啟用後預設顯示延遲圖表",
                     "en": "Enable to show Ping chart.",
                     "ja": "Pingチャートを表示します。",
                     "id": "Aktifkan untuk menampilkan grafik Ping."
@@ -1312,7 +1350,7 @@
                 "default": 0,
                 "help": {
                     "zh-CN": "设置延迟图表的最大渲染点数，0 表示使用自动智能降采样（根据数据量和线条数自动计算，使用 LTTB 算法保留视觉形状），设置正整数则强制使用该值",
-                    "zh-TW": "設置延遲圖表的最大渲染點數，0 表示使用自動智能降採樣（根據資料量和線條數自動計算，使用 LTTB 演算法保留視覺形狀），設置正整數則強制使用該值",
+                    "zh-TW": "設定延遲圖表的最大渲染點數，0 表示使用自動智慧降採樣（根據資料量和線條數自動計算，使用 LTTB 演算法保留視覺形狀），設定正整數則強制使用該值",
                     "en": "Max points for ping chart. 0 = auto smart downsampling (auto-calculated based on data volume and line count, using LTTB algorithm to preserve visual shape). Set a positive number to override.",
                     "ja": "Pingチャートの最大描画点数。0＝自動スマートダウンサンプリング（データ量とライン数から自動計算、LTTBアルゴリズムで視覚形状を維持）。正の整数を設定すると強制適用。",
                     "id": "Titik maksimum grafik ping. 0 = downsampling otomatis cerdas (dihitung otomatis berdasarkan volume data dan jumlah garis, menggunakan algoritma LTTB untuk mempertahankan bentuk visual). Atur angka positif untuk menimpa."
@@ -1351,7 +1389,7 @@
                 "default": "",
                 "help": {
                     "zh-CN": "仅在排序方式为'自定义'时生效。每行填写一个监测节点名称（与后台设置的名称一致），按填写顺序排序。未列出的节点将按ID正序排列在最后",
-                    "zh-TW": "僅在排序方式為「自訂」時生效。每行填寫一個監測節點名稱（與後台設定的名稱一致），按填寫順序排序。未列出的節點將按ID正序排列在最後",
+                    "zh-TW": "僅在排序方式為「自訂」時生效。每行填寫一個監測節點名稱（與後台設定的名稱一致），按填寫順序排序。未列出的節點將按 ID 正序排列在最後",
                     "en": "Only effective when sort mode is 'custom'. Enter one monitor node name per line (matching the name configured in the backend). Nodes are sorted in the order entered. Unlisted nodes are appended in ID ascending order",
                     "ja": "ソートモードが「カスタム」の場合のみ有効。1行に1つの監視ノード名を入力（バックエンドで設定した名前と一致）。入力順にソートされます。未記載のノードはID昇順で末尾に追加",
                     "id": "Hanya berlaku saat mode urutan adalah 'kustom'. Masukkan satu nama node monitor per baris (sesuai nama yang dikonfigurasi di backend). Node diurutkan sesuai urutan input. Node yang tidak tercantum ditambahkan di akhir berdasarkan ID naik"
@@ -1360,7 +1398,7 @@
             {
                 "name": {
                     "zh-CN": "UI 自定义",
-                    "zh-TW": "UI 自定義",
+                    "zh-TW": "UI 自訂",
                     "en": "UI Customization",
                     "ja": "UI カスタマイズ",
                     "id": "Kustomisasi UI"
@@ -1371,7 +1409,7 @@
                 "key": "customTexts",
                 "name": {
                     "zh-CN": "自定义 UI 文本（实验性）",
-                    "zh-TW": "自定義 UI 文本（實驗性）",
+                    "zh-TW": "自訂 UI 文字（實驗性）",
                     "en": "Custom UI Texts (Experimental)",
                     "ja": "カスタムUIテキスト（実験的）",
                     "id": "Teks UI Kustom (Eksperimental)"
@@ -1409,7 +1447,7 @@
                 "default": true,
                 "help": {
                     "zh-CN": "启用后将在页面左下角显示欢迎气泡，展示访客信息",
-                    "zh-TW": "啟用後將在頁面左下角顯示歡迎氣泡，展示訪客信息",
+                    "zh-TW": "啟用後將在頁面左下角顯示歡迎氣泡，展示訪客資訊",
                     "en": "Show welcome bubble with visitor info at bottom left.",
                     "ja": "左下に訪問者情報を表示するウェルカムバブルを表示します。",
                     "id": "Tampilkan gelembung selamat datang dengan info pengunjung di kiri bawah."
@@ -1428,7 +1466,7 @@
                 "default": "阿米诺斯",
                 "help": {
                     "zh-CN": "欢迎气泡标题栏显示的站点名称，留空则使用站点标题",
-                    "zh-TW": "歡迎氣泡標題欄顯示的站點名稱，留空則使用站點標題",
+                    "zh-TW": "歡迎氣泡標題列顯示的站點名稱，留空則使用站點標題",
                     "en": "Site name displayed in welcome bubble. Uses site title if empty.",
                     "ja": "ウェルカムバブルに表示するサイト名。空の場合はサイトタイトルを使用。",
                     "id": "Nama situs ditampilkan di gelembung selamat datang. Menggunakan judul situs jika kosong."
@@ -1447,7 +1485,7 @@
                 "default": "/assets/logo.png",
                 "help": {
                     "zh-CN": "欢迎气泡标题栏的 Logo 图片链接，留空则不展示",
-                    "zh-TW": "歡迎氣泡標題欄的 Logo 圖片連結，留空則不展示",
+                    "zh-TW": "歡迎氣泡標題列的 Logo 圖片連結，留空則不展示",
                     "en": "Logo image URL for welcome bubble header. Leave empty to hide.",
                     "ja": "ウェルカムバブルヘッダーのロゴ画像URL。空の場合は非表示。",
                     "id": "URL gambar logo untuk header gelembung selamat datang. Kosongkan untuk menyembunyikan."
@@ -1467,7 +1505,7 @@
                 "default": "circle",
                 "help": {
                     "zh-CN": "circle: 圆形固定缩放（32×32）；original: 原图等比缩放（高32px，宽度自适应）",
-                    "zh-TW": "circle: 圓形固定縮放（32×32）；original: 原圖等比縮放（高32px，寬度自適應）",
+                    "zh-TW": "circle: 圓形固定縮放（32×32）；original: 原圖等比縮放（高 32px，寬度自適應）",
                     "en": "circle: Circular fixed scale (32×32); original: Proportional scale (height 32px, auto width).",
                     "ja": "circle: 円形固定スケール（32×32）；original: 等比スケール（高さ32px、幅自動）。",
                     "id": "circle: Skala tetap bulat (32×32); original: Skala proporsional (tinggi 32px, lebar otomatis)."
@@ -1486,7 +1524,7 @@
                 "default": true,
                 "help": {
                     "zh-CN": "启用后将在标题栏显示资产统计入口按钮，可查看服务器总价值、月均支出、剩余价值等信息",
-                    "zh-TW": "啟用後將在標題欄顯示資產統計入口按鈕，可查看伺服器總價值、月均支出、剩餘價值等資訊",
+                    "zh-TW": "啟用後將在標題列顯示資產統計入口按鈕，可查看伺服器總價值、月均支出、剩餘價值等資訊",
                     "en": "Enable to show asset statistics entry button in the header for viewing server total value, monthly expenses, remaining value, etc.",
                     "ja": "有効にすると、ヘッダーに資産統計入口ボタンが表示され、サーバーの総価値、月額支出、残存価値などを確認できます。",
                     "id": "Aktifkan untuk menampilkan tombol statistik aset di header untuk melihat total nilai server, pengeluaran bulanan, nilai sisa, dll."
@@ -1505,7 +1543,7 @@
                 "default": true,
                 "help": {
                     "zh-CN": "启用后将在标题栏显示 3D 地球入口按钮，可查看服务器地理分布",
-                    "zh-TW": "啟用後將在標題欄顯示 3D 地球入口按鈕，可查看伺服器地理分佈",
+                    "zh-TW": "啟用後將在標題列顯示 3D 地球入口按鈕，可查看伺服器地理分佈",
                     "en": "Enable to show 3D Earth globe entry button in the header for viewing server geographic distribution.",
                     "ja": "有効にすると、ヘッダーに3D地球儀入口ボタンが表示され、サーバーの地理的分布を確認できます。",
                     "id": "Aktifkan untuk menampilkan tombol globe Bumi 3D di header untuk melihat distribusi geografis server."
@@ -1524,7 +1562,7 @@
                 "default": "/assets/logo.png",
                 "help": {
                     "zh-CN": "地球组件中用户位置标记的 Logo 图片链接，留空则显示 YOU 文字标记",
-                    "zh-TW": "地球組件中用戶位置標記的 Logo 圖片連結，留空則顯示 YOU 文字標記",
+                    "zh-TW": "地球組件中使用者位置標記的 Logo 圖片連結，留空則顯示 YOU 文字標記",
                     "en": "Logo image URL for user location marker on Earth Globe. Shows 'YOU' text if empty.",
                     "ja": "地球儀のユーザー位置マーカーのロゴ画像URL。空の場合は「YOU」テキストを表示。",
                     "id": "URL gambar logo untuk penanda lokasi pengguna di Globe Bumi. Menampilkan teks 'YOU' jika kosong."
@@ -1544,7 +1582,7 @@
                 "default": "circle",
                 "help": {
                     "zh-CN": "circle: 圆形固定缩放（32×32）；original: 原图等比缩放（高32px，宽度自适应）",
-                    "zh-TW": "circle: 圓形固定縮放（32×32）；original: 原圖等比縮放（高32px，寬度自適應）",
+                    "zh-TW": "circle: 圓形固定縮放（32×32）；original: 原圖等比縮放（高 32px，寬度自適應）",
                     "en": "circle: Circular fixed scale (32×32); original: Proportional scale (height 32px, auto width).",
                     "ja": "circle: 円形固定スケール（32×32）；original: 等比スケール（高さ32px、幅自動）。",
                     "id": "circle: Skala tetap bulat (32×32); original: Skala proporsional (tinggi 32px, lebar otomatis)."
@@ -1554,7 +1592,7 @@
                 "key": "earthLightBgImage",
                 "name": {
                     "zh-CN": "地球组件亮色模式背景图",
-                    "zh-TW": "地球組件亮色模式背景圖",
+                    "zh-TW": "地球組件淺色模式背景圖",
                     "en": "Earth Light Mode Background",
                     "ja": "地球儀ライトモード背景",
                     "id": "Latar Bumi Mode Terang"
@@ -1563,7 +1601,7 @@
                 "default": "",
                 "help": {
                     "zh-CN": "地球组件亮色模式的背景图片链接，留空则使用透明背景",
-                    "zh-TW": "地球組件亮色模式的背景圖片連結，留空則使用透明背景",
+                    "zh-TW": "地球組件淺色模式的背景圖片連結，留空則使用透明背景",
                     "en": "Background image for Earth in light mode. Transparent if empty.",
                     "ja": "地球儀ライトモードの背景画像URL。空の場合は透明。",
                     "id": "Gambar latar untuk Bumi dalam mode terang. Transparan jika kosong."
@@ -1573,7 +1611,7 @@
                 "key": "earthDarkBgImage",
                 "name": {
                     "zh-CN": "地球组件暗色模式背景图",
-                    "zh-TW": "地球組件暗色模式背景圖",
+                    "zh-TW": "地球組件深色模式背景圖",
                     "en": "Earth Dark Mode Background",
                     "ja": "地球儀ダークモード背景",
                     "id": "Latar Bumi Mode Gelap"
@@ -1582,7 +1620,7 @@
                 "default": "//upload.wikimedia.org/wikipedia/commons/6/60/ESO_-_Milky_Way.jpg",
                 "help": {
                     "zh-CN": "地球组件暗色模式的背景图片链接",
-                    "zh-TW": "地球組件暗色模式的背景圖片連結",
+                    "zh-TW": "地球組件深色模式的背景圖片連結",
                     "en": "Background image for Earth in dark mode.",
                     "ja": "地球儀ダークモードの背景画像URL。",
                     "id": "Gambar latar untuk Bumi dalam mode gelap."
@@ -1592,7 +1630,7 @@
                 "key": "earthLightGlobeImage",
                 "name": {
                     "zh-CN": "地球组件亮色模式地球贴图",
-                    "zh-TW": "地球組件亮色模式地球貼圖",
+                    "zh-TW": "地球組件淺色模式地球貼圖",
                     "en": "Earth Light Mode Texture",
                     "ja": "地球儀ライトモードテクスチャ",
                     "id": "Tekstur Bumi Mode Terang"
@@ -1601,7 +1639,7 @@
                 "default": "//upload.wikimedia.org/wikipedia/commons/0/04/Solarsystemscope_texture_8k_earth_daymap.jpg",
                 "help": {
                     "zh-CN": "地球组件亮色模式的地球贴图链接",
-                    "zh-TW": "地球組件亮色模式的地球貼圖連結",
+                    "zh-TW": "地球組件淺色模式的地球貼圖連結",
                     "en": "Earth texture image for light mode.",
                     "ja": "地球儀ライトモードのテクスチャ画像。",
                     "id": "Gambar tekstur Bumi untuk mode terang."
@@ -1611,7 +1649,7 @@
                 "key": "earthDarkGlobeImage",
                 "name": {
                     "zh-CN": "地球组件暗色模式地球贴图",
-                    "zh-TW": "地球組件暗色模式地球貼圖",
+                    "zh-TW": "地球組件深色模式地球貼圖",
                     "en": "Earth Dark Mode Texture",
                     "ja": "地球儀ダークモードテクスチャ",
                     "id": "Tekstur Bumi Mode Gelap"
@@ -1620,7 +1658,7 @@
                 "default": "//upload.wikimedia.org/wikipedia/commons/b/b3/Solarsystemscope_texture_8k_earth_nightmap.jpg",
                 "help": {
                     "zh-CN": "地球组件暗色模式的地球贴图链接",
-                    "zh-TW": "地球組件暗色模式的地球貼圖連結",
+                    "zh-TW": "地球組件深色模式的地球貼圖連結",
                     "en": "Earth texture image for dark mode.",
                     "ja": "地球儀ダークモードのテクスチャ画像。",
                     "id": "Gambar tekstur Bumi untuk mode gelap."
@@ -1639,7 +1677,7 @@
                 "default": false,
                 "help": {
                     "zh-CN": "启用后地球组件将使用假数据实现点亮全球",
-                    "zh-TW": "啟用後地球組件將使用假數據實現點亮全球",
+                    "zh-TW": "啟用後地球組件將使用假資料實現點亮全球",
                     "en": "Use fake data to light up the whole globe.",
                     "ja": "偽データを使用して地球全体を点灯させます。",
                     "id": "Gunakan data palsu untuk menerangi seluruh globe."
@@ -1665,6 +1703,177 @@
                 }
             },
             {
+                "key": "enableCanvasNest",
+                "name": {
+                    "zh-CN": "启用连线粒子背景",
+                    "zh-TW": "啟用連線粒子背景",
+                    "en": "Enable Canvas Nest Background",
+                    "ja": "パーティクル背景を有効化",
+                    "id": "Aktifkan Latar Partikel"
+                },
+                "type": "switch",
+                "default": true,
+                "help": {
+                    "zh-CN": "在页面背景显示跟随鼠标的连线粒子动画，仅桌面端生效",
+                    "zh-TW": "在頁面背景顯示跟隨滑鼠的連線粒子動畫，僅桌面端生效",
+                    "en": "Show a mouse-following connected-particle animation in the background. Desktop only.",
+                    "ja": "背景にマウス追従のパーティクルアニメーションを表示します。デスクトップのみ。",
+                    "id": "Tampilkan animasi partikel terhubung yang mengikuti mouse di latar. Hanya desktop."
+                }
+            },
+            {
+                "key": "canvasNestColor",
+                "name": {
+                    "zh-CN": "连线粒子颜色",
+                    "zh-TW": "連線粒子顏色",
+                    "en": "Canvas Nest Color",
+                    "ja": "パーティクルの色",
+                    "id": "Warna Partikel"
+                },
+                "type": "string",
+                "default": "128,128,128",
+                "help": {
+                    "zh-CN": "连线粒子的 RGB 颜色，格式为 R,G,B（如 128,128,128），仅在启用连线粒子背景时生效",
+                    "zh-TW": "連線粒子的 RGB 顏色，格式為 R,G,B（如 128,128,128），僅在啟用連線粒子背景時生效",
+                    "en": "RGB color of the particles as R,G,B (e.g. 128,128,128). Only effective when Canvas Nest is enabled.",
+                    "ja": "パーティクルのRGB色（R,G,B 形式、例：128,128,128）。パーティクル背景有効時のみ。",
+                    "id": "Warna RGB partikel sebagai R,G,B (mis. 128,128,128). Hanya efektif saat Latar Partikel diaktifkan."
+                }
+            },
+            {
+                "key": "canvasNestCount",
+                "name": {
+                    "zh-CN": "连线粒子数量",
+                    "zh-TW": "連線粒子數量",
+                    "en": "Canvas Nest Count",
+                    "ja": "パーティクル数",
+                    "id": "Jumlah Partikel"
+                },
+                "type": "number",
+                "default": 99,
+                "help": {
+                    "zh-CN": "连线粒子的数量，数值越大越密集（也越耗效能），仅在启用连线粒子背景时生效",
+                    "zh-TW": "連線粒子的數量，數值越大越密集（也越耗效能），僅在啟用連線粒子背景時生效",
+                    "en": "Number of particles; higher is denser (and heavier). Only effective when Canvas Nest is enabled.",
+                    "ja": "パーティクルの数。大きいほど密になります（負荷も増加）。パーティクル背景有効時のみ。",
+                    "id": "Jumlah partikel; lebih tinggi lebih padat (dan lebih berat). Hanya efektif saat Latar Partikel diaktifkan."
+                }
+            },
+            {
+                "key": "enableSakura",
+                "name": {
+                    "zh-CN": "启用樱花飘落特效",
+                    "zh-TW": "啟用櫻花飄落特效",
+                    "en": "Enable Sakura Petals",
+                    "ja": "桜の花びらを有効化",
+                    "id": "Aktifkan Kelopak Sakura"
+                },
+                "type": "switch",
+                "default": true,
+                "help": {
+                    "zh-CN": "在页面上显示飘落的樱花花瓣，仅桌面端生效",
+                    "zh-TW": "在頁面上顯示飄落的櫻花花瓣，僅桌面端生效",
+                    "en": "Show falling sakura petals across the page. Desktop only.",
+                    "ja": "ページに舞い散る桜の花びらを表示します。デスクトップのみ。",
+                    "id": "Tampilkan kelopak sakura berjatuhan di halaman. Hanya desktop."
+                }
+            },
+            {
+                "key": "enableLive2D",
+                "name": {
+                    "zh-CN": "启用 Live2D 看板娘",
+                    "zh-TW": "啟用 Live2D 看板娘",
+                    "en": "Enable Live2D Widget",
+                    "ja": "Live2D ウィジェットを有効化",
+                    "id": "Aktifkan Widget Live2D"
+                },
+                "type": "switch",
+                "default": true,
+                "help": {
+                    "zh-CN": "在页面右下角显示 Live2D 看板娘角色，仅桌面端生效",
+                    "zh-TW": "在頁面右下角顯示 Live2D 看板娘角色，僅桌面端生效",
+                    "en": "Show a Live2D mascot character at the bottom right. Desktop only.",
+                    "ja": "右下に Live2D のマスコットキャラクターを表示します。デスクトップのみ。",
+                    "id": "Tampilkan karakter maskot Live2D di kanan bawah. Hanya desktop."
+                }
+            },
+            {
+                "key": "live2dModelUrl",
+                "name": {
+                    "zh-CN": "Live2D 模型链接",
+                    "zh-TW": "Live2D 模型連結",
+                    "en": "Live2D Model URL",
+                    "ja": "Live2D モデル URL",
+                    "id": "URL Model Live2D"
+                },
+                "type": "string",
+                "default": "https://unpkg.com/live2d-widget-model-hijiki@1.0.5/assets/hijiki.model.json",
+                "help": {
+                    "zh-CN": "Live2D 模型的 model.json 链接，仅在启用 Live2D 看板娘时生效",
+                    "zh-TW": "Live2D 模型的 model.json 連結，僅在啟用 Live2D 看板娘時生效",
+                    "en": "URL to the Live2D model.json file. Only effective when Live2D is enabled.",
+                    "ja": "Live2D モデルの model.json への URL。Live2D 有効時のみ。",
+                    "id": "URL ke file model.json Live2D. Hanya efektif saat Live2D diaktifkan."
+                }
+            },
+            {
+                "key": "enableCustomCursor",
+                "name": {
+                    "zh-CN": "启用自定义鼠标光标",
+                    "zh-TW": "啟用自訂滑鼠游標",
+                    "en": "Enable Custom Cursor",
+                    "ja": "カスタムカーソルを有効化",
+                    "id": "Aktifkan Kursor Kustom"
+                },
+                "type": "switch",
+                "default": true,
+                "help": {
+                    "zh-CN": "启用后将使用自定义图片作为鼠标光标，可点击元素显示指针光标，文本输入框保留系统文字光标。建议使用 32×32 以内的 PNG/CUR 图片，过大将无法显示",
+                    "zh-TW": "啟用後將使用自訂圖片作為滑鼠游標，可點擊元素顯示指標游標，文字輸入框保留系統文字游標。建議使用 32×32 以內的 PNG/CUR 圖片，過大將無法顯示",
+                    "en": "Use custom images as the mouse cursor. Clickable elements show a pointer cursor while text inputs keep the system text caret. Use PNG/CUR images within 32×32; larger images will not display.",
+                    "ja": "カスタム画像をマウスカーソルとして使用します。クリック可能な要素はポインターカーソルを表示し、テキスト入力欄はシステムのテキストカーソルを維持します。32×32以内のPNG/CUR画像を推奨。大きすぎると表示されません。",
+                    "id": "Gunakan gambar kustom sebagai kursor mouse. Elemen yang dapat diklik menampilkan kursor pointer sementara input teks mempertahankan kursor teks sistem. Gunakan gambar PNG/CUR dalam 32×32; gambar lebih besar tidak akan tampil."
+                }
+            },
+            {
+                "key": "cursorNormalUrl",
+                "name": {
+                    "zh-CN": "一般光标图片",
+                    "zh-TW": "一般游標圖片",
+                    "en": "Normal Cursor Image",
+                    "ja": "通常カーソル画像",
+                    "id": "Gambar Kursor Normal"
+                },
+                "type": "string",
+                "default": "/assets/normal.png",
+                "help": {
+                    "zh-CN": "一般状态下的鼠标光标图片链接，仅在启用自定义鼠标光标时生效",
+                    "zh-TW": "一般狀態下的滑鼠游標圖片連結，僅在啟用自訂滑鼠游標時生效",
+                    "en": "Image URL for the normal cursor. Only effective when custom cursor is enabled.",
+                    "ja": "通常状態のカーソル画像URL。カスタムカーソル有効時のみ有効。",
+                    "id": "URL gambar untuk kursor normal. Hanya efektif saat kursor kustom diaktifkan."
+                }
+            },
+            {
+                "key": "cursorPointerUrl",
+                "name": {
+                    "zh-CN": "点击光标图片",
+                    "zh-TW": "點擊游標圖片",
+                    "en": "Pointer Cursor Image",
+                    "ja": "ポインターカーソル画像",
+                    "id": "Gambar Kursor Pointer"
+                },
+                "type": "string",
+                "default": "/assets/pointer.png",
+                "help": {
+                    "zh-CN": "可点击元素（链接、按钮等）的鼠标光标图片链接，仅在启用自定义鼠标光标时生效",
+                    "zh-TW": "可點擊元素（連結、按鈕等）的滑鼠游標圖片連結，僅在啟用自訂滑鼠游標時生效",
+                    "en": "Image URL for the cursor on clickable elements (links, buttons, etc.). Only effective when custom cursor is enabled.",
+                    "ja": "クリック可能な要素（リンク、ボタン等）のカーソル画像URL。カスタムカーソル有効時のみ有効。",
+                    "id": "URL gambar untuk kursor pada elemen yang dapat diklik (tautan, tombol, dll.). Hanya efektif saat kursor kustom diaktifkan."
+                }
+            },
+            {
                 "key": "enableProtection",
                 "name": {
                     "zh-CN": "启用访客保护",
@@ -1674,10 +1883,10 @@
                     "id": "Aktifkan Perlindungan Pengunjung"
                 },
                 "type": "switch",
-                "default": true,
+                "default": false,
                 "help": {
                     "zh-CN": "启用后将对未登录用户启用反调试保护（禁止右键等）",
-                    "zh-TW": "啟用後將對未登錄用戶啟用反調試保護（禁止右鍵等）",
+                    "zh-TW": "啟用後將對未登入使用者啟用反調試保護（禁止右鍵等）",
                     "en": "Enable anti-debug protection (disable right-click, etc.) for guests.",
                     "ja": "未ログインユーザーに対してデバッグ防止保護（右クリック禁止等）を有効にします。",
                     "id": "Aktifkan perlindungan anti-debug (nonaktifkan klik kanan, dll.) untuk pengunjung."
@@ -1697,7 +1906,7 @@
                 "default": "/assets/logo.png",
                 "help": {
                     "zh-CN": "访客保护弹窗标题栏的 Logo 图片链接，留空则不展示",
-                    "zh-TW": "訪客保護彈窗標題欄的 Logo 圖片連結，留空則不展示",
+                    "zh-TW": "訪客保護彈窗標題列的 Logo 圖片連結，留空則不展示",
                     "en": "Logo image URL for protection modal header. Leave empty to hide.",
                     "ja": "訪問者保護モーダルヘッダーのロゴ画像URL。空の場合は非表示。",
                     "id": "URL gambar logo untuk header modal perlindungan. Kosongkan untuk menyembunyikan."
@@ -1717,10 +1926,77 @@
                 "default": "circle",
                 "help": {
                     "zh-CN": "circle: 圆形固定缩放（32×32）；original: 原图等比缩放（高32px，宽度自适应）",
-                    "zh-TW": "circle: 圓形固定縮放（32×32）；original: 原圖等比縮放（高32px，寬度自適應）",
+                    "zh-TW": "circle: 圓形固定縮放（32×32）；original: 原圖等比縮放（高 32px，寬度自適應）",
                     "en": "circle: Circular fixed scale (32×32); original: Proportional scale (height 32px, auto width).",
                     "ja": "circle: 円形固定スケール（32×32）；original: 等比スケール（高さ32px、幅自動）。",
                     "id": "circle: Skala tetap bulat (32×32); original: Skala proporsional (tinggi 32px, lebar otomatis)."
+                }
+            },
+            {
+                "name": {
+                    "zh-CN": "网站分析（Matomo）",
+                    "zh-TW": "網站分析（Matomo）",
+                    "en": "Web Analytics (Matomo)",
+                    "ja": "ウェブ解析（Matomo）",
+                    "id": "Analitik Web (Matomo)"
+                },
+                "type": "title"
+            },
+            {
+                "key": "enableMatomo",
+                "name": {
+                    "zh-CN": "启用 Matomo 网站分析",
+                    "zh-TW": "啟用 Matomo 網站分析",
+                    "en": "Enable Matomo Analytics",
+                    "ja": "Matomo解析を有効化",
+                    "id": "Aktifkan Analitik Matomo"
+                },
+                "type": "switch",
+                "default": false,
+                "help": {
+                    "zh-CN": "启用后将注入 Matomo 追踪脚本，并在单页应用路由切换时自动统计页面浏览。需同时填写下方的服务器地址和网站 ID",
+                    "zh-TW": "啟用後將注入 Matomo 追蹤腳本，並在單頁應用路由切換時自動統計頁面瀏覽。需同時填寫下方的伺服器位址和網站 ID",
+                    "en": "Inject the Matomo tracking script and automatically track page views on SPA route changes. Requires the server URL and Site ID below.",
+                    "ja": "Matomoの追跡スクリプトを注入し、SPAのルート切替時にページビューを自動計測します。下記のサーバーURLとサイトIDが必要です。",
+                    "id": "Menyuntikkan skrip pelacakan Matomo dan melacak tampilan halaman secara otomatis saat perubahan rute SPA. Memerlukan URL server dan Site ID di bawah."
+                }
+            },
+            {
+                "key": "matomoUrl",
+                "name": {
+                    "zh-CN": "Matomo 服务器地址",
+                    "zh-TW": "Matomo 伺服器位址",
+                    "en": "Matomo Server URL",
+                    "ja": "MatomoサーバーURL",
+                    "id": "URL Server Matomo"
+                },
+                "type": "string",
+                "default": "",
+                "help": {
+                    "zh-CN": "Matomo 实例的访问地址（eg: https://matomo.example.com/），脚本将由此地址加载 matomo.js 与 matomo.php",
+                    "zh-TW": "Matomo 實例的訪問位址（eg: https://matomo.example.com/），腳本將由此位址載入 matomo.js 與 matomo.php",
+                    "en": "URL of your Matomo instance (e.g., https://matomo.example.com/). matomo.js and matomo.php are loaded from here.",
+                    "ja": "MatomoインスタンスのURL（例: https://matomo.example.com/）。matomo.js と matomo.php はここから読み込まれます。",
+                    "id": "URL instans Matomo Anda (mis. https://matomo.example.com/). matomo.js dan matomo.php dimuat dari sini."
+                }
+            },
+            {
+                "key": "matomoSiteId",
+                "name": {
+                    "zh-CN": "Matomo 网站 ID",
+                    "zh-TW": "Matomo 網站 ID",
+                    "en": "Matomo Site ID",
+                    "ja": "MatomoサイトID",
+                    "id": "Site ID Matomo"
+                },
+                "type": "string",
+                "default": "",
+                "help": {
+                    "zh-CN": "Matomo 后台中对应站点的网站 ID（Site ID），通常为数字，eg: 1",
+                    "zh-TW": "Matomo 後台中對應站點的網站 ID（Site ID），通常為數字，eg: 1",
+                    "en": "The Site ID of this site in your Matomo dashboard. Usually a number, e.g., 1.",
+                    "ja": "Matomo管理画面における当サイトのサイトID。通常は数字、例: 1。",
+                    "id": "Site ID situs ini di dasbor Matomo Anda. Biasanya berupa angka, mis. 1."
                 }
             }
         ]

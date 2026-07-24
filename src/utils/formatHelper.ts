@@ -19,7 +19,7 @@ export const formatBytes = (bytes: number, isSpeed = false, decimals = 2) => {
   let i = Math.floor(Math.log(bytes) / Math.log(k));
   let value = bytes / Math.pow(k, i);
 
-  // 如果值大于等于1000，则进位到下一个单位
+  // 如果值大於等於 1000，則進位到下一個單位
   if (value >= 1000 && i < sizes.length - 1) {
     i++;
     value = bytes / Math.pow(k, i);
@@ -41,20 +41,20 @@ export const formatUptime = (seconds: number) => {
 
   let uptimeString = "";
   if (days > 0) {
-    uptimeString += `${days}天`;
+    uptimeString += `${days} 天 `;
   }
   if (hrs > 0) {
-    uptimeString += `${hrs}小时`;
+    uptimeString += `${hrs} 小時 `;
   }
   if (mns > 0 && days === 0) {
     // Only show minutes if uptime is less than a day
-    uptimeString += `${mns}分钟`;
+    uptimeString += `${mns} 分鐘 `;
   }
   if (uptimeString === "") {
-    return "刚刚";
+    return "剛剛";
   }
 
-  return uptimeString;
+  return uptimeString.trim();
 };
 
 export const formatPrice = (
@@ -62,15 +62,15 @@ export const formatPrice = (
   currency: string,
   billingCycle: number
 ) => {
-  if (price === -1) return "免费";
+  if (price === -1) return "免費";
   if (price === 0) return "";
   if (!currency || !billingCycle) return "N/A";
 
-  // 标准化货币显示符号
+  // 標準化貨幣顯示符號
   const code = normalizeCurrencyToCode(currency);
   const sym = CURRENCY_SYMBOLS[code] || currency;
 
-  let cycleStr = `${billingCycle}天`;
+  let cycleStr = `${billingCycle} 天`;
   if (billingCycle < 0) {
     return `${sym}${price.toFixed(2)}`;
   } else if (billingCycle === 30 || billingCycle === 31) {
@@ -82,7 +82,7 @@ export const formatPrice = (
   } else if (billingCycle >= 364 && billingCycle <= 366) {
     cycleStr = "年";
   } else if (billingCycle >= 730 && billingCycle <= 732) {
-    cycleStr = "两年";
+    cycleStr = "兩年";
   } else if (billingCycle >= 1095 && billingCycle <= 1097) {
     cycleStr = "三年";
   } else if (billingCycle >= 1825 && billingCycle <= 1827) {
@@ -96,36 +96,36 @@ export const formatTrafficLimit = (
   limit?: number,
   type?: "sum" | "max" | "min" | "up" | "down"
 ) => {
-  if (!limit) return "未设置";
+  if (!limit) return "未設定";
 
   const limitText = formatBytes(limit);
 
   const typeText =
     {
-      sum: "总和",
+      sum: "總和",
       max: "最大值",
       min: "最小值",
-      up: "上传",
-      down: "下载",
+      up: "上傳",
+      down: "下載",
     }[type || "max"] || "";
 
-  return `总 ${limitText} (${typeText})`;
+  return `總計 ${limitText} (${typeText})`;
 };
 
-// 用于将最后出现时间格式化为相对时间的辅助函数
+// 用於將最後出現時間格式化為相對時間的輔助函式
 export const formatLastSeen = (timestamp: string): string => {
   const now = Date.now();
   const then = new Date(timestamp).getTime();
   if (isNaN(then)) return "N/A";
 
   const diffSec = Math.floor((now - then) / 1000);
-  if (diffSec < 60) return "刚刚";
+  if (diffSec < 60) return "剛剛";
   const diffMin = Math.floor(diffSec / 60);
-  if (diffMin < 60) return `${diffMin}分钟前`;
+  if (diffMin < 60) return `${diffMin} 分鐘前`;
   const diffHour = Math.floor(diffMin / 60);
-  if (diffHour < 24) return `${diffHour}小时前`;
+  if (diffHour < 24) return `${diffHour} 小時前`;
   const diffDay = Math.floor(diffHour / 24);
-  if (diffDay < 30) return `${diffDay}天前`;
+  if (diffDay < 30) return `${diffDay} 天前`;
 
   return new Date(timestamp).toLocaleDateString(undefined, {
     month: "2-digit",

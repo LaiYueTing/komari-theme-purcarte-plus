@@ -61,17 +61,17 @@ export const useNodeListCommons = (searchTerm: string, advancedSearchState?: Adv
   );
 
   const filteredNodes = useMemo(() => {
-    // 先按分组过滤
+    // 先按分組過濾
     let nodes = combinedNodes.filter(
       (node: NodeData & { stats?: any }) =>
         selectedGroup === ALL_GROUP || (node.group && node.group.split(";").map(g => g.trim()).includes(selectedGroup))
     );
 
-    // 高级搜索激活时，使用高级过滤替代简单名称搜索
+    // 進階搜尋啟用時，使用進階過濾取代簡單名稱搜尋
     if (advancedSearchState && !isStateDefault(advancedSearchState)) {
       nodes = applyAdvancedFilters(nodes, advancedSearchState, rates) as typeof nodes;
     } else {
-      // 简单搜索：名称模糊匹配
+      // 簡單搜尋：名稱模糊比對
       nodes = nodes.filter((node: NodeData) =>
         node.name.toLowerCase().includes(searchTerm.toLowerCase())
       );
@@ -163,7 +163,7 @@ export const useNodeCommons = (node: NodeData & { stats?: any; _liveDataReady?: 
   const { stats, _liveDataReady } = node;
   const { t } = useLocale();
   const isOnline = stats ? stats.online : false;
-  // 离线确认：liveData 已到达且节点不在线（包括 stats 为 undefined 的从未上线节点）
+  // 離線確認：liveData 已到達且節點不在線（包括 stats 為 undefined 的從未上線節點）
   const isConfirmedOffline = _liveDataReady ? !isOnline : false;
   const price = formatPrice(node.price, node.currency, node.billing_cycle);
 
@@ -240,11 +240,11 @@ export const useNodeCommons = (node: NodeData & { stats?: any; _liveDataReady?: 
       : []),
   ];
 
-  // 计算流量使用百分比
+  // 計算流量使用百分比
   const trafficPercentage = useMemo(() => {
     if (!node.traffic_limit || !stats || !isOnline) return 0;
 
-    // 根据流量限制类型确定使用的流量值
+    // 根據流量限制類型確定使用的流量值
     let usedTraffic = 0;
     switch (node.traffic_limit_type) {
       case "up":
@@ -259,7 +259,7 @@ export const useNodeCommons = (node: NodeData & { stats?: any; _liveDataReady?: 
       case "min":
         usedTraffic = Math.min(stats.net_total_up, stats.net_total_down);
         break;
-      default: // max 或者未设置
+      default: // max 或者未設定
         usedTraffic = Math.max(stats.net_total_up, stats.net_total_down);
         break;
     }

@@ -76,8 +76,14 @@ function calculateFinanceData(
   let totalRemainVal = 0;
   const specialCases: string[] = [];
 
-  const items = sorted.map((node) => {
-    const isFreeTag = node.tags ? node.tags.includes(t("enhanced.finance.freeTag")) : false;
+  // 免費標籤關鍵字：i18n 設定的免費標籤 + 常見「免費 / 免费」
+  const freeTagKeywords = [t("enhanced.finance.freeTag"), "免費", "免费"];
+
+  const items: FinanceData["items"] = [];
+  for (const node of sorted) {
+    const isFreeTag = node.tags
+      ? freeTagKeywords.some((kw) => node.tags.includes(kw))
+      : false;
     const { price: priceBase, isSpecialFree } = parsePriceToBase(node, rates);
     const { remainingValue, isLongTerm } = calculateRemainingValue(
       node,
@@ -86,6 +92,14 @@ function calculateFinanceData(
     );
     const monthly = calculateMonthlyExpense(priceBase, node.billing_cycle);
 
+    // 排除免費：開啟時，免費標籤、特殊免費機(-1)、價格 <= 0（含 0）皆視為免費
+    // 完全不顯示於列表，也不計入彙總與提示
+    const rawPrice = parseFloat(String(node.price));
+    const isZeroPrice = rawPrice <= 0;
+    if (excludeFree && (isFreeTag || isZeroPrice)) {
+      continue;
+    }
+
     let tooltipText = "";
     if (isSpecialFree) {
       specialCases.push(`${node.name} (${t("enhanced.finance.freeChicken")})`);
@@ -93,20 +107,16 @@ function calculateFinanceData(
     } else if (isLongTerm) {
       specialCases.push(`${node.name} (${t("enhanced.finance.longTermChicken")})`);
       tooltipText = t("enhanced.finance.longTermTooltip");
-    } else if (isFreeTag && excludeFree) {
+    } else if (isFreeTag) {
       specialCases.push(`${node.name} (${t("enhanced.finance.freeTag")})`);
       tooltipText = `${node.name} (${t("enhanced.finance.freeTag")})`;
     }
 
-    // excludeFree 开启时白嫖机不计入汇总，列表中仍正常显示剩余价值
-    const excludeFromTotal = isSpecialFree || (excludeFree && isFreeTag);
-    if (!excludeFromTotal) {
-      totalPrice += priceBase;
-      monthlyPrice += monthly;
-      totalRemainVal += remainingValue;
-    }
+    totalPrice += priceBase;
+    monthlyPrice += monthly;
+    totalRemainVal += remainingValue;
 
-    return {
+    items.push({
       node,
       displayVal: remainingValue,
       remainingValue,
@@ -114,8 +124,8 @@ function calculateFinanceData(
       isSpecialFree,
       isLongTerm,
       isFreeTag,
-    };
-  });
+    });
+  }
 
   return {
     totalNodes: nodes.length,
@@ -134,7 +144,7 @@ export function FinanceWidget() {
   const isAdvancedSearchEnabled = enableSearchButton && enableAdvancedSearch;
   const [isOpen, setIsOpen] = useState(false);
   const [userCurrency, setUserCurrency] = useState<string>(
-    () => localStorage.getItem("fin_currency") || "CNY"
+    () => localStorage.getItem("fin_currency") || "TWD"
   );
   const { rates, lastUpdated, refreshRates } = useExchangeRates(userCurrency);
   const [sortBy, setSortBy] = useState<SortBy>(
@@ -148,22 +158,22 @@ export function FinanceWidget() {
   const [tradeNode, setTradeNode] = useState<NodeData | null>(null);
   const [showRatesInfo, setShowRatesInfo] = useState(false);
 
-  // URL 分享参数：交易日期和金额
+  // URL 分享參數：交易日期和金額
   const [initialTradeDate, setInitialTradeDate] = useState<string | undefined>();
   const [initialTradeAmount, setInitialTradeAmount] = useState<string | undefined>();
   const urlTradeHandled = useRef(false);
 
-  // 监听来自 Header 按钮的自定义事件
+  // 監聽來自 Header 按鈕的自訂事件
   useEffect(() => {
     const handler = () => setIsOpen((prev) => !prev);
     window.addEventListener("toggle-finance-widget", handler);
     return () => window.removeEventListener("toggle-finance-widget", handler);
   }, []);
 
-  // 从 URL 加载交易模态框参数（仅在首次加载时执行）
+  // 從 URL 載入交易對話框參數（僅在首次載入時執行）
   useEffect(() => {
     if (urlTradeHandled.current || nodes.length === 0) return;
-    // 如果没有同时开启【搜索按钮】和【高级搜索】，直接中止，不打开交易面板
+    // 如果沒有同時開啟【搜尋按鈕】和【進階搜尋】，直接中止，不開啟交易面板
     if (!isAdvancedSearchEnabled) {
       urlTradeHandled.current = true;
       return;
@@ -174,13 +184,13 @@ export function FinanceWidget() {
     const tmAmount = params.get("tm_amount");
     const tq = params.get("t_q");
 
-    // 如果有 tm_cur，更新货币单位到 localStorage 和状态
+    // 如果有 tm_cur，更新貨幣單位到 localStorage 和狀態
     if (tmCur) {
       setUserCurrency(tmCur);
       localStorage.setItem("fin_currency", tmCur);
     }
 
-    // 如果有 t_q（UUID搜索），尝试打开交易模态框
+    // 如果有 t_q（UUID 搜尋），嘗試開啟交易對話框
     if (tq && (tmDate || tmAmount || tmCur)) {
       const targetNode = nodes.find((n) => n.uuid === tq);
       if (targetNode) {
@@ -233,35 +243,38 @@ export function FinanceWidget() {
     setIsOpen(false);
   }, []);
 
-  // 汇率列表：只展示节点实际使用的货币与用户选择货币之间的汇率
+  // 匯率列表：常見主要貨幣 + 節點實際使用的貨幣，與使用者選擇貨幣之間的匯率
   const ratesList = useMemo(() => {
-    // 从节点数据中提取所有实际使用的货币代码
-    const nodeCurrencies = new Set<string>();
+    // 常見主要貨幣，確保列表不會只剩單一貨幣
+    const MAJOR_CURRENCIES = ["TWD", "USD", "CNY", "JPY", "HKD", "EUR", "GBP"];
+    const relevantCodes = new Set<string>(MAJOR_CURRENCIES);
+    // 併入節點資料中實際使用的貨幣代碼
     for (const node of nodes) {
-      const code = normalizeCurrencyToCode(node.currency || "¥");
-      nodeCurrencies.add(code);
+      relevantCodes.add(normalizeCurrencyToCode(node.currency || "¥"));
     }
-    // 合并：节点货币 + 用户选择的货币，去重后排除当前基准货币
-    const relevantCodes = new Set(nodeCurrencies);
-    relevantCodes.add(userCurrency);
-    relevantCodes.delete(userCurrency); // 排除基准货币自身
 
-    return Array.from(nodeCurrencies)
-      .filter((code) => code !== userCurrency && rates[code] != null)
+    const baseSym = CURRENCY_SYMBOLS[userCurrency] || userCurrency;
+
+    return Array.from(relevantCodes)
+      .filter(
+        (code) => code !== userCurrency && rates[code] != null && rates[code] > 0
+      )
       .sort((a, b) => a.localeCompare(b))
       .map((code) => {
         const s = CURRENCY_SYMBOLS[code];
+        // rates[code] = 1 基準貨幣可換多少 code；取倒數得「1 code = 多少基準貨幣」
+        const valueInBase = 1 / rates[code];
         return {
           code,
-          name: s ? `${code} ${s}` : code,
-          rate: rates[code],
+          name: s ? `1 ${code} ${s}` : `1 ${code}`,
+          rate: `${baseSym} ${valueInBase.toFixed(2)}`,
         };
       });
   }, [rates, userCurrency, nodes]);
 
   return (
     <>
-      {/* 资产面板 */}
+      {/* 資產面板 */}
       <div
         id="finance-widget"
         className={`finance-widget${isOpen ? " show" : ""}`}>
@@ -295,7 +308,7 @@ export function FinanceWidget() {
           </button>
         </div>
         <div className="bubble-content">
-          {/* 汇总 */}
+          {/* 彙總 */}
           <div className="finance-row">
             <span>{t("enhanced.finance.serverCount")}</span>
             <span className="finance-value">{financeData.totalNodes}</span>
@@ -321,7 +334,7 @@ export function FinanceWidget() {
               </span>
               {financeData.specialCases.length > 0 && (
                 <div
-                  className="help-icon show-help"
+                  className="help-icon show-help help-icon-down"
                   data-tooltip={financeData.specialCases.join("\n")}
                   onClick={(e) => {
                     e.stopPropagation();
@@ -348,7 +361,7 @@ export function FinanceWidget() {
 
           <div className="finance-separator" />
 
-          {/* 服务器列表 */}
+          {/* 伺服器列表 */}
           <div className="finance-list">
             {financeData.items.map((item) => (
               <div
@@ -399,13 +412,13 @@ export function FinanceWidget() {
             ))}
           </div>
 
-          {/* 汇率信息 */}
+          {/* 匯率資訊 */}
           <div
             className="finance-tooltip"
             style={{ cursor: "pointer" }}
             onClick={() => setShowRatesInfo((p) => !p)}>
             {lastUpdated
-              ? lastUpdated === "使用默认汇率"
+              ? lastUpdated === "使用預設匯率"
                 ? t("enhanced.finance.defaultRates")
                 : t("enhanced.finance.ratesUpdated", { time: lastUpdated })
               : t("enhanced.finance.ratesUpdating")}
@@ -418,16 +431,14 @@ export function FinanceWidget() {
                 {ratesList.map((r) => (
                   <div key={r.code} className="finance-rate-item">
                     <span>{r.name}</span>
-                    <span className="finance-rate-value">
-                      {r.rate.toFixed(6)}
-                    </span>
+                    <span className="finance-rate-value">{r.rate}</span>
                   </div>
                 ))}
               </div>
             </>
           )}
 
-          {/* 控制栏 */}
+          {/* 控制列 */}
           <div className="finance-controls">
             <div style={{ display: "flex", gap: 8 }}>
               <select
@@ -495,7 +506,7 @@ export function FinanceWidget() {
         </div>
       </div>
 
-      {/* 交易模态框 */}
+      {/* 交易對話框 */}
       {tradeNode && (
         <ServerTradeModal
           node={tradeNode}

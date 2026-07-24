@@ -8,14 +8,14 @@ export function DynamicContent({ children }: { children: ReactNode }) {
   const isMobile = useIsMobile();
   const { appearance } = useTheme();
 
-  // 缓存随机选择的背景 URL，避免每次父组件重渲染时重新随机导致背景闪烁
+  // 快取隨機選擇的背景 URL，避免每次父元件重新渲染時重新隨機導致背景閃爍
   const cachedUrlsRef = useRef<Record<string, string>>({});
 
   const getUrlFromConfig = useCallback(
     (urls: string) => {
       if (!urls) return "";
 
-      // 使用 urls + appearance 作为缓存 key，只有配置值真正变化时才重新随机
+      // 使用 urls + appearance 作為快取 key，只有設定值真正變化時才重新隨機
       const cacheKey = `${urls}|${appearance}`;
       if (cacheKey in cachedUrlsRef.current) {
         return cachedUrlsRef.current[cacheKey];
@@ -39,7 +39,7 @@ export function DynamicContent({ children }: { children: ReactNode }) {
 
   const backgroundMode = config.backgroundMode || "image";
 
-  // 使用具体的原始值作为依赖，而非整个 config 对象，避免无关配置变化触发重计算
+  // 使用具體的原始值作為依賴，而非整個 config 物件，避免無關設定變化觸發重新計算
   const bgImage = config.backgroundImage;
   const bgImageMobile = config.backgroundImageMobile;
   const videoBgUrl = config.videoBackgroundUrl;
@@ -49,6 +49,11 @@ export function DynamicContent({ children }: { children: ReactNode }) {
   const blurValue = config.blurValue;
   const blurBackgroundColor = config.blurBackgroundColor;
   const bgAlignment = config.backgroundAlignment;
+  const globalFontFamily = config.globalFontFamily;
+  const customFontFaceCss = config.customFontFaceCss;
+  const enableCustomCursor = config.enableCustomCursor;
+  const cursorNormalUrl = config.cursorNormalUrl;
+  const cursorPointerUrl = config.cursorPointerUrl;
 
   const imageUrl = useMemo(() => {
     if (backgroundMode !== "image") return "";
@@ -87,6 +92,46 @@ export function DynamicContent({ children }: { children: ReactNode }) {
 
     return `:root { ${styles.join(" ")} }`;
   }, [mainWidth, blurValue, blurBackgroundColor, imageUrl]);
+
+  // 全域字型樣式：注入自訂 @font-face 並覆寫 Radix Themes 的字型變數
+  const fontStyles = useMemo(() => {
+    const parts: string[] = [];
+    if (customFontFaceCss && customFontFaceCss.trim()) {
+      parts.push(customFontFaceCss.trim());
+    }
+    if (globalFontFamily && globalFontFamily.trim()) {
+      const family = globalFontFamily.trim();
+      // 覆寫 Radix Themes 的 --default-font-family（標題、強調文字皆引用此變數）
+      parts.push(`:root, .radix-themes { --default-font-family: ${family}; }`);
+      // 套用至 body，涵蓋非 Radix 區域（載入畫面、背景等）
+      parts.push(`body { font-family: ${family}; }`);
+    }
+    return parts.join("\n");
+  }, [globalFontFamily, customFontFaceCss]);
+
+  // 自訂滑鼠游標：一般狀態套用至 body，可點擊元素套用 pointer 游標
+  // 文字輸入區維持系統 text 游標，避免影響輸入體驗
+  const cursorStyles = useMemo(() => {
+    if (!enableCustomCursor) return "";
+    const normal = (cursorNormalUrl || "").trim();
+    const pointer = (cursorPointerUrl || "").trim();
+    if (!normal && !pointer) return "";
+
+    const parts: string[] = [];
+    if (normal) {
+      parts.push(`body { cursor: url("${normal}"), auto !important; }`);
+    }
+    if (pointer) {
+      parts.push(
+        `a,\nbutton,\n[role="button"],\ninput[type="submit"],\ninput[type="button"],\nlabel[for],\nselect,\nsummary,\n.cursor-pointer,\n.finance-ball,\n.scroll-helper-btn {\n  cursor: url("${pointer}"), pointer !important;\n}`
+      );
+    }
+    // 文字輸入區域保留系統文字游標
+    parts.push(
+      `input:not([type="submit"]):not([type="button"]):not([type="checkbox"]):not([type="radio"]),\ntextarea,\n[contenteditable="true"] {\n  cursor: text !important;\n}`
+    );
+    return parts.join("\n");
+  }, [enableCustomCursor, cursorNormalUrl, cursorPointerUrl]);
 
   useEffect(() => {
     const imageBackground = document.getElementById("image-background");
@@ -133,6 +178,8 @@ export function DynamicContent({ children }: { children: ReactNode }) {
 
   return (
     <>
+      {fontStyles && <style>{fontStyles}</style>}
+      {cursorStyles && <style>{cursorStyles}</style>}
       <style>{dynamicStyles}</style>
       <div className="fade-in">{children}</div>
     </>

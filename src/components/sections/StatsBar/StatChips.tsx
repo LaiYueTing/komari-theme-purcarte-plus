@@ -22,7 +22,7 @@ export const StatChip = memo(
       return (
         <div
           className={cn(
-            "flex shrink-0 bg-transition px-1.5 py-0.5 text-center items-center",
+            "stat-chip flex shrink-0 bg-transition px-1.5 py-0.5 text-center items-center",
             isLabelVertical ? "" : "flex-col"
           )}>
           <div
@@ -48,7 +48,7 @@ export const StatChip = memo(
     }
 
     return (
-      <div className="w-full py-1">
+      <div className="stat-chip w-full py-1">
         <div className="flex flex-col gap-2 items-center">
           <label>{label}</label>
           <div className={`font-medium -mt-2 whitespace-nowrap ${textLeft ? "text-left" : ""}`}>
@@ -76,7 +76,7 @@ export const CurrentTimeChip = memo(
       <StatChip
         key="currentTime"
         label={t("statsBar.currentTime")}
-        lines={[time.toLocaleTimeString()]}
+        lines={[time.toLocaleTimeString().replace(/^(上午|下午)/, "$1 ")]}
         isInHeader={isInHeader}
         isMobile={isMobile}
       />

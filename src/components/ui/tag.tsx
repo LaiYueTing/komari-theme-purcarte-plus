@@ -10,13 +10,13 @@ interface TagProps extends React.HTMLAttributes<HTMLDivElement> {
   tags: string[];
 }
 
-// 解析带颜色的标签
+// 解析帶顏色的標籤
 const parseTagWithColor = (tag: string) => {
   const colorMatch = tag.match(/<(\w+)>$/);
   if (colorMatch && colorMatch) {
     const color = colorMatch[1].toLowerCase();
     const text = tag.replace(/<\w+>$/, "");
-    // 检查颜色是否在完整的颜色列表中
+    // 檢查顏色是否在完整的顏色清單中
     if (allColors.includes(color as ColorType)) {
       return { text, color: color as ColorType };
     }
