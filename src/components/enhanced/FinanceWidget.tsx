@@ -9,13 +9,19 @@ import {
 import type { ExchangeRates } from "./useExchangeRates";
 import type { NodeData } from "@/types/node.d";
 import {
-  parsePriceToBase,
-  calculateRemainingValue,
-  calculateMonthlyExpense,
+  calculateFinanceNodeValues,
   normalizeCurrencyToCode,
 } from "./financeUtils";
+import { hasDelimitedTag, normalizeFreeTag } from "@/utils/tagHelper";
 import { ServerTradeModal } from "./ServerTradeModal";
 import { useLocale } from "@/config/hooks";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 type SortBy = "weight_asc" | "weight_desc" | "price_asc" | "price_desc";
 
@@ -66,7 +72,8 @@ function calculateFinanceData(
   rates: ExchangeRates,
   excludeFree: boolean,
   sortBy: SortBy,
-  t: (key: string, params?: Record<string, string | number>) => string
+  t: (key: string, params?: Record<string, string | number>) => string,
+  freeTag: string
 ): FinanceData {
   const sorted = sortNodes(nodes, sortBy);
   const now = new Date();
@@ -76,21 +83,20 @@ function calculateFinanceData(
   let totalRemainVal = 0;
   const specialCases: string[] = [];
 
-  // 免費標籤關鍵字：i18n 設定的免費標籤 + 常見「免費 / 免费」
-  const freeTagKeywords = [t("enhanced.finance.freeTag"), "免費", "免费"];
-
   const items: FinanceData["items"] = [];
   for (const node of sorted) {
-    const isFreeTag = node.tags
-      ? freeTagKeywords.some((kw) => node.tags.includes(kw))
-      : false;
-    const { price: priceBase, isSpecialFree } = parsePriceToBase(node, rates);
-    const { remainingValue, isLongTerm } = calculateRemainingValue(
+    const isFreeTag = hasDelimitedTag(node.tags, freeTag);
+    const {
+      priceBase,
+      monthlyExpense,
+      remainingValue,
+      isSpecialFree,
+      isLongTerm,
+    } = calculateFinanceNodeValues(
       node,
       rates,
       now
     );
-    const monthly = calculateMonthlyExpense(priceBase, node.billing_cycle);
 
     // 排除免費：開啟時，免費標籤、特殊免費機(-1)、價格 <= 0（含 0）皆視為免費
     // 完全不顯示於列表，也不計入彙總與提示
@@ -108,12 +114,12 @@ function calculateFinanceData(
       specialCases.push(`${node.name} (${t("enhanced.finance.longTermChicken")})`);
       tooltipText = t("enhanced.finance.longTermTooltip");
     } else if (isFreeTag) {
-      specialCases.push(`${node.name} (${t("enhanced.finance.freeTag")})`);
-      tooltipText = `${node.name} (${t("enhanced.finance.freeTag")})`;
+      specialCases.push(`${node.name} (${freeTag})`);
+      tooltipText = `${node.name} (${freeTag})`;
     }
 
     totalPrice += priceBase;
-    monthlyPrice += monthly;
+    monthlyPrice += monthlyExpense;
     totalRemainVal += remainingValue;
 
     items.push({
@@ -140,8 +146,9 @@ function calculateFinanceData(
 export function FinanceWidget() {
   const { nodes } = useNodeData();
   const { t } = useLocale();
-  const { enableSearchButton, enableAdvancedSearch } = useAppConfig();
+  const { enableSearchButton, enableAdvancedSearch, freeTag } = useAppConfig();
   const isAdvancedSearchEnabled = enableSearchButton && enableAdvancedSearch;
+  const configuredFreeTag = normalizeFreeTag(freeTag);
   const [isOpen, setIsOpen] = useState(false);
   const [userCurrency, setUserCurrency] = useState<string>(
     () => localStorage.getItem("fin_currency") || "TWD"
@@ -170,6 +177,19 @@ export function FinanceWidget() {
     return () => window.removeEventListener("toggle-finance-widget", handler);
   }, []);
 
+  useEffect(() => {
+    const handler = (event: Event) => {
+      const uuid = (event as CustomEvent<{ uuid?: string }>).detail?.uuid;
+      if (!uuid) return;
+      const targetNode = nodes.find((node) => node.uuid === uuid);
+      if (targetNode) {
+        setTradeNode(targetNode);
+      }
+    };
+    window.addEventListener("open-server-trade-modal", handler);
+    return () => window.removeEventListener("open-server-trade-modal", handler);
+  }, [nodes, isAdvancedSearchEnabled]);
+
   // 從 URL 載入交易對話框參數（僅在首次載入時執行）
   useEffect(() => {
     if (urlTradeHandled.current || nodes.length === 0) return;
@@ -188,6 +208,9 @@ export function FinanceWidget() {
     if (tmCur) {
       setUserCurrency(tmCur);
       localStorage.setItem("fin_currency", tmCur);
+      window.dispatchEvent(
+        new CustomEvent("finance-currency-change", { detail: tmCur })
+      );
     }
 
     // 如果有 t_q（UUID 搜尋），嘗試開啟交易對話框
@@ -200,29 +223,29 @@ export function FinanceWidget() {
         setTradeNode(targetNode);
       }
     }
-  }, [nodes]);
+  }, [nodes, isAdvancedSearchEnabled]);
 
   const financeData = useMemo(
-    () => calculateFinanceData(nodes, rates, excludeFree, sortBy, t),
-    [nodes, rates, excludeFree, sortBy, t]
+    () => calculateFinanceData(nodes, rates, excludeFree, sortBy, t, configuredFreeTag),
+    [nodes, rates, excludeFree, sortBy, t, configuredFreeTag]
   );
 
   const sym = CURRENCY_SYMBOLS[userCurrency] || userCurrency;
 
   const handleCurrencyChange = useCallback(
-    (e: React.ChangeEvent<HTMLSelectElement>) => {
-      const val = e.target.value;
+    (val: string) => {
       setUserCurrency(val);
       localStorage.setItem("fin_currency", val);
+      window.dispatchEvent(new CustomEvent("finance-currency-change", { detail: val }));
     },
     []
   );
 
   const handleSortChange = useCallback(
-    (e: React.ChangeEvent<HTMLSelectElement>) => {
-      const val = e.target.value as SortBy;
-      setSortBy(val);
-      localStorage.setItem("fin_sort", val);
+    (val: string) => {
+      const nextSort = val as SortBy;
+      setSortBy(nextSort);
+      localStorage.setItem("fin_sort", nextSort);
     },
     []
   );
@@ -231,6 +254,9 @@ export function FinanceWidget() {
     setExcludeFree((prev) => {
       const next = !prev;
       localStorage.setItem("fin_exclude_free", String(next));
+      window.dispatchEvent(
+        new CustomEvent("finance-exclude-free-change", { detail: next })
+      );
       return next;
     });
   }, []);
@@ -441,34 +467,38 @@ export function FinanceWidget() {
           {/* 控制列 */}
           <div className="finance-controls">
             <div style={{ display: "flex", gap: 8 }}>
-              <select
-                className="finance-select"
-                value={userCurrency}
-                onChange={handleCurrencyChange}>
-                {CURRENCY_OPTIONS.map((opt) => (
-                  <option key={opt.value} value={opt.value}>
-                    {opt.label}
-                  </option>
-                ))}
-              </select>
-              <select
-                className="finance-select"
-                value={sortBy}
-                onChange={handleSortChange}>
-                {SORT_VALUES.map((val) => (
-                  <option key={val} value={val}>
-                    {t(SORT_LABEL_KEYS[val])}
-                  </option>
-                ))}
-              </select>
+              <Select value={userCurrency} onValueChange={handleCurrencyChange}>
+                <SelectTrigger className="h-8 w-[92px] text-xs">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {CURRENCY_OPTIONS.map((opt) => (
+                    <SelectItem key={opt.value} value={opt.value}>
+                      {opt.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              <Select value={sortBy} onValueChange={handleSortChange}>
+                <SelectTrigger className="h-8 w-[132px] text-xs">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {SORT_VALUES.map((val) => (
+                    <SelectItem key={val} value={val}>
+                      {t(SORT_LABEL_KEYS[val])}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
             <div style={{ display: "flex", gap: 5 }}>
               <button
                 className={`finance-btn${excludeFree ? " active" : ""}`}
                 title={
                   excludeFree
-                    ? t("enhanced.finance.excludeFreeOn")
-                    : t("enhanced.finance.excludeFreeOff")
+                    ? t("enhanced.finance.excludeFreeOn", { tag: configuredFreeTag })
+                    : t("enhanced.finance.excludeFreeOff", { tag: configuredFreeTag })
                 }
                 onClick={handleToggleFree}>
                 <svg

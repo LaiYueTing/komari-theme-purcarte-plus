@@ -17,7 +17,9 @@ import { useNodeCommons } from "@/hooks/useNodeCommons";
 import { useLocale } from "@/config/hooks";
 import { NodeDisplayContainer } from "./NodeDisplay";
 import { useAppConfig } from "@/config";
+import { useState } from "react";
 import { useRowHeightAlignment } from "@/hooks/useRowHeightAlignment";
+import { FinancePriceTag } from "@/components/enhanced/FinancePriceTag";
 
 interface NodeCompactContainerProps {
   nodes: NodeData[];
@@ -50,11 +52,13 @@ interface NodeCompactProps {
 }
 
 export const NodeCompact = ({ node, onShowDetails }: NodeCompactProps) => {
+  const [priceTagElement, setPriceTagElement] = useState<HTMLElement | null>(null);
   const {
     stats,
     isOnline,
     isConfirmedOffline,
     tagList,
+    priceTagIndex,
     cpuUsage,
     memUsage,
     diskUsage,
@@ -62,7 +66,7 @@ export const NodeCompact = ({ node, onShowDetails }: NodeCompactProps) => {
     expired_at,
   } = useNodeCommons(node);
   const { t } = useLocale();
-  const { compactExpiredAtDisplay, compactUptimeDisplay } = useAppConfig();
+  const { compactExpiredAtDisplay, compactUptimeDisplay, enableFinanceWidget } = useAppConfig();
 
   return (
     <Card
@@ -75,7 +79,7 @@ export const NodeCompact = ({ node, onShowDetails }: NodeCompactProps) => {
       <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-1">
         <Link
           to={`/instance/${node.uuid}`}
-          className="hover:underline hover:text-(--accent-11)">
+          className="text-inherit transition-opacity duration-200 hover:opacity-80">
           <div className="flex items-center gap-2 min-w-0">
             <Flag flag={node.region} size={"4"}></Flag>
             <img
@@ -93,7 +97,15 @@ export const NodeCompact = ({ node, onShowDetails }: NodeCompactProps) => {
       </CardHeader>
       <CardContent className="flex-grow space-y-1 text-xs flex-shrink-0">
         <div className="flex flex-wrap gap-1" data-section="tags">
-          <Tag tags={tagList} />
+          <Tag
+            tags={tagList}
+            getTagInteraction={({ index }) =>
+              enableFinanceWidget && index === priceTagIndex
+                ? { ref: setPriceTagElement, className: "cursor-pointer" }
+                : undefined
+            }
+          />
+          <FinancePriceTag node={node} triggerElement={priceTagElement} />
         </div>
         <div className="border-t border-(--accent-4)/50 my-1"></div>
         <div className="flex items-center justify-between">
@@ -169,12 +181,12 @@ export const NodeCompact = ({ node, onShowDetails }: NodeCompactProps) => {
                   {isOnline && stats ? (
                     <>
                       <span className="mr-1">{t("node.uptime")}</span>
-                      <span>{formatUptime(stats.uptime)}</span>
+                      <span>{formatUptime(stats.uptime, t)}</span>
                     </>
                   ) : stats?.time ? (
                     <>
                       <span className="mr-1">{t("node.lastSeen")}</span>
-                      <span>{formatLastSeen(stats.time)}</span>
+                      <span>{formatLastSeen(stats.time, t)}</span>
                     </>
                   ) : (
                     t("node.offline")

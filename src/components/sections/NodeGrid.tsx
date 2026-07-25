@@ -17,7 +17,9 @@ import { CircleProgress } from "../ui/progress-circle";
 import { useAppConfig } from "@/config";
 import { useLocale } from "@/config/hooks";
 import { NodeDisplayContainer } from "./NodeDisplay";
+import { useState } from "react";
 import { useRowHeightAlignment } from "@/hooks/useRowHeightAlignment";
+import { FinancePriceTag } from "@/components/enhanced/FinancePriceTag";
 
 interface NodeGridContainerProps {
   nodes: NodeData[];
@@ -66,11 +68,13 @@ export const NodeGrid = ({
   selectTrafficProgressStyle,
   onShowDetails,
 }: NodeGridProps) => {
+  const [priceTagElement, setPriceTagElement] = useState<HTMLElement | null>(null);
   const {
     stats,
     isOnline,
     isConfirmedOffline,
     tagList,
+    priceTagIndex,
     cpuUsage,
     memUsage,
     swapUsage,
@@ -78,8 +82,10 @@ export const NodeGrid = ({
     load,
     expired_at,
     trafficPercentage,
+    trafficLimitEnabled,
+    trafficLimitInfinite,
   } = useNodeCommons(node);
-  const { isShowHWBarInCard, isShowValueUnderProgressBar, gridExpiredAtDisplay, gridUptimeDisplay } = useAppConfig();
+  const { isShowHWBarInCard, isShowValueUnderProgressBar, gridExpiredAtDisplay, gridUptimeDisplay, enableFinanceWidget } = useAppConfig();
   const { t } = useLocale();
 
   return (
@@ -93,7 +99,7 @@ export const NodeGrid = ({
       <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
         <Link
           to={`/instance/${node.uuid}`}
-          className="hover:underline hover:text-(--accent-11) min-w-0">
+          className="min-w-0 text-inherit transition-opacity duration-200 hover:opacity-80">
           <div className="flex items-center gap-2">
             <Flag flag={node.region}></Flag>
             <img
@@ -111,7 +117,15 @@ export const NodeGrid = ({
       </CardHeader>
       <CardContent className="flex-grow space-y-3 text-sm text-nowrap">
         <div className="flex flex-wrap gap-1 mb-2" data-section="tags">
-          <Tag tags={tagList} />
+          <Tag
+            tags={tagList}
+            getTagInteraction={({ index }) =>
+              enableFinanceWidget && index === priceTagIndex
+                ? { ref: setPriceTagElement, className: "cursor-pointer" }
+                : undefined
+            }
+          />
+          <FinancePriceTag node={node} triggerElement={priceTagElement} />
         </div>
         <div className="border-t border-(--accent-4)/50 my-2"></div>
         {isShowHWBarInCard && (
@@ -226,9 +240,13 @@ export const NodeGrid = ({
             <div className="flex items-center justify-between">
               <span>{t("node.traffic")}</span>
               <div className="w-3/4 flex items-center gap-2">
-                <ProgressBar value={trafficPercentage} />
+                <ProgressBar
+                  value={trafficLimitInfinite ? 0 : trafficPercentage}
+                />
                 <span className="w-12 text-right">
-                  {node.traffic_limit !== 0
+                  {trafficLimitInfinite
+                    ? "∞"
+                    : trafficLimitEnabled
                     ? `${trafficPercentage.toFixed(0)}%`
                     : t("node.off")}
                 </span>
@@ -238,7 +256,8 @@ export const NodeGrid = ({
               <span>
                 {formatTrafficLimit(
                   node.traffic_limit,
-                  node.traffic_limit_type
+                  node.traffic_limit_type,
+                  t
                 )}
               </span>
               <span>
@@ -275,9 +294,9 @@ export const NodeGrid = ({
               <span className="w-1/5">{t("node.traffic")}</span>
               <div className="flex items-center justify-between w-4/5">
                 <div className="flex items-center justify-center w-1/4 h-8">
-                  {node.traffic_limit !== 0 && (
+                  {trafficLimitEnabled && (
                     <CircleProgress
-                      value={trafficPercentage}
+                      value={trafficLimitInfinite ? 0 : trafficPercentage}
                       maxValue={100}
                       size={32}
                       strokeWidth={4}
@@ -300,11 +319,12 @@ export const NodeGrid = ({
                         : t("node.notAvailable")}
                     </span>
                   </div>
-                  {node.traffic_limit !== 0 && isOnline && stats && (
+                  {trafficLimitEnabled && isOnline && stats && (
                     <div className="text-right">
                       {formatTrafficLimit(
                         node.traffic_limit,
-                        node.traffic_limit_type
+                        node.traffic_limit_type,
+                        t
                       )}
                     </div>
                   )}
@@ -340,12 +360,12 @@ export const NodeGrid = ({
                     {isOnline && stats ? (
                       <>
                         <span className="mr-1">{t("node.uptime")}</span>
-                        <span>{formatUptime(stats.uptime)}</span>
+                        <span>{formatUptime(stats.uptime, t)}</span>
                       </>
                     ) : stats?.time ? (
                       <>
                         <span className="mr-1">{t("node.lastSeen")}</span>
-                        <span>{formatLastSeen(stats.time)}</span>
+                        <span>{formatLastSeen(stats.time, t)}</span>
                       </>
                     ) : (
                       t("node.offline")

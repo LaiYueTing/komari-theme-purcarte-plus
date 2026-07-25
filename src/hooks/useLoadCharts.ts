@@ -1,11 +1,100 @@
 import { useState, useEffect, useMemo } from "react";
 import { useNodeData } from "@/contexts/NodeDataContext";
 import type { HistoryRecord, NodeData } from "@/types/node";
+import type { HistoryQueryRange } from "@/services/api";
 import type { RpcNodeStatus } from "@/types/rpc";
 import { useLiveData } from "@/contexts/LiveDataContext";
-import fillMissingTimePoints from "@/utils/RecordHelper";
+import {
+  calculateAutoMaxPoints,
+  lttbDownsamplePreservingGaps,
+} from "@/utils/downsample";
+import {
+  insertAdaptiveSeriesGapRows,
+  resolveHistoryBounds,
+  type HistoryBounds,
+} from "@/utils/RecordHelper";
 
-export const useLoadCharts = (node: NodeData | null, hours: number) => {
+const HISTORY_NUMERIC_KEYS: Array<keyof HistoryRecord> = [
+  "cpu",
+  "gpu",
+  "ram",
+  "ram_total",
+  "swap",
+  "swap_total",
+  "load",
+  "temp",
+  "disk",
+  "disk_total",
+  "net_in",
+  "net_out",
+  "net_total_up",
+  "net_total_down",
+  "process",
+  "connections",
+  "connections_udp",
+];
+
+const MAX_REALTIME_POINTS = 30 * 5;
+
+const mergeRealtimeRecords = (
+  ...recordGroups: HistoryRecord[][]
+): HistoryRecord[] => {
+  const recordsByTime = new Map<number, HistoryRecord>();
+
+  for (const records of recordGroups) {
+    for (const record of records) {
+      const timestamp = new Date(record.time).getTime();
+      if (!Number.isFinite(timestamp)) continue;
+
+      recordsByTime.set(timestamp, {
+        ...record,
+        time: new Date(timestamp).toISOString(),
+      });
+    }
+  }
+
+  return Array.from(recordsByTime.entries())
+    .sort(([leftTime], [rightTime]) => leftTime - rightTime)
+    .slice(-MAX_REALTIME_POINTS)
+    .map(([, record]) => record);
+};
+
+const toFiniteNumber = (value: unknown): number | null => {
+  if (typeof value === "number") {
+    return Number.isFinite(value) ? value : null;
+  }
+  if (typeof value === "string" && value.trim() !== "") {
+    const parsed = Number(value);
+    return Number.isFinite(parsed) ? parsed : null;
+  }
+  return null;
+};
+
+const normalizeHistoryRecord = (record: HistoryRecord): HistoryRecord => {
+  const normalized: Record<string, unknown> = { ...record };
+  for (const key of HISTORY_NUMERIC_KEYS) {
+    normalized[key] = toFiniteNumber(record[key]);
+  }
+  return normalized as unknown as HistoryRecord;
+};
+
+const createEmptyHistoryRecord = (
+  client: string,
+  time: number
+): HistoryRecord => {
+  const record: Record<string, unknown> = {
+    client,
+    time: new Date(time).toISOString(),
+  };
+  for (const key of HISTORY_NUMERIC_KEYS) record[key] = null;
+  return record as unknown as HistoryRecord;
+};
+
+export const useLoadCharts = (
+  node: NodeData | null,
+  hours: number,
+  range?: HistoryQueryRange | null
+) => {
   const { getLoadHistory, getRecentLoadHistory } = useNodeData();
   const { liveData } = useLiveData();
   const [historicalData, setHistoricalData] = useState<HistoryRecord[]>([]);
@@ -13,8 +102,11 @@ export const useLoadCharts = (node: NodeData | null, hours: number) => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [isDataEmpty, setIsDataEmpty] = useState(false);
+  const [historyBounds, setHistoryBounds] = useState<HistoryBounds | null>(null);
 
   const isRealtime = hours === 0;
+  const rangeStart = range?.start;
+  const rangeEnd = range?.end;
 
   // Fetch historical data
   useEffect(() => {
@@ -23,11 +115,27 @@ export const useLoadCharts = (node: NodeData | null, hours: number) => {
     const fetchHistoricalData = async () => {
       setLoading(true);
       setError(null);
+      const requestedRange =
+        rangeStart && rangeEnd ? { start: rangeStart, end: rangeEnd } : null;
+      const requestTime = Date.now();
+      setHistoryBounds(
+        resolveHistoryBounds(hours, requestedRange, null, requestTime)
+      );
       try {
-        const data = await getLoadHistory(node.uuid, hours);
-        const records = data?.records || [];
+        const data = await getLoadHistory(node.uuid, hours, requestedRange);
+        const records = (data?.records || []).map(normalizeHistoryRecord);
         setHistoricalData(records);
-        setIsDataEmpty(records.length === 0);
+        setIsDataEmpty(
+          !records.some((record) =>
+            HISTORY_NUMERIC_KEYS.some((key) => {
+              const value = record[key];
+              return typeof value === "number" && Number.isFinite(value);
+            })
+          )
+        );
+        setHistoryBounds(
+          resolveHistoryBounds(hours, requestedRange, data, requestTime)
+        );
 
         setRealtimeData([]); // Clear realtime data
       } catch (err: any) {
@@ -38,27 +146,44 @@ export const useLoadCharts = (node: NodeData | null, hours: number) => {
     };
 
     fetchHistoricalData();
-  }, [node?.uuid, hours, getLoadHistory, isRealtime, isDataEmpty]);
+  }, [node?.uuid, hours, rangeStart, rangeEnd, getLoadHistory, isRealtime]);
 
   // Fetch initial real-time data and handle WebSocket updates
   useEffect(() => {
     if (!isRealtime || !node?.uuid) return;
+
+    let cancelled = false;
+    setRealtimeData([]);
 
     const fetchInitialRealtimeData = async () => {
       setLoading(true);
       setError(null);
       try {
         const data = await getRecentLoadHistory(node.uuid);
-        setRealtimeData(data?.records || []);
+        if (cancelled) return;
+
+        const records = mergeRealtimeRecords(data?.records || []);
+        setRealtimeData((currentRecords) =>
+          mergeRealtimeRecords(
+            records,
+            currentRecords.filter((record) => record.client === node.uuid)
+          )
+        );
         setHistoricalData([]); // Clear historical data
+        setHistoryBounds(null);
       } catch (err: any) {
+        if (cancelled) return;
         setError(err.message || "Failed to fetch initial real-time data");
       } finally {
-        setLoading(false);
+        if (!cancelled) setLoading(false);
       }
     };
 
     fetchInitialRealtimeData();
+
+    return () => {
+      cancelled = true;
+    };
   }, [node?.uuid, getRecentLoadHistory, isRealtime]);
 
   // Separate effect for WebSocket updates
@@ -66,9 +191,12 @@ export const useLoadCharts = (node: NodeData | null, hours: number) => {
     if (!isRealtime || !node?.uuid || !liveData || !liveData[node.uuid]) return;
 
     const stats: RpcNodeStatus = liveData[node.uuid];
+    const timestamp = new Date(stats.time).getTime();
+    if (!Number.isFinite(timestamp)) return;
+
     const newRecord: HistoryRecord = {
       client: node.uuid,
-      time: new Date(stats.time).toISOString(),
+      time: new Date(timestamp).toISOString(),
       cpu: stats.cpu,
       ram: stats.ram,
       disk: stats.disk,
@@ -88,20 +216,14 @@ export const useLoadCharts = (node: NodeData | null, hours: number) => {
       connections_udp: stats.connections_udp,
     };
 
-    setRealtimeData((prevHistory) => {
-      if (
-        prevHistory.length > 0 &&
-        new Date(prevHistory[prevHistory.length - 1].time).getTime() ===
-          new Date(newRecord.time).getTime()
-      ) {
-        return prevHistory;
-      }
-      const updatedHistory = [...prevHistory, newRecord];
-      return updatedHistory.length > 600
-        ? updatedHistory.slice(updatedHistory.length - 600)
-        : updatedHistory;
-    });
+    setRealtimeData((prevHistory) =>
+      mergeRealtimeRecords(prevHistory, [newRecord])
+    );
   }, [liveData, node?.uuid, isRealtime]);
+
+  useEffect(() => {
+    if (isRealtime) setIsDataEmpty(realtimeData.length === 0);
+  }, [isRealtime, realtimeData]);
 
   const chartData = useMemo(() => {
     const rawData = isRealtime ? realtimeData : historicalData;
@@ -114,78 +236,89 @@ export const useLoadCharts = (node: NodeData | null, hours: number) => {
       return mappedData;
     }
 
-    const minute = 60;
-    const hour = minute * 60;
+    const sortedData = mappedData
+      .filter((d) => Number.isFinite(d.time))
+      .sort((a, b) => a.time - b.time);
 
-    const stringifiedData = mappedData.map((d) => ({
+    const bounds = historyBounds;
+    const boundedData = bounds
+      ? sortedData.filter((d) => d.time >= bounds.start && d.time <= bounds.end)
+      : sortedData;
+    const stringifiedData = boundedData.map((d) => ({
       ...d,
       time: new Date(d.time).toISOString(),
-    }));
+    })) as HistoryRecord[];
 
-    // 確定與目前採樣方案相符的間隔，以便進行時間差比較
-    const intervalSeconds =
-      hours === 1
-        ? minute
-        : hours === 4
-        ? minute
-        : hours > 120
-        ? hour
-        : minute * 15;
-
-    // 如果最後一個資料點的時間與目前時間相差超過一個間隔，則在末尾新增一個目前時間的空點
-    const now = new Date();
-    if (stringifiedData.length > 0) {
-      const lastDataTime = new Date(
-        stringifiedData[stringifiedData.length - 1].time
-      ).getTime();
-      if (now.getTime() - lastDataTime > intervalSeconds * 1000) {
-        stringifiedData.push({ time: now.toISOString() } as HistoryRecord);
+    if (bounds) {
+      const client = node?.uuid || stringifiedData[0]?.client || "";
+      const timestamps = new Set(boundedData.map((item) => item.time));
+      if (!timestamps.has(bounds.start)) {
+        stringifiedData.push(createEmptyHistoryRecord(client, bounds.start));
       }
+      if (!timestamps.has(bounds.end)) {
+        stringifiedData.push(createEmptyHistoryRecord(client, bounds.end));
+      }
+      stringifiedData.sort(
+        (a, b) => new Date(a.time).getTime() - new Date(b.time).getTime()
+      );
     }
 
-    let filledData;
-    if (hours === 1) {
-      filledData = fillMissingTimePoints(
-        stringifiedData,
-        minute,
-        hour,
-        minute * 2
-      );
-    } else if (hours === 4) {
-      filledData = fillMissingTimePoints(
-        stringifiedData,
-        minute,
-        hour * 4,
-        minute * 2
-      );
-    } else {
-      const interval = hours > 120 ? hour : minute * 15;
-      const maxGap = interval * 2;
-      filledData = fillMissingTimePoints(
-        stringifiedData,
-        interval,
-        hour * hours,
-        maxGap
-      );
-    }
-    return filledData.map((d) => ({ ...d, time: new Date(d.time!).getTime() }));
-  }, [isRealtime, realtimeData, historicalData, hours]);
+    const fallbackIntervalMs =
+      hours > 120 ? 60 * 60_000 : hours > 4 ? 15 * 60_000 : 60_000;
+    return insertAdaptiveSeriesGapRows(
+      stringifiedData,
+      HISTORY_NUMERIC_KEYS as string[],
+      fallbackIntervalMs
+    )
+      .map((d) => ({ ...d, time: new Date(d.time!).getTime() }))
+      .filter((d) => Number.isFinite(d.time));
+  }, [
+    isRealtime,
+    realtimeData,
+    historicalData,
+    hours,
+    node?.uuid,
+    historyBounds,
+  ]);
+
+  const sampledChartData = useMemo(() => {
+    if (isRealtime || chartData.length === 0) return chartData;
+
+    const maxPoints = calculateAutoMaxPoints(
+      chartData.length,
+      HISTORY_NUMERIC_KEYS.length
+    );
+    if (maxPoints <= 0 || chartData.length <= maxPoints) return chartData;
+
+    return lttbDownsamplePreservingGaps(
+      chartData,
+      maxPoints,
+      HISTORY_NUMERIC_KEYS as string[]
+    );
+  }, [chartData, isRealtime]);
 
   const memoryChartData = useMemo(() => {
-    return chartData.map((item) => ({
+    return sampledChartData.map((item) => ({
       ...item,
-      ram: ((item.ram ?? 0) / (node?.mem_total ?? 1)) * 100,
+      ram:
+        typeof item.ram === "number" && Number.isFinite(item.ram)
+          ? (item.ram / (node?.mem_total || 1)) * 100
+          : null,
       ram_raw: item.ram,
-      swap: ((item.swap ?? 0) / (node?.swap_total ?? 1)) * 100,
+      swap:
+        typeof item.swap === "number" && Number.isFinite(item.swap)
+          ? (item.swap / (node?.swap_total || 1)) * 100
+          : null,
       swap_raw: item.swap,
     }));
-  }, [chartData, node?.mem_total, node?.swap_total]);
+  }, [sampledChartData, node?.mem_total, node?.swap_total]);
 
   return {
     loading,
     error,
-    chartData,
+    chartData: sampledChartData,
     memoryChartData,
     isDataEmpty,
+    historyBounds,
   };
 };

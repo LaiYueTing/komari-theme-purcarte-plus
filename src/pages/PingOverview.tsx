@@ -1,4 +1,4 @@
-import { memo, useState, useMemo, useEffect, useCallback } from "react";
+import { memo, useState, useMemo, useEffect, useCallback, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { useIsMobile } from "@/hooks/useMobile";
@@ -11,6 +11,8 @@ import {
   ArrowDownUp,
   ArrowUp,
   ArrowDown,
+  CalendarDays,
+  Search,
 } from "lucide-react";
 import {
   LineChart,
@@ -25,6 +27,7 @@ import {
 } from "recharts";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Switch } from "@/components/ui/switch";
+import { Input } from "@/components/ui/input";
 import { Label } from "@radix-ui/react-label";
 import type { PingHistoryResponse, PingTaskFull } from "@/types/node";
 import Loading from "@/components/loading";
@@ -33,6 +36,9 @@ import {
   cutPeakValues,
   calculateTaskStats,
   interpolateNullsLinear,
+  insertSeriesGapRows,
+  resolveHistoryBounds,
+  type HistoryBounds,
 } from "@/utils/RecordHelper";
 import { useAppConfig } from "@/config";
 import { ScrollableTooltip } from "@/components/ui/tooltip";
@@ -48,17 +54,68 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { cn } from "@/utils";
-import { lttbDownsample, calculateAutoMaxPoints } from "@/utils/downsample";
+import {
+  lttbDownsamplePreservingGaps,
+  calculateAutoMaxPoints,
+} from "@/utils/downsample";
 import { apiService } from "@/services/api";
+import {
+  buildMetricQuickRangeDays,
+  buildMetricRangeHours,
+  limitMetricRetentionHours,
+  resolveMetricRetentionHours,
+} from "@/utils/metricRetention";
 
-// 排序型別定義
+// 排序类型定义
 type ServerSortKey = "weight" | "name";
 type SortDirection = "asc" | "desc";
+type CustomTimeRange = {
+  start: string;
+  end: string;
+};
 
-// localStorage 鍵
+// localStorage 键
 const SERVER_SORT_KEY = "pingOverview_serverSort";
+const CUSTOM_RANGE_HOURS = -1;
 
-// 讀寫 localStorage 排序設定
+const toDateTimeLocalValue = (date: Date) => {
+  const offset = date.getTimezoneOffset() * 60_000;
+  return new Date(date.getTime() - offset).toISOString().slice(0, 16);
+};
+
+const buildRecentRange = (days: number): CustomTimeRange => {
+  const end = new Date();
+  const start = new Date(end.getTime() - days * 24 * 60 * 60 * 1000);
+  return {
+    start: toDateTimeLocalValue(start),
+    end: toDateTimeLocalValue(end),
+  };
+};
+
+const toQueryRange = (range: CustomTimeRange) => {
+  const start = new Date(range.start);
+  const end = new Date(range.end);
+  if (
+    !range.start ||
+    !range.end ||
+    !Number.isFinite(start.getTime()) ||
+    !Number.isFinite(end.getTime()) ||
+    end <= start
+  ) {
+    return null;
+  }
+  return { start: start.toISOString(), end: end.toISOString() };
+};
+
+const rangeHours = (range: { start: string; end: string } | null) => {
+  if (!range) return 1;
+  const hours =
+    (new Date(range.end).getTime() - new Date(range.start).getTime()) /
+    3_600_000;
+  return Number.isFinite(hours) && hours > 0 ? hours : 1;
+};
+
+// 读写 localStorage 排序配置
 function loadSort<K extends string>(
   storageKey: string,
   defaultKey: K,
@@ -80,7 +137,7 @@ function saveSort(storageKey: string, key: string, dir: SortDirection) {
   } catch { /* empty */ }
 }
 
-// 型別定義
+// 类型定义
 interface CombinedLineInfo {
   key: string; // `${uuid}_${taskId}`
   name: string; // `${serverName} - ${taskName}`
@@ -89,22 +146,23 @@ interface CombinedLineInfo {
   taskName: string;
   serverName: string;
   interval: number;
+  loss?: number;
 }
 
-// 合併線條的顏色產生（按伺服器分色相，同伺服器內按監測節點偏移色相+亮度+飽和度）
+// 合并线条的颜色生成（按服务器分色相，同服务器内按监测节点偏移色相+亮度+饱和度）
 const generateCombinedColor = (
   serverIndex: number,
   totalServers: number,
   taskIndex: number,
   totalTasks: number
 ) => {
-  // 不同伺服器：均勻分配色相
+  // 不同服务器：均匀分配色相
   const baseHue = (serverIndex * (360 / Math.max(totalServers, 1))) % 360;
-  // 同伺服器不同監測節點：色相偏移 + 亮度/飽和度大幅變化
+  // 同服务器不同监测节点：色相偏移 + 亮度/饱和度大幅变化
   const hueShift = totalTasks > 1 ? (taskIndex * 30) / (totalTasks - 1) - 15 : 0;
   const hue = (baseHue + hueShift + 360) % 360;
 
-  // OKLCH: 亮度 0.55~0.85，飽和度 0.25~0.12
+  // OKLCH: 亮度 0.55~0.85，饱和度 0.25~0.12
   const lightness = totalTasks > 1
     ? 0.55 + taskIndex * (0.3 / (totalTasks - 1))
     : 0.7;
@@ -114,7 +172,7 @@ const generateCombinedColor = (
 
   const oklchColor = `oklch(${lightness} ${chroma} ${hue} / .85)`;
 
-  // HSL 回退: 亮度 40%~70%，飽和度 70%~40%
+  // HSL 回退: 亮度 40%~70%，饱和度 70%~40%
   const hslLightness = totalTasks > 1
     ? 40 + taskIndex * (30 / (totalTasks - 1))
     : 55;
@@ -133,13 +191,14 @@ const generateCombinedColor = (
   return hslFallback;
 };
 
-// 元件
+// 组件
 const PingOverview = memo(() => {
   const {
     enableCutPeak,
     enableConnectBreaks,
     pingChartMaxPoints,
     publicSettings,
+    siteStatus,
     monitorNodeSortMode,
     monitorNodeCustomOrder,
   } = useAppConfig();
@@ -148,7 +207,7 @@ const PingOverview = memo(() => {
   const isMobile = useIsMobile();
   const { t } = useLocale();
 
-  // 伺服器排序狀態（從 localStorage 恢復）
+  // 服务器排序状态（从 localStorage 恢复）
   const [serverSort, setServerSort] = useState(() =>
     loadSort<ServerSortKey>(SERVER_SORT_KEY, "weight", "asc")
   );
@@ -159,7 +218,7 @@ const PingOverview = memo(() => {
     saveSort(SERVER_SORT_KEY, key, dir);
   };
 
-  // 管理員 Ping 任務資料（用於按 target/type/weight 排序）
+  // 管理员 Ping 任务数据（用于按 target/type/weight 排序）
   const [pingTasksFull, setPingTasksFull] = useState<PingTaskFull[]>([]);
   useEffect(() => {
     const needsAdminData = ["target_asc", "target_desc", "type_asc", "type_desc", "weight_asc", "weight_desc"].includes(monitorNodeSortMode);
@@ -170,7 +229,7 @@ const PingOverview = memo(() => {
 
   const { chartContentRef, handleChartMouseMove, tooltipProps } = useTooltipScrollLock();
 
-  // 首頁分組
+  // 首页分组
   const allGroups = useMemo(() => {
     const groups = getGroups();
     return [ALL_GROUP, ...groups];
@@ -178,7 +237,7 @@ const PingOverview = memo(() => {
 
   const [selectedGroups, setSelectedGroups] = useState<Set<string>>(new Set());
 
-  // 預設選中所有分組
+  // 默认选中所有分组
   useEffect(() => {
     if (allGroups.length > 0) {
       setSelectedGroups((prev) => {
@@ -192,7 +251,7 @@ const PingOverview = memo(() => {
     setSelectedGroups((prev) => {
       const next = new Set(prev);
       if (group === ALL_GROUP) {
-        // 點擊「全部」：如果已全選則取消全選，否則全選
+        // 点击"所有"：如果已全选则取消全选，否则全选
         if (next.size === allGroups.length) {
           next.clear();
         } else {
@@ -204,7 +263,7 @@ const PingOverview = memo(() => {
           next.delete(ALL_GROUP);
         } else {
           next.add(group);
-          // 檢查是否所有非「全部」的分組都選中了
+          // 检查是否所有非"所有"的分组都选中了
           const nonAllGroups = allGroups.filter((g) => g !== ALL_GROUP);
           if (nonAllGroups.every((g) => next.has(g))) {
             next.add(ALL_GROUP);
@@ -215,47 +274,112 @@ const PingOverview = memo(() => {
     });
   };
 
-  const maxPingRecordPreserveTime =
-    publicSettings?.ping_record_preserve_time || 24;
+  const isAuthenticated =
+    siteStatus === "authenticated" || siteStatus === "private-authenticated";
+  const maxPingRecordPreserveTime = limitMetricRetentionHours(
+    resolveMetricRetentionHours(publicSettings, "ping"),
+    isAuthenticated
+  );
 
-  // 時間範圍
+  // 时间范围
   const timeRanges = useMemo(() => {
-    const ranges = [
-      { label: t("instancePage.hours", { count: 1 }), hours: 1 },
-      { label: t("instancePage.hours", { count: 4 }), hours: 4 },
-      { label: t("instancePage.days", { count: 1 }), hours: 24 },
-      { label: t("instancePage.days", { count: 7 }), hours: 168 },
-      { label: t("instancePage.days", { count: 30 }), hours: 720 },
-    ];
-    const filtered = ranges.filter(
-      (range) => range.hours <= maxPingRecordPreserveTime
-    );
-    if (maxPingRecordPreserveTime > 720) {
-      const dynamicLabel =
-        maxPingRecordPreserveTime % 24 === 0
-          ? t("instancePage.days", {
-              count: Math.floor(maxPingRecordPreserveTime / 24),
-            })
-          : t("instancePage.hours", { count: maxPingRecordPreserveTime });
-      filtered.push({
-        label: dynamicLabel,
-        hours: maxPingRecordPreserveTime,
-      });
-    }
-    return filtered;
+    return buildMetricRangeHours(maxPingRecordPreserveTime).map((hours) => ({
+      label:
+        hours % 24 === 0
+          ? t("instancePage.days", { count: hours / 24 })
+          : t("instancePage.hours", { count: hours }),
+      hours,
+    }));
   }, [t, maxPingRecordPreserveTime]);
 
   const [hours, setHours] = useState<number>(1);
+  const [customDraftRange, setCustomDraftRange] = useState<CustomTimeRange>(
+    () => buildRecentRange(1)
+  );
+  const [customQueryRange, setCustomQueryRange] = useState<CustomTimeRange>(
+    () => buildRecentRange(1)
+  );
+  const [customRangeError, setCustomRangeError] = useState<string | null>(null);
+  const [customQuickRangeDays, setCustomQuickRangeDays] = useState<
+    number | null
+  >(1);
+  const customQuery = useMemo(
+    () => toQueryRange(customQueryRange),
+    [customQueryRange]
+  );
+  const isCustomRange = hours === CUSTOM_RANGE_HOURS;
+  const queryRange = isCustomRange ? customQuery : null;
+  const queryStart = queryRange?.start;
+  const queryEnd = queryRange?.end;
+  const chartHours = isCustomRange ? rangeHours(customQuery) : hours;
+  const customQuickRanges = useMemo(
+    () => buildMetricQuickRangeDays(maxPingRecordPreserveTime),
+    [maxPingRecordPreserveTime]
+  );
+  const customInputMax = toDateTimeLocalValue(new Date());
 
-  // 資料取得
+  useEffect(() => {
+    if (
+      (hours === CUSTOM_RANGE_HOURS && maxPingRecordPreserveTime <= 0) ||
+      (hours !== CUSTOM_RANGE_HOURS && hours > maxPingRecordPreserveTime)
+    ) {
+      setHours(Math.min(24, maxPingRecordPreserveTime));
+    }
+  }, [hours, maxPingRecordPreserveTime]);
+
+  const applyCustomRange = () => {
+    const nextRange = toQueryRange(customDraftRange);
+    if (!nextRange || rangeHours(nextRange) > maxPingRecordPreserveTime) {
+      setCustomRangeError(t("instancePage.invalidTimeRange"));
+      return;
+    }
+    setCustomQueryRange(customDraftRange);
+    setCustomRangeError(null);
+  };
+
+  const selectRecentRange = (days: number) => {
+    setCustomDraftRange(buildRecentRange(days));
+    setCustomQuickRangeDays(days);
+    setCustomRangeError(null);
+  };
+
+  // 数据获取
   const [allPingData, setAllPingData] = useState<
     Map<string, PingHistoryResponse>
   >(new Map());
   const [dataLoading, setDataLoading] = useState(true);
   const [dataError, setDataError] = useState<string | null>(null);
+  const [historyBounds, setHistoryBounds] = useState<HistoryBounds | null>(null);
+  const historyStart = historyBounds?.start;
+  const historyEnd = historyBounds?.end;
+  const fetchRequestIdRef = useRef(0);
+  const hasLoadedPingDataRef = useRef(false);
+  const [hasLoadedPingData, setHasLoadedPingData] = useState(false);
 
   const fetchAllPingData = useCallback(async () => {
     if (!nodes || nodes.length === 0) return;
+    const requestId = ++fetchRequestIdRef.current;
+    const requestedRange =
+      queryStart && queryEnd ? { start: queryStart, end: queryEnd } : null;
+    const requestTime = Date.now();
+    setHistoryBounds(
+      resolveHistoryBounds(chartHours, requestedRange, null, requestTime)
+    );
+    if (maxPingRecordPreserveTime <= 0) {
+      setAllPingData(new Map());
+      setTimeRange(null);
+      setBrushIndices({});
+      setDataError(null);
+      setDataLoading(false);
+      hasLoadedPingDataRef.current = true;
+      setHasLoadedPingData(true);
+      return;
+    }
+    if (!hasLoadedPingDataRef.current) {
+      setAllPingData(new Map());
+    }
+    setTimeRange(null);
+    setBrushIndices({});
     setDataLoading(true);
     setDataError(null);
 
@@ -268,7 +392,11 @@ const PingOverview = memo(() => {
         const results = await Promise.all(
           batch.map(async (node) => {
             try {
-              const data = await getPingHistory(node.uuid, hours);
+              const data = await getPingHistory(
+                node.uuid,
+                chartHours,
+                requestedRange
+              );
               return { uuid: node.uuid, data };
             } catch {
               return { uuid: node.uuid, data: null };
@@ -280,16 +408,29 @@ const PingOverview = memo(() => {
             map.set(result.uuid, result.data);
           }
         }
-        // 漸進式更新：每批到達即重新整理
+        // 渐进式更新：每批到达即刷新
+        if (requestId !== fetchRequestIdRef.current) return;
         setAllPingData(new Map(map));
         if (i === 0) setDataLoading(false);
       }
     } catch (err: any) {
+      if (requestId !== fetchRequestIdRef.current) return;
       setDataError(err.message || "Failed to fetch ping data");
     } finally {
-      setDataLoading(false);
+      if (requestId === fetchRequestIdRef.current) {
+        hasLoadedPingDataRef.current = true;
+        setHasLoadedPingData(true);
+        setDataLoading(false);
+      }
     }
-  }, [nodes, hours, getPingHistory]);
+  }, [
+    nodes,
+    chartHours,
+    queryStart,
+    queryEnd,
+    getPingHistory,
+    maxPingRecordPreserveTime,
+  ]);
 
   useEffect(() => {
     if (!nodesLoading && nodes && nodes.length > 0) {
@@ -297,7 +438,7 @@ const PingOverview = memo(() => {
     }
   }, [nodesLoading, nodes, fetchAllPingData]);
 
-  // 建構合併線條資訊
+  // 构建合并线条信息
   const allLines = useMemo<CombinedLineInfo[]>(() => {
     const lines: CombinedLineInfo[] = [];
     for (const node of nodes || []) {
@@ -311,16 +452,17 @@ const PingOverview = memo(() => {
           taskId: task.id,
           taskName: task.name,
           serverName: node.name,
-          interval: task.interval,
+          interval: task.data_interval || task.interval,
+          loss: task.loss,
         });
       }
     }
     return lines.sort((a, b) => a.key.localeCompare(b.key));
   }, [nodes, allPingData]);
 
-  // 去重的監測節點（按任務名）+ 基於後台設定排序
+  // 去重的监测节点（按任务名）+ 基于后台配置排序
   const uniqueMonitorNodes = useMemo(() => {
-    // 收集去重的監測節點資訊（name + taskId）
+    // 收集去重的监测节点信息（name + taskId）
     const taskMap = new Map<string, number>(); // name → taskId
     for (const line of allLines) {
       if (!taskMap.has(line.taskName)) {
@@ -329,7 +471,7 @@ const PingOverview = memo(() => {
     }
     const arr = Array.from(taskMap.entries()).map(([name, taskId]) => ({ name, taskId }));
 
-    // 建構 admin API 資料查找表（用於 target/type/weight 排序）
+    // 构建 admin API 数据查找表（用于 target/type/weight 排序）
     const adminTaskMap = new Map<number, PingTaskFull>();
     for (const task of pingTasksFull) {
       adminTaskMap.set(task.id, task);
@@ -338,7 +480,7 @@ const PingOverview = memo(() => {
     const mode = monitorNodeSortMode;
 
     if (mode === "custom") {
-      // 自訂排序：按使用者填寫的名稱順序排列，未列出的按 ID 升序
+      // 自定义排序：按用户填写的名称顺序排列，未列出的按 ID 正序
       const customLines = monitorNodeCustomOrder
         .split(/\r?\n/)
         .map((s) => s.trim())
@@ -352,7 +494,7 @@ const PingOverview = memo(() => {
         if (aIdx !== undefined && bIdx !== undefined) return aIdx - bIdx;
         if (aIdx !== undefined) return -1;
         if (bIdx !== undefined) return 1;
-        return a.taskId - b.taskId; // 未列出的按 ID 升序
+        return a.taskId - b.taskId; // 未列出的按 ID 正序
       });
     } else if (mode === "name_asc" || mode === "name_desc") {
       const dir = mode === "name_asc" ? 1 : -1;
@@ -397,14 +539,32 @@ const PingOverview = memo(() => {
         arr.sort((a, b) => dir * (a.taskId - b.taskId));
       }
     } else {
-      // 預設按 ID 升序
+      // 默认按 ID 正序
       arr.sort((a, b) => a.taskId - b.taskId);
     }
 
     return arr.map((item) => item.name);
   }, [allLines, monitorNodeSortMode, monitorNodeCustomOrder, pingTasksFull]);
 
-  // 去重的伺服器節點 + 排序
+  const sortedAllServerNodes = useMemo(() => {
+    const servers = (nodes || []).map((node) => ({
+      uuid: node.uuid,
+      name: node.name,
+      weight: node.weight ?? 0,
+      group: node.group ?? "",
+    }));
+    const { key: sortKey, dir: sortDir } = serverSort;
+    servers.sort((a, b) => {
+      const cmp =
+        sortKey === "weight"
+          ? a.weight - b.weight
+          : a.name.localeCompare(b.name);
+      return sortDir === "asc" ? cmp : -cmp;
+    });
+    return servers;
+  }, [nodes, serverSort]);
+
+  // 去重的服务器节点 + 排序
   const uniqueServerNodes = useMemo(() => {
     const servers: { uuid: string; name: string; weight: number; group: string }[] = [];
     const seen = new Set<string>();
@@ -433,7 +593,7 @@ const PingOverview = memo(() => {
     return servers;
   }, [allLines, nodes, serverSort]);
 
-  // 按分組過濾後的伺服器節點
+  // 按分组过滤后的服务器节点
   const filteredServerNodes = useMemo(() => {
     const allLabel = ALL_GROUP;
     if (selectedGroups.has(allLabel)) return uniqueServerNodes;
@@ -442,46 +602,100 @@ const PingOverview = memo(() => {
       if (!s.group) return false;
 
       const nodeGroups = s.group.split(";").map(g => g.trim());
-      // 只要該節點的任意一個分組被選中，就展示
+      // 只要该节点的任意一个分组被选中，就展示
       return nodeGroups.some(g => selectedGroups.has(g));
     });
   }, [uniqueServerNodes, selectedGroups]);
 
-  // 可見性狀態
+  const selectableServerUuids = useMemo(() => {
+    const allLabel = ALL_GROUP;
+    const servers = selectedGroups.has(allLabel)
+      ? sortedAllServerNodes
+      : sortedAllServerNodes.filter((server) => {
+          if (!server.group && selectedGroups.size > 0) return false;
+          if (!server.group) return false;
+          const nodeGroups = server.group.split(";").map((g) => g.trim());
+          return nodeGroups.some((group) => selectedGroups.has(group));
+        });
+    return servers.map((server) => server.uuid);
+  }, [sortedAllServerNodes, selectedGroups]);
+
+  // 可见性状态
   const [visibleMonitorNodes, setVisibleMonitorNodes] = useState<Set<string>>(
     new Set()
   );
   const [visibleServers, setVisibleServers] = useState<Set<string>>(
     new Set()
   );
+  const hasInitializedMonitorSelectionRef = useRef(false);
+  const hasInitializedServerSelectionRef = useRef(false);
+  const knownMonitorNodesRef = useRef<Set<string>>(new Set());
+  const knownServerNodesRef = useRef<Set<string>>(new Set());
 
-  // 預設全選：資料變化時選中所有
   useEffect(() => {
-    if (uniqueMonitorNodes.length > 0) {
-      setVisibleMonitorNodes((prev) => {
-        if (prev.size === 0) return new Set(uniqueMonitorNodes);
-        return prev;
+    if (uniqueMonitorNodes.length === 0) return;
+
+    const knownNames = new Set(uniqueMonitorNodes);
+    const previousKnownNames = knownMonitorNodesRef.current;
+    setVisibleMonitorNodes((prev) => {
+      if (!hasInitializedMonitorSelectionRef.current) {
+        hasInitializedMonitorSelectionRef.current = true;
+        return new Set(uniqueMonitorNodes);
+      }
+
+      const next = new Set([...prev].filter((name) => knownNames.has(name)));
+      uniqueMonitorNodes.forEach((name) => {
+        if (!previousKnownNames.has(name)) {
+          next.add(name);
+        }
       });
-    }
+      return next;
+    });
+    knownMonitorNodesRef.current = knownNames;
   }, [uniqueMonitorNodes]);
 
   useEffect(() => {
-    if (filteredServerNodes.length > 0) {
-      setVisibleServers((prev) => {
-        if (prev.size === 0)
-          return new Set(filteredServerNodes.map((s) => s.uuid));
-        return prev;
+    if (sortedAllServerNodes.length === 0) return;
+
+    const knownUuids = new Set(
+      sortedAllServerNodes.map((server) => server.uuid)
+    );
+    const previousKnownUuids = knownServerNodesRef.current;
+    setVisibleServers((prev) => {
+      if (!hasInitializedServerSelectionRef.current) {
+        hasInitializedServerSelectionRef.current = true;
+        return new Set(knownUuids);
+      }
+
+      const wasAllKnownSelected =
+        previousKnownUuids.size > 0 &&
+        [...previousKnownUuids].every((uuid) => prev.has(uuid));
+      const next = new Set([...prev].filter((uuid) => knownUuids.has(uuid)));
+      knownUuids.forEach((uuid) => {
+        if (!previousKnownUuids.has(uuid) && wasAllKnownSelected) {
+          next.add(uuid);
+        }
       });
-    }
-  }, [filteredServerNodes]);
+      return next;
+    });
+    knownServerNodesRef.current = knownUuids;
+  }, [sortedAllServerNodes]);
 
-  // 分組變化時同步可見伺服器
-  useEffect(() => {
-    const filteredUuids = new Set(filteredServerNodes.map((s) => s.uuid));
-    setVisibleServers(filteredUuids);
-  }, [selectedGroups, filteredServerNodes]);
+  const filteredServerUuids = useMemo(
+    () => filteredServerNodes.map((server) => server.uuid),
+    [filteredServerNodes]
+  );
 
-  // 單條線的顯隱狀態（透過統計卡片點擊控制）
+  const displayedServerUuids = useMemo(
+    () => new Set(filteredServerUuids),
+    [filteredServerUuids]
+  );
+
+  const allFilteredServersVisible =
+    selectableServerUuids.length > 0 &&
+    selectableServerUuids.every((uuid) => visibleServers.has(uuid));
+
+  // 单条线的显隐状态（通过统计卡片点击控制）
   const [hiddenLines, setHiddenLines] = useState<Set<string>>(new Set());
 
   const isLineVisible = useCallback(
@@ -489,10 +703,11 @@ const PingOverview = memo(() => {
       return (
         visibleMonitorNodes.has(line.taskName) &&
         visibleServers.has(line.uuid) &&
+        displayedServerUuids.has(line.uuid) &&
         !hiddenLines.has(line.key)
       );
     },
-    [visibleMonitorNodes, visibleServers, hiddenLines]
+    [visibleMonitorNodes, visibleServers, displayedServerUuids, hiddenLines]
   );
 
   const handleToggleLine = (key: string) => {
@@ -507,7 +722,7 @@ const PingOverview = memo(() => {
     });
   };
 
-  // 圖表狀態
+  // 图表状态
   const [timeRange, setTimeRange] = useState<[number, number] | null>(null);
   const [brushIndices, setBrushIndices] = useState<{
     startIndex?: number;
@@ -527,12 +742,27 @@ const PingOverview = memo(() => {
 
   const chartMargin = { top: 8, right: 16, bottom: 8, left: 16 };
 
-  // 合併所有記錄到統一時間線
-  const midData = useMemo(() => {
-    if (allPingData.size === 0 || allLines.length === 0) return [];
+  const activeLines = useMemo(
+    () => allLines.filter((line) => isLineVisible(line)),
+    [allLines, isLineVisible]
+  );
 
-    // 計算最小間隔用於容差
-    const intervals = allLines
+  const activeLineKeys = useMemo(
+    () => activeLines.map((line) => line.key),
+    [activeLines]
+  );
+
+  const activeLineKeySet = useMemo(
+    () => new Set(activeLineKeys),
+    [activeLineKeys]
+  );
+
+  // 合并所有记录到统一时间线
+  const midData = useMemo(() => {
+    if (allPingData.size === 0 && historyStart === undefined) return [];
+
+    // 计算最小间隔用于容差
+    const intervals = activeLines
       .map((l) => l.interval)
       .filter((v) => typeof v === "number" && v > 0);
     const fallbackIntervalSec = intervals.length
@@ -544,7 +774,7 @@ const PingOverview = memo(() => {
       Math.max(800, Math.floor(fallbackIntervalSec * 1000 * 0.25))
     );
 
-    // 使用分桶比對取代線性掃描 O(n*m) -> O(n)
+    // 使用分桶匹配替代线性扫描 O(n*m) -> O(n)
     const bucketSize = toleranceMs * 2;
     const grouped: Record<number, any> = {};
     const bucketToAnchor = new Map<number, number>();
@@ -552,10 +782,13 @@ const PingOverview = memo(() => {
     for (const [uuid, pingData] of allPingData.entries()) {
       if (!pingData?.records) continue;
       for (const rec of pingData.records) {
+        const lineKey = `${uuid}_${rec.task_id}`;
+        if (!activeLineKeySet.has(lineKey)) continue;
+
         const ts = new Date(rec.time).getTime();
         const bucket = Math.floor(ts / bucketSize);
 
-        // 檢查目前桶和相鄰桶
+        // 检查当前桶和相邻桶
         let anchor: number | null = null;
         for (const b of [bucket - 1, bucket, bucket + 1]) {
           const candidate = bucketToAnchor.get(b);
@@ -572,8 +805,24 @@ const PingOverview = memo(() => {
             bucketToAnchor.set(bucket, use);
           }
         }
-        const lineKey = `${uuid}_${rec.task_id}`;
-        grouped[use][lineKey] = rec.value < 0 ? null : rec.value;
+        grouped[use][lineKey] =
+          typeof rec.value === "number" &&
+          Number.isFinite(rec.value) &&
+          rec.value >= 0
+            ? rec.value
+            : null;
+      }
+    }
+
+    if (historyStart !== undefined && historyEnd !== undefined) {
+      for (const time of [historyStart, historyEnd]) {
+        if (!grouped[time]) {
+          grouped[time] = {
+            time: new Date(time).toISOString(),
+            __ts: time,
+            __rangeAnchor: true,
+          };
+        }
       }
     }
 
@@ -584,7 +833,8 @@ const PingOverview = memo(() => {
     if (!merged.length) return [];
 
     const lastTs = (merged as any[])[(merged as any[]).length - 1].__ts;
-    const fromTs = lastTs - hours * 3600_000;
+    const fromTs = historyStart ?? lastTs - chartHours * 3600_000;
+    const toTs = historyEnd ?? Infinity;
     let startIdx = 0;
     for (let i = 0; i < (merged as any[]).length; i++) {
       if ((merged as any[])[i].__ts >= fromTs) {
@@ -592,21 +842,54 @@ const PingOverview = memo(() => {
         break;
       }
     }
-    return (merged as any[]).slice(startIdx);
-  }, [allPingData, allLines, hours]);
+    return (merged as any[]).slice(startIdx).filter((row) => row.__ts <= toTs);
+  }, [
+    allPingData,
+    activeLines,
+    activeLineKeySet,
+    chartHours,
+    historyStart,
+    historyEnd,
+  ]);
 
-  // 圖表資料處理
+  // 图表数据处理
   const chartData = useMemo(() => {
     let full = midData;
-    if (!allLines.length || !full.length) return [];
+    if (!full.length) return [];
 
-    const keys = allLines.map((l) => l.key);
+    const keys = activeLineKeys;
+    if (!keys.length) {
+      return full.map((d: any) => ({
+        ...d,
+        time: d.__ts ?? new Date(d.time).getTime(),
+      }));
+    }
+    const intervalByKey = new Map(
+      activeLines.map((line) => [
+        line.key,
+        Math.max(30, Number(line.interval) || 60) * 1000,
+      ])
+    );
+    full = insertSeriesGapRows(full, intervalByKey, 1.5);
+
+    const autoMax = calculateAutoMaxPoints(full.length, keys.length);
+    const effectiveMax = pingChartMaxPoints > 0 ? pingChartMaxPoints : autoMax;
+    const preProcessMax =
+      effectiveMax > 0 ? Math.min(full.length, effectiveMax * 4) : 0;
+
+    if (preProcessMax > 0 && full.length > preProcessMax) {
+      const withTs = full.map((d: any) => ({
+        ...d,
+        time: d.__ts ?? new Date(d.time).getTime(),
+      }));
+      full = lttbDownsamplePreservingGaps(withTs, preProcessMax, keys);
+    }
 
     if (cutPeak) {
       full = cutPeakValues(full, keys);
     }
 
-    // 使用 Uint8Array 取代 Set<string> 標記 null 值（避免字串拼接開銷）
+    // 使用 Uint8Array 替代 Set<string> 标记 null 值（避免字符串拼接开销）
     const keyCount = keys.length;
     const preservedNulls = new Uint8Array(full.length * keyCount);
     for (let i = 0; i < full.length; i++) {
@@ -623,7 +906,7 @@ const PingOverview = memo(() => {
       maxCapMs: 30 * 60_000,
     });
 
-    // 恢復原始 null 值
+    // 恢复原始 null 值
     for (let i = 0; i < full.length; i++) {
       for (let ki = 0; ki < keyCount; ki++) {
         if (preservedNulls[i * keyCount + ki] === 1) {
@@ -632,34 +915,42 @@ const PingOverview = memo(() => {
       }
     }
 
-    // 自動智慧降採樣：優先使用者設定，否則自動計算
-    const autoMax = calculateAutoMaxPoints(full.length, keys.length);
-    const effectiveMax = pingChartMaxPoints > 0 ? pingChartMaxPoints : autoMax;
-
+    // 自动智能降采样：优先用户配置，否则自动计算
     if (effectiveMax > 0 && full.length > effectiveMax) {
-      // 先轉換時間戳記，再用 LTTB 降採樣
+      // 先转换时间戳，再用 LTTB 降采样
       const withTs = full.map((d: any) => ({
         ...d,
         time: d.__ts ?? new Date(d.time).getTime(),
       }));
-      return lttbDownsample(withTs, effectiveMax, keys);
+      return lttbDownsamplePreservingGaps(withTs, effectiveMax, keys);
     }
 
     return full.map((d: any) => ({
       ...d,
       time: d.__ts ?? new Date(d.time).getTime(),
     }));
-  }, [midData, cutPeak, allLines, pingChartMaxPoints]);
+  }, [midData, cutPeak, activeLineKeys, activeLines, pingChartMaxPoints]);
 
-  // 線條顏色（按伺服器分色相，同伺服器內按監測節點變化）
+  const hasVisiblePingData = useMemo(
+    () =>
+      chartData.some((row) =>
+        activeLineKeys.some((key) => {
+          const value = row[key];
+          return typeof value === "number" && Number.isFinite(value);
+        })
+      ),
+    [chartData, activeLineKeys]
+  );
+
+  // 线条颜色（按服务器分色相，同服务器内按监测节点变化）
   const lineColors = useMemo(() => {
     const map = new Map<string, string>();
-    // 建構伺服器索引對應
+    // 构建服务器索引映射
     const serverUuids = [...new Set(allLines.map((l) => l.uuid))];
     const totalServers = serverUuids.length;
     const serverIndexMap = new Map<string, number>();
     serverUuids.forEach((uuid, i) => serverIndexMap.set(uuid, i));
-    // 建構每台伺服器內的監測節點索引
+    // 构建每台服务器内的监测节点索引
     const serverTaskCount = new Map<string, number>();
     const serverTaskIndex = new Map<string, number>();
     for (const line of allLines) {
@@ -676,7 +967,7 @@ const PingOverview = memo(() => {
     return map;
   }, [allLines]);
 
-  // 切換處理函式
+  // 切换处理函数
   const handleToggleMonitorNode = (name: string) => {
     setVisibleMonitorNodes((prev) => {
       const next = new Set(prev);
@@ -710,15 +1001,19 @@ const PingOverview = memo(() => {
   };
 
   const handleToggleAllServers = () => {
-    if (visibleServers.size === filteredServerNodes.length) {
-      setVisibleServers(new Set());
-    } else {
-      setVisibleServers(new Set(filteredServerNodes.map((s) => s.uuid)));
-    }
+    setVisibleServers((prev) => {
+      const next = new Set(prev);
+      if (allFilteredServersVisible) {
+        selectableServerUuids.forEach((uuid) => next.delete(uuid));
+      } else {
+        selectableServerUuids.forEach((uuid) => next.add(uuid));
+      }
+      return next;
+    });
   };
 
-  // 斷點標記
-  // 斷點標記（上限 200 個，避免渲染過多 ReferenceLine）
+  // 断点标记
+  // 断点标记（上限 200 个，避免渲染过多 ReferenceLine）
   const breakPoints = useMemo(() => {
     if (!connectBreaks || !chartData || chartData.length < 2) {
       return [];
@@ -735,6 +1030,7 @@ const PingOverview = memo(() => {
         const currentPoint = chartData[i];
 
         const isBreak =
+          !currentPoint.__rangeAnchor &&
           (currentPoint[lineKey] === null ||
             currentPoint[lineKey] === undefined) &&
           prevPoint[lineKey] !== null &&
@@ -751,7 +1047,7 @@ const PingOverview = memo(() => {
     return points;
   }, [chartData, allLines, isLineVisible, connectBreaks, lineColors]);
 
-  // 每條線的統計資訊
+  // 每条线的统计信息
   const lineStats = useMemo(() => {
     return allLines.map((line) => {
       const pingData = allPingData.get(line.uuid);
@@ -764,11 +1060,12 @@ const PingOverview = memo(() => {
           color: lineColors.get(line.key) || "#000",
         };
       }
-      // 篩選該任務的記錄
+      // 筛选该任务的记录
       const { loss, latestValue, latestTime } = calculateTaskStats(
         pingData.records,
         line.taskId,
-        timeRange
+        timeRange,
+        line.loss
       );
       return {
         ...line,
@@ -780,27 +1077,29 @@ const PingOverview = memo(() => {
     });
   }, [allLines, allPingData, timeRange, lineColors]);
 
-  // 根據選中的伺服器節點和監測節點過濾統計資訊，並按伺服器排序 + 監測節點排序
+  // 根据选中的服务器节点和监测节点过滤统计信息，并按服务器排序 + 监测节点排序
   const filteredLineStats = useMemo(() => {
     const filtered = lineStats.filter(
       (stat) =>
-        visibleServers.has(stat.uuid) && visibleMonitorNodes.has(stat.taskName)
+        visibleServers.has(stat.uuid) &&
+        displayedServerUuids.has(stat.uuid) &&
+        visibleMonitorNodes.has(stat.taskName)
     );
 
-    // 建構伺服器排序索引（複用 filteredServerNodes 的順序）
+    // 构建服务器排序索引（复用 filteredServerNodes 的顺序）
     const serverOrderMap = new Map<string, number>();
     filteredServerNodes.forEach((s, i) => serverOrderMap.set(s.uuid, i));
 
-    // 建構監測節點排序索引（複用 uniqueMonitorNodes 的順序）
+    // 构建监测节点排序索引（复用 uniqueMonitorNodes 的顺序）
     const monitorOrderMap = new Map<string, number>();
     uniqueMonitorNodes.forEach((name, i) => monitorOrderMap.set(name, i));
 
     filtered.sort((a, b) => {
-      // 優先按伺服器節點排序規則
+      // 优先按服务器节点排序规则
       const serverCmp =
         (serverOrderMap.get(a.uuid) ?? 0) - (serverOrderMap.get(b.uuid) ?? 0);
       if (serverCmp !== 0) return serverCmp;
-      // 其次按監測節點排序規則
+      // 其次按监测节点排序规则
       return (
         (monitorOrderMap.get(a.taskName) ?? 0) -
         (monitorOrderMap.get(b.taskName) ?? 0)
@@ -808,27 +1107,34 @@ const PingOverview = memo(() => {
     });
 
     return filtered;
-  }, [lineStats, visibleServers, visibleMonitorNodes, filteredServerNodes, uniqueMonitorNodes]);
+  }, [lineStats, visibleServers, displayedServerUuids, visibleMonitorNodes, filteredServerNodes, uniqueMonitorNodes]);
 
-  // 切換全部線條顯隱
+  // 切换全部线条显隐
   const handleToggleAllLines = () => {
     const allMonitorSelected =
       visibleMonitorNodes.size === uniqueMonitorNodes.length;
-    const allServersSelected =
-      visibleServers.size === filteredServerNodes.length;
+    const allServersSelected = allFilteredServersVisible;
     const noneHidden = hiddenLines.size === 0;
 
     if (allMonitorSelected && allServersSelected && noneHidden) {
       setVisibleMonitorNodes(new Set());
-      setVisibleServers(new Set());
+      setVisibleServers((prev) => {
+        const next = new Set(prev);
+        filteredServerUuids.forEach((uuid) => next.delete(uuid));
+        return next;
+      });
     } else {
       setVisibleMonitorNodes(new Set(uniqueMonitorNodes));
-      setVisibleServers(new Set(filteredServerNodes.map((s) => s.uuid)));
+      setVisibleServers((prev) => {
+        const next = new Set(prev);
+        filteredServerUuids.forEach((uuid) => next.add(uuid));
+        return next;
+      });
       setHiddenLines(new Set());
     }
   };
 
-  // 僅可見的線條（條件渲染取代 hide 屬性，減少 Recharts 內部處理）
+  // 仅可见的线条（条件渲染替代 hide 属性，减少 Recharts 内部处理）
   const visibleLines = useMemo(
     () => allLines.filter(isLineVisible),
     [allLines, isLineVisible]
@@ -836,12 +1142,12 @@ const PingOverview = memo(() => {
 
   const allVisible =
     visibleMonitorNodes.size === uniqueMonitorNodes.length &&
-    visibleServers.size === filteredServerNodes.length &&
+    allFilteredServersVisible &&
     hiddenLines.size === 0;
 
   const isLoading = nodesLoading || dataLoading;
 
-  if (isLoading && allPingData.size === 0) {
+  if (isLoading && !hasLoadedPingData && allPingData.size === 0) {
     return (
       <div className="flex items-center justify-center h-full">
         <Loading text={t("pingOverview.loadingData")} />
@@ -851,7 +1157,7 @@ const PingOverview = memo(() => {
 
   return (
     <div className="text-card-foreground space-y-4 my-4 fade-in @container">
-      {/* 返回按鈕 + 標題 */}
+      {/* 返回按钮 + 标题 */}
       <Card className="flex items-center justify-between p-4 text-primary">
         <div className="flex items-center gap-2 min-w-0">
           <Button
@@ -867,24 +1173,106 @@ const PingOverview = memo(() => {
         </div>
       </Card>
 
-      {/* 時間範圍選擇器 */}
+      {/* 时间范围选择器 */}
       <div className="flex flex-col items-center w-full space-y-4">
         <Card className={`justify-center p-2 ${isMobile ? "w-full" : ""}`}>
-          <div className="flex space-x-2 overflow-x-auto whitespace-nowrap">
-            {timeRanges.map((range) => (
+          {maxPingRecordPreserveTime > 0 ? (
+            <div className="flex space-x-2 overflow-x-auto whitespace-nowrap">
+              {timeRanges.map((range) => (
+                <Button
+                  key={range.label}
+                  variant={hours === range.hours ? "default" : "ghost"}
+                  size="sm"
+                  onClick={() => setHours(range.hours)}>
+                  {range.label}
+                </Button>
+              ))}
               <Button
-                key={range.label}
-                variant={hours === range.hours ? "default" : "ghost"}
+                variant={isCustomRange ? "default" : "ghost"}
                 size="sm"
-                onClick={() => setHours(range.hours)}>
-                {range.label}
+                onClick={() => {
+                  setHours(CUSTOM_RANGE_HOURS);
+                  setCustomRangeError(null);
+                }}>
+                {t("instancePage.customRange")}
               </Button>
-            ))}
-          </div>
+            </div>
+          ) : (
+            <div className="px-2 py-1 text-sm text-secondary-foreground">
+              {t("pingOverview.noData")}
+            </div>
+          )}
         </Card>
+        {isCustomRange && maxPingRecordPreserveTime > 0 && (
+          <Card className="w-full p-3">
+            <div className="flex flex-col gap-3 @md:flex-row @md:flex-wrap @md:items-end">
+              <div className="flex items-center gap-2 text-sm font-medium @md:self-center">
+                <CalendarDays className="h-4 w-4" />
+                <span>{t("instancePage.customRange")}</span>
+              </div>
+              <label className="flex min-w-0 flex-1 flex-col gap-1 text-xs text-secondary-foreground @md:min-w-56">
+                <span>{t("instancePage.startTime")}</span>
+                <Input
+                  type="datetime-local"
+                  value={customDraftRange.start}
+                  max={customInputMax}
+                  onChange={(event) => {
+                    setCustomDraftRange((current) => ({
+                      ...current,
+                      start: event.target.value,
+                    }));
+                    setCustomQuickRangeDays(null);
+                    setCustomRangeError(null);
+                  }}
+                  aria-label={t("instancePage.startTime")}
+                />
+              </label>
+              <label className="flex min-w-0 flex-1 flex-col gap-1 text-xs text-secondary-foreground @md:min-w-56">
+                <span>{t("instancePage.endTime")}</span>
+                <Input
+                  type="datetime-local"
+                  value={customDraftRange.end}
+                  max={customInputMax}
+                  onChange={(event) => {
+                    setCustomDraftRange((current) => ({
+                      ...current,
+                      end: event.target.value,
+                    }));
+                    setCustomQuickRangeDays(null);
+                    setCustomRangeError(null);
+                  }}
+                  aria-label={t("instancePage.endTime")}
+                />
+              </label>
+              <div className="flex flex-wrap gap-2">
+                {customQuickRanges.map((days) => (
+                  <Button
+                    key={days}
+                    type="button"
+                    variant={
+                      customQuickRangeDays === days ? "default" : "ghost"
+                    }
+                    size="sm"
+                    onClick={() => selectRecentRange(days)}>
+                    {t("instancePage.recentDays", { count: days })}
+                  </Button>
+                ))}
+                <Button type="button" size="sm" onClick={applyCustomRange}>
+                  <Search className="h-4 w-4" />
+                  {t("instancePage.query")}
+                </Button>
+              </div>
+            </div>
+            {customRangeError && (
+              <div className="pt-2 text-sm text-red-500">
+                {customRangeError}
+              </div>
+            )}
+          </Card>
+        )}
       </div>
 
-      {/* 監測節點篩選 */}
+      {/* 监测节点筛选 */}
       {uniqueMonitorNodes.length > 0 && (
         <Card>
           <CardHeader className="pb-2">
@@ -906,7 +1294,7 @@ const PingOverview = memo(() => {
             <div className="flex flex-wrap gap-2">
               {uniqueMonitorNodes.map((name) => {
                 const isVisible = visibleMonitorNodes.has(name);
-                // 取一條代表性線條用於顏色
+                // 取一条代表性线条用于颜色
                 const repLine = allLines.find((l) => l.taskName === name);
                 const color = repLine
                   ? lineColors.get(repLine.key)
@@ -933,7 +1321,7 @@ const PingOverview = memo(() => {
         </Card>
       )}
 
-      {/* 伺服器節點篩選 */}
+      {/* 服务器节点筛选 */}
       {uniqueServerNodes.length > 0 && (
         <Card>
           <CardHeader className="pb-2">
@@ -988,14 +1376,14 @@ const PingOverview = memo(() => {
                 variant="ghost"
                 size="sm"
                 onClick={handleToggleAllServers}>
-                {visibleServers.size === filteredServerNodes.length
+                {allFilteredServersVisible
                   ? t("pingOverview.deselectAll")
                   : t("pingOverview.selectAll")}
               </Button>
             </div>
           </CardHeader>
           <CardContent className="pt-0 space-y-3">
-            {/* 分組篩選按鈕 */}
+            {/* 分组筛选按钮 */}
             {allGroups.length > 1 && (
               <div className="flex flex-wrap gap-2">
                 {allGroups.map((group) => {
@@ -1012,11 +1400,11 @@ const PingOverview = memo(() => {
                 })}
               </div>
             )}
-            {/* 伺服器節點列表 */}
+            {/* 服务器节点列表 */}
             <div className="flex flex-wrap gap-2">
               {filteredServerNodes.map((server) => {
                 const isVisible = visibleServers.has(server.uuid);
-                // 取一條代表性線條用於顏色
+                // 取一条代表性线条用于颜色
                 const repLine = allLines.find(
                   (l) => l.uuid === server.uuid
                 );
@@ -1045,7 +1433,7 @@ const PingOverview = memo(() => {
         </Card>
       )}
 
-      {/* 線條統計資訊摘要 */}
+      {/* 线条统计信息摘要 */}
       {filteredLineStats.length > 0 && (
         <Card className="relative">
           <div className="absolute top-2 right-2">
@@ -1091,11 +1479,14 @@ const PingOverview = memo(() => {
         </Card>
       )}
 
-      {/* 圖表 */}
+      {/* 图表 */}
       <Card className="flex-grow flex flex-col relative">
         {isLoading && (
           <div className="absolute inset-0 flex items-center justify-center purcarte-blur rounded-lg z-10">
-            <Loading text={t("chart.loadingData")} />
+            <Loading
+              text={t("chart.loadingData")}
+              className="!min-h-0 h-full"
+            />
           </div>
         )}
         {dataError && (
@@ -1193,7 +1584,7 @@ const PingOverview = memo(() => {
             </div>
           </div>
         </CardHeader>
-        <CardContent className="pt-0 flex-grow flex flex-col"
+        <CardContent className="relative pt-0 flex-grow flex flex-col"
          ref={chartContentRef}
         >
           {chartData.length > 0 ? (
@@ -1210,7 +1601,12 @@ const PingOverview = memo(() => {
                 <XAxis
                   type="number"
                   dataKey="time"
-                  domain={timeRange || ["dataMin", "dataMax"]}
+                  domain={
+                    timeRange ||
+                    (historyStart !== undefined && historyEnd !== undefined
+                      ? [historyStart, historyEnd]
+                      : ["dataMin", "dataMax"])
+                  }
                   tickFormatter={(time) => {
                     const date = new Date(time);
                     return date.toLocaleString([], {
@@ -1240,7 +1636,9 @@ const PingOverview = memo(() => {
                   {...tooltipProps}
                   content={
                     <ScrollableTooltip
-                      labelFormatter={(value: any) => lableFormatter(value, hours)}
+                      labelFormatter={(value: any) =>
+                        lableFormatter(value, chartHours)
+                      }
                     />
                   }
                 />
@@ -1307,6 +1705,11 @@ const PingOverview = memo(() => {
             </ResponsiveContainer>
           ) : (
             <div className="min-h-90 flex items-center justify-center">
+              <p>{t("pingOverview.noData")}</p>
+            </div>
+          )}
+          {!isLoading && !hasVisiblePingData && chartData.length > 0 && (
+            <div className="pointer-events-none absolute inset-0 flex items-center justify-center">
               <p>{t("pingOverview.noData")}</p>
             </div>
           )}

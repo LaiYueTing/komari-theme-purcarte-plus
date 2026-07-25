@@ -1,9 +1,11 @@
-// API 服務 - 用於與 Komari 後端通訊
+// API 服务 - 用于与 Komari 后端通信
 import type {
   NodeData,
   ApiResponse,
   PublicInfo,
   HistoryRecord,
+  HistoryRangeMetadata,
+  LoadHistoryResponse,
   PingHistoryResponse,
   PingHistoryRecord,
   PingTask,
@@ -15,10 +17,66 @@ import type { RpcNodeStatus, RpcNodeStatusMap } from "@/types/rpc";
 import { convertNodeStatsToRpcNodeStatus } from "@/utils/converters";
 import type { SiteStatus } from "@/config/default";
 
+const LOAD_HISTORY_METRIC_KEYS = [
+  "cpu.usage",
+  "gpu.usage",
+  "memory.used",
+  "memory.total",
+  "swap.used",
+  "swap.total",
+  "load.average",
+  "temperature",
+  "disk.used",
+  "disk.total",
+  "net.in.rate",
+  "net.out.rate",
+  "net.total.up",
+  "net.total.down",
+  "process.count",
+  "connections.tcp",
+  "connections.udp",
+];
+
+const METRIC_DEFAULT_MAX_POINTS = 700;
+const METRIC_QUERY_MAX_POINTS = 200_000;
+const METRIC_QUERY_POINT_INTERVAL_SECONDS = 30;
+const RPC_WS_CONNECT_TIMEOUT_MS = 5000;
+
+class RpcResponseError extends Error {}
+
+export type HistoryQueryRange = {
+  start: string;
+  end: string;
+};
+
+type MetricDefinitionRetention = {
+  name?: string;
+  metric_key?: string;
+  retention_days?: number;
+};
+
+const toNonNegativeNumber = (value: unknown): number | null => {
+  const parsed = Number(value);
+  return Number.isFinite(parsed) && parsed >= 0 ? parsed : null;
+};
+
 class ApiService {
   private baseUrl: string;
   public useRpc = false;
   private rpcCallId = 1;
+  private rpcWs: WebSocket | null = null;
+  private rpcWsConnectPromise: Promise<void> | null = null;
+  private rpcWsPending = new Map<
+    number,
+    {
+      resolve: (value: any) => void;
+      reject: (error: Error) => void;
+      timeout: ReturnType<typeof setTimeout>;
+    }
+  >();
+  private metricDefinitionsPromise: Promise<
+    MetricDefinitionRetention[] | null
+  > | null = null;
 
   constructor() {
     this.baseUrl = "";
@@ -26,8 +84,29 @@ class ApiService {
 
   private async rpcCall<T>(
     method: string,
-    params: any = {}
+    params: any = {},
+    options: { silent?: boolean } = {}
   ): Promise<ApiResponse<T>> {
+    if (typeof window !== "undefined") {
+      try {
+        await this.ensureRpcWebSocket();
+        const result = await this.rpcCallViaWebSocket<T>(method, params);
+        return { status: "success", message: "", data: result };
+      } catch (error) {
+        if (error instanceof RpcResponseError) {
+          if (!options.silent) {
+            console.error(`RPC call to '${method}' failed:`, error);
+          }
+          return {
+            status: "error",
+            message: error.message,
+            data: null as any,
+          };
+        }
+        // HTTP is a transport fallback only when WebSocket is unavailable.
+      }
+    }
+
     try {
       const response = await fetch(`${this.baseUrl}/api/rpc2`, {
         method: "POST",
@@ -54,13 +133,788 @@ class ApiService {
       }
       return { status: "success", message: "", data: rpcResponse.result };
     } catch (error) {
-      console.error(`RPC call to '${method}' failed:`, error);
+      if (!options.silent) {
+        console.error(`RPC call to '${method}' failed:`, error);
+      }
       return {
         status: "error",
         message: error instanceof Error ? error.message : "Unknown RPC error",
         data: null as any,
       };
     }
+  }
+
+  private ensureRpcWebSocket(): Promise<void> {
+    if (this.rpcWs?.readyState === WebSocket.OPEN) {
+      return Promise.resolve();
+    }
+    if (this.rpcWs?.readyState === WebSocket.CONNECTING) {
+      return (
+        this.rpcWsConnectPromise ||
+        Promise.reject(new Error("RPC2 WebSocket connection is unavailable"))
+      );
+    }
+
+    const protocol = window.location.protocol === "https:" ? "wss:" : "ws:";
+    const ws = new WebSocket(`${protocol}//${window.location.host}/api/rpc2`);
+    this.rpcWs = ws;
+
+    this.rpcWsConnectPromise = new Promise<void>((resolve, reject) => {
+      const timeout = setTimeout(() => {
+        reject(new Error("RPC2 WebSocket connection timed out"));
+        ws.close();
+      }, RPC_WS_CONNECT_TIMEOUT_MS);
+
+      ws.onopen = () => {
+        clearTimeout(timeout);
+        if (this.rpcWs === ws) this.rpcWsConnectPromise = null;
+        resolve();
+      };
+
+      ws.onerror = () => {
+        clearTimeout(timeout);
+        reject(new Error("RPC2 WebSocket connection failed"));
+      };
+
+      ws.onmessage = (event) => {
+        try {
+          const response = JSON.parse(event.data);
+          const pending = this.rpcWsPending.get(response.id);
+          if (!pending) return;
+          clearTimeout(pending.timeout);
+          this.rpcWsPending.delete(response.id);
+          if (response.error) {
+            pending.reject(
+              new RpcResponseError(
+                `RPC Error: ${response.error.message} (Code: ${response.error.code})`
+              )
+            );
+          } else {
+            pending.resolve(response.result);
+          }
+        } catch (error) {
+          console.error("Failed to parse RPC2 WebSocket message:", error);
+        }
+      };
+
+      ws.onclose = () => {
+        clearTimeout(timeout);
+        reject(new Error("RPC2 WebSocket disconnected"));
+        if (this.rpcWs === ws) {
+          this.rpcWs = null;
+          this.rpcWsConnectPromise = null;
+        }
+        for (const [, pending] of this.rpcWsPending) {
+          clearTimeout(pending.timeout);
+          pending.reject(new Error("RPC2 WebSocket disconnected"));
+        }
+        this.rpcWsPending.clear();
+      };
+    });
+
+    return this.rpcWsConnectPromise;
+  }
+
+  private rpcCallViaWebSocket<T>(method: string, params: any = {}): Promise<T> {
+    if (!this.rpcWs || this.rpcWs.readyState !== WebSocket.OPEN) {
+      return Promise.reject(new Error("RPC2 WebSocket is not connected"));
+    }
+
+    const id = this.rpcCallId++;
+    const request = {
+      jsonrpc: "2.0",
+      method,
+      params,
+      id,
+    };
+
+    return new Promise<T>((resolve, reject) => {
+      const timeout = setTimeout(() => {
+        this.rpcWsPending.delete(id);
+        reject(new Error(`RPC2 request timed out: ${method}`));
+      }, 30000);
+      this.rpcWsPending.set(id, { resolve, reject, timeout });
+      this.rpcWs?.send(JSON.stringify(request));
+    });
+  }
+
+  private async rpcFallback<T>(
+    attempts: Array<{ method: string; params?: any }>
+  ): Promise<ApiResponse<T>> {
+    let lastResponse: ApiResponse<T> | null = null;
+    for (let i = 0; i < attempts.length; i++) {
+      const attempt = attempts[i];
+      const response = await this.rpcCall<T>(attempt.method, attempt.params || {}, {
+        silent: i < attempts.length - 1,
+      });
+      if (response.status === "success" && response.data != null) {
+        return response;
+      }
+      lastResponse = response;
+    }
+    return (
+      lastResponse || {
+        status: "error",
+        message: "No RPC attempts were provided",
+        data: null as any,
+      }
+    );
+  }
+
+  private normalizeHistoryTime(value: unknown): string | undefined {
+    const time = new Date(value as any).getTime();
+    return Number.isFinite(time) ? new Date(time).toISOString() : undefined;
+  }
+
+  private historyRangeMetadata(data: any): HistoryRangeMetadata {
+    const from = this.normalizeHistoryTime(data?.from ?? data?.start);
+    const to = this.normalizeHistoryTime(data?.to ?? data?.end);
+    return {
+      ...(from ? { from } : {}),
+      ...(to ? { to } : {}),
+    };
+  }
+
+  private normalizeLoadHistory(
+    data: any,
+    uuid: string
+  ): LoadHistoryResponse | null {
+    if (!data) return null;
+    const records = Array.isArray(data.records)
+      ? data.records
+      : data.records?.[uuid] || [];
+    return {
+      count: data.count ?? records.length,
+      records,
+      ...this.historyRangeMetadata(data),
+    };
+  }
+
+  private normalizePingHistory(data: any): PingHistoryResponse | null {
+    if (!data) return null;
+    const records: PingHistoryRecord[] = Array.isArray(data.records)
+      ? data.records
+          .map((record: any) => {
+            const taskId = Number(record.task_id);
+            const value =
+              record.value === null ? null : this.metricValue(record.value);
+            if (!Number.isFinite(taskId)) return null;
+            return {
+              ...record,
+              task_id: taskId,
+              value: value === null ? null : value,
+            };
+          })
+          .filter(Boolean)
+      : [];
+    let tasks: PingTask[] = Array.isArray(data.tasks)
+      ? data.tasks
+          .map((task: any) => {
+            const id = Number(task.id);
+            if (!Number.isFinite(id)) return null;
+
+            const loss = this.metricValue(task.loss);
+            return {
+              ...task,
+              id,
+              loss:
+                loss !== null && loss >= 0 ? Math.min(100, loss) : undefined,
+            };
+          })
+          .filter((task: PingTask | null): task is PingTask => task !== null)
+      : [];
+
+    if (tasks.length === 0 && records.length > 0) {
+      const taskIdSet = new Set<number>();
+      records.forEach((record: any) => {
+        const taskId = Number(record.task_id);
+        if (Number.isFinite(taskId)) taskIdSet.add(taskId);
+      });
+
+      tasks = Array.from(taskIdSet)
+        .sort((a, b) => a - b)
+        .map((id) => ({
+          id,
+          name: `Task ${id}`,
+          interval: 30,
+        }));
+    }
+
+    return {
+      count: data.count ?? records.length,
+      records,
+      tasks,
+      ...this.historyRangeMetadata(data),
+    };
+  }
+
+  private metricTags(value: any): Record<string, string> | undefined {
+    for (const tags of [value?.tags, value?.tag, value?.labels]) {
+      if (
+        tags &&
+        typeof tags === "object" &&
+        Object.keys(tags).length > 0
+      ) {
+        return tags;
+      }
+    }
+    return undefined;
+  }
+
+  private metricValue(value: unknown): number | null {
+    if (typeof value === "number") {
+      return Number.isFinite(value) ? value : null;
+    }
+    if (typeof value === "string" && value.trim() !== "") {
+      const parsed = Number(value);
+      return Number.isFinite(parsed) ? parsed : null;
+    }
+    return null;
+  }
+
+  private hasFiniteMetricValue(records: Array<Record<string, unknown>>) {
+    return records.some((record) =>
+      Object.entries(record).some(
+        ([key, value]) =>
+          key !== "time" &&
+          key !== "client" &&
+          typeof value === "number" &&
+          Number.isFinite(value)
+      )
+    );
+  }
+
+  private hasFinitePingValue(records: PingHistoryRecord[]) {
+    return records.some(
+      (record) =>
+        typeof record.value === "number" &&
+        Number.isFinite(record.value) &&
+        record.value >= 0
+    );
+  }
+
+  private historyRangeHours(
+    hours: number,
+    range?: HistoryQueryRange | null
+  ) {
+    if (range?.start && range?.end) {
+      const start = new Date(range.start).getTime();
+      const end = new Date(range.end).getTime();
+      const rangeHours = (end - start) / 3_600_000;
+      if (Number.isFinite(rangeHours) && rangeHours > 0) {
+        return rangeHours;
+      }
+    }
+    return Number.isFinite(hours) && hours > 0 ? hours : 1;
+  }
+
+  private metricQueryMaxPoints(
+    hours: number,
+    range?: HistoryQueryRange | null
+  ) {
+    const rangeSeconds = this.historyRangeHours(hours, range) * 3600;
+    const points =
+      Math.ceil(rangeSeconds / METRIC_QUERY_POINT_INTERVAL_SECONDS) + 2;
+    return Math.min(
+      METRIC_QUERY_MAX_POINTS,
+      Math.max(METRIC_DEFAULT_MAX_POINTS, points)
+    );
+  }
+
+  private isPingMetricsConsistent(
+    records: PingHistoryRecord[],
+    statsData: any
+  ) {
+    if (records.length === 0) return false;
+    if (!this.hasFinitePingValue(records)) return true;
+
+    const statsList = Array.isArray(statsData?.stats) ? statsData.stats : [];
+    if (statsList.length === 0) return true;
+
+    const maxByTask = new Map<number, number>();
+    for (const stat of statsList) {
+      const taskId = Number(stat.task_id);
+      const candidates = [stat.max, stat.latest, stat.avg]
+        .map((value) => this.metricValue(value))
+        .filter((value): value is number => value !== null && value >= 0);
+      if (!Number.isFinite(taskId) || candidates.length === 0) continue;
+      maxByTask.set(taskId, Math.max(...candidates));
+    }
+    if (maxByTask.size === 0) return true;
+
+    for (const record of records) {
+      if (
+        typeof record.value !== "number" ||
+        !Number.isFinite(record.value) ||
+        record.value < 0
+      ) {
+        continue;
+      }
+      const statMax = maxByTask.get(Number(record.task_id));
+      if (typeof statMax !== "number" || !Number.isFinite(statMax)) continue;
+      const allowedMax = Math.max(statMax * 3, statMax + 1000);
+      if (record.value > allowedMax) return false;
+    }
+
+    return true;
+  }
+
+  private async getLoadHistoryFromRecordFallbacks(
+    uuid: string,
+    hours: number,
+    range?: HistoryQueryRange | null
+  ): Promise<LoadHistoryResponse | null> {
+    const commonParams = {
+      uuid,
+      type: "load",
+      load_type: "all",
+      maxCount: -1,
+      ...(range ? { start: range.start, end: range.end } : { hours }),
+    };
+    const attempts = range
+      ? [{ method: "common:getRecords", params: commonParams }]
+      : [
+          {
+            method: "public:getRecordsByUUID",
+            params: { uuid, hours: String(hours), load_type: "all" },
+          },
+          { method: "common:getRecords", params: commonParams },
+        ];
+
+    for (let i = 0; i < attempts.length; i++) {
+      const attempt = attempts[i];
+      const response = await this.rpcCall<any>(
+        attempt.method,
+        attempt.params,
+        { silent: i < attempts.length - 1 }
+      );
+      if (response.status !== "success" || !response.data) continue;
+      const normalized = this.normalizeLoadHistory(response.data, uuid);
+      if (
+        normalized &&
+        this.hasFiniteMetricValue(normalized.records as any[])
+      ) {
+        return normalized;
+      }
+    }
+
+    return null;
+  }
+
+  private async getPingHistoryFromRecordFallbacks(
+    uuid: string,
+    hours: number,
+    range?: HistoryQueryRange | null
+  ): Promise<PingHistoryResponse | null> {
+    const commonParams = {
+      uuid,
+      type: "ping",
+      task_id: -1,
+      maxCount: -1,
+      ...(range ? { start: range.start, end: range.end } : { hours }),
+    };
+    const attempts = range
+      ? [{ method: "common:getRecords", params: commonParams }]
+      : [
+          {
+            method: "public:getPingRecords",
+            params: { uuid, hours: String(hours) },
+          },
+          { method: "common:getRecords", params: commonParams },
+        ];
+
+    for (let i = 0; i < attempts.length; i++) {
+      const attempt = attempts[i];
+      const response = await this.rpcCall<any>(
+        attempt.method,
+        attempt.params,
+        { silent: i < attempts.length - 1 }
+      );
+      if (response.status !== "success" || !response.data) continue;
+      const normalized = this.normalizePingHistory(response.data);
+      if (normalized && normalized.records.length > 0) {
+        return normalized;
+      }
+    }
+
+    return null;
+  }
+
+  private async getMetricDefinitions() {
+    if (!this.metricDefinitionsPromise) {
+      this.metricDefinitionsPromise = this.rpcCall<
+        MetricDefinitionRetention[]
+      >("public:listMetricDefinitions", {}, { silent: true }).then((response) =>
+        response.status === "success" && Array.isArray(response.data)
+          ? response.data
+          : null
+      );
+    }
+    return this.metricDefinitionsPromise;
+  }
+
+  private async getMetricDefinitionKeys() {
+    const definitions = await this.getMetricDefinitions();
+    if (definitions === null) return null;
+    return new Set(
+      definitions
+        .filter(
+          (definition) =>
+            (toNonNegativeNumber(definition.retention_days) ?? 0) > 0
+        )
+        .map((definition) =>
+          String(definition.name || definition.metric_key || "")
+        )
+        .filter(Boolean)
+    );
+  }
+
+  private async filterAvailableMetricKeys(metricKeys: string[]) {
+    const available = await this.getMetricDefinitionKeys();
+    if (!available) {
+      return metricKeys;
+    }
+    return metricKeys.filter((key) => available.has(key));
+  }
+
+  private async queryMetrics(params: any): Promise<any | null> {
+    const response = await this.rpcCall<any>("public:queryMetrics", params, {
+      silent: true,
+    });
+    return response.status === "success" ? response.data : null;
+  }
+
+  private legacyMetricRetentionDays(
+    publicInfo: PublicInfo | null | undefined,
+    kind: "load" | "ping"
+  ): number | null {
+    const specificDays = toNonNegativeNumber(
+      kind === "load"
+        ? publicInfo?.load_metric_retention_days
+        : publicInfo?.ping_metric_retention_days
+    );
+    if (specificDays !== null) return specificDays;
+
+    const legacyDays = toNonNegativeNumber(publicInfo?.metric_retention_days);
+    if (legacyDays !== null) return legacyDays;
+
+    const legacyHours = toNonNegativeNumber(
+      kind === "load"
+        ? publicInfo?.record_preserve_time
+        : publicInfo?.ping_record_preserve_time
+    );
+    return legacyHours === null ? null : legacyHours / 24;
+  }
+
+  async getLoadMetricRetentionDays(
+    publicInfo?: PublicInfo | null
+  ): Promise<number | null> {
+    if (this.useRpc) {
+      const definitions = await this.getMetricDefinitions();
+      if (definitions !== null) {
+        const keySet = new Set(LOAD_HISTORY_METRIC_KEYS);
+        const retentionDays = definitions
+          .filter((definition) =>
+            keySet.has(String(definition.name || definition.metric_key || ""))
+          )
+          .map((definition) => toNonNegativeNumber(definition.retention_days))
+          .filter((days): days is number => days !== null);
+        if (retentionDays.length > 0) {
+          const enabledDays = retentionDays.filter((days) => days > 0);
+          return enabledDays.length > 0 ? Math.max(...enabledDays) : 0;
+        }
+      }
+    }
+    return this.legacyMetricRetentionDays(publicInfo, "load");
+  }
+
+  async getPingMetricRetentionDays(
+    publicInfo?: PublicInfo | null
+  ): Promise<number | null> {
+    if (this.useRpc) {
+      const definitions = await this.getMetricDefinitions();
+      if (definitions !== null) {
+        const findRetention = (metricKey: string) => {
+          const definition = definitions.find(
+            (item) =>
+              String(item.name || item.metric_key || "") === metricKey
+          );
+          return definition
+            ? toNonNegativeNumber(definition.retention_days)
+            : null;
+        };
+        const latencyDays = findRetention("ping.latency_ms");
+        if (latencyDays !== null) {
+          if (latencyDays === 0) return 0;
+          const lossDays = findRetention("ping.loss");
+          return lossDays !== null && lossDays > 0
+            ? Math.min(latencyDays, lossDays)
+            : latencyDays;
+        }
+      }
+    }
+    return this.legacyMetricRetentionDays(publicInfo, "ping");
+  }
+
+  private async getLoadHistoryFromMetrics(
+    uuid: string,
+    hours: number,
+    range?: HistoryQueryRange | null
+  ): Promise<LoadHistoryResponse | null> {
+    const metricToRecordKey: Record<string, keyof HistoryRecord> = {
+      "cpu.usage": "cpu",
+      "gpu.usage": "gpu",
+      "memory.used": "ram",
+      "memory.total": "ram_total",
+      "swap.used": "swap",
+      "swap.total": "swap_total",
+      "load.average": "load",
+      temperature: "temp",
+      "disk.used": "disk",
+      "disk.total": "disk_total",
+      "net.in.rate": "net_in",
+      "net.out.rate": "net_out",
+      "net.total.up": "net_total_up",
+      "net.total.down": "net_total_down",
+      "process.count": "process",
+      "connections.tcp": "connections",
+      "connections.udp": "connections_udp",
+    };
+    const metricKeys = await this.filterAvailableMetricKeys(
+      Object.keys(metricToRecordKey)
+    );
+    if (metricKeys.length === 0) return null;
+    const buildRecords = (data: any) => {
+      const seriesList = Array.isArray(data?.series) ? data.series : [];
+      if (seriesList.length === 0) return null;
+
+      const rows = new Map<string, Partial<HistoryRecord>>();
+      for (const series of seriesList) {
+        const metricKey = series.metric_key || series.name;
+        const recordKey = metricToRecordKey[metricKey];
+        if (!recordKey) continue;
+        for (const point of series.points || []) {
+          const time = new Date(point.time).getTime();
+          if (!Number.isFinite(time)) continue;
+          const timestamp = new Date(time).toISOString();
+          const row = rows.get(timestamp) || { client: uuid, time: timestamp };
+          (row as any)[recordKey] = this.metricValue(point.value);
+          rows.set(timestamp, row);
+        }
+      }
+
+      const records = Array.from(rows.values())
+        .sort(
+          (a, b) =>
+            new Date(a.time || 0).getTime() - new Date(b.time || 0).getTime()
+        )
+        .map((row) => ({ client: uuid, ...row } as HistoryRecord));
+
+      return records.length > 0 ? records : null;
+    };
+
+    const baseParams = {
+      metric_keys: metricKeys,
+      entity_id: uuid,
+      ...(range ? { start: range.start, end: range.end } : { hours }),
+      aggregation: "avg",
+    };
+    const data = await this.queryMetrics({
+      ...baseParams,
+      max_points: this.metricQueryMaxPoints(hours, range),
+      downsample: true,
+      fill_empty: true,
+    });
+    const records = buildRecords(data);
+
+    return records && this.hasFiniteMetricValue(records as any[])
+      ? {
+          count: records.length,
+          records,
+          ...this.historyRangeMetadata(data),
+        }
+      : null;
+  }
+
+  private async getPingHistoryFromMetrics(
+    uuid: string,
+    hours: number,
+    range?: HistoryQueryRange | null
+  ): Promise<PingHistoryResponse | null> {
+    const metricKeys = await this.filterAvailableMetricKeys([
+      "ping.latency_ms",
+      "ping.loss",
+    ]);
+    if (!metricKeys.includes("ping.latency_ms")) return null;
+    const baseMetricParams = {
+      metric_keys: metricKeys,
+      entity_id: uuid,
+      ...(range ? { start: range.start, end: range.end } : { hours }),
+      aggregation: "avg",
+    };
+    const queryMaxPoints = this.metricQueryMaxPoints(hours, range);
+    const queryPingMetrics = async () => {
+      const params = {
+        ...baseMetricParams,
+        max_points: queryMaxPoints,
+        downsample: true,
+        fill_empty: true,
+      };
+      const data = await this.queryMetrics(params);
+      if (data || !metricKeys.includes("ping.loss")) return data;
+
+      // Komari versions without ping.loss reject the whole multi-metric query.
+      return this.queryMetrics({
+        ...params,
+        metric_keys: ["ping.latency_ms"],
+      });
+    };
+    const [metricData, taskList, statsData] = await Promise.all([
+      queryPingMetrics(),
+      this.getPingTasks(),
+      this.rpcCall<any>(
+        "public:getPingMetricStats",
+        {
+          entity_id: uuid,
+          ...(range ? { start: range.start, end: range.end } : { hours }),
+          max_points: queryMaxPoints,
+        },
+        { silent: true }
+      ).then((response) =>
+        response.status === "success" ? response.data : null
+      ),
+    ]);
+
+    const buildRecords = (data: any) => {
+      const seriesList = Array.isArray(data?.series) ? data.series : [];
+      if (seriesList.length === 0) return null;
+
+      const latencyRecords = new Map<string, PingHistoryRecord>();
+      const lossByPoint = new Map<
+        string,
+        { ratio: number | null; sampleCount?: number }
+      >();
+      const taskIds = new Set<number>();
+      const intervalByTask = new Map<number, number>();
+      for (const series of seriesList) {
+        const metricKey = String(series.metric_key || series.name || "");
+        if (metricKey !== "ping.latency_ms" && metricKey !== "ping.loss") {
+          continue;
+        }
+        const seriesInterval = Number(series.interval_seconds);
+        for (const point of series.points || []) {
+          const tags = this.metricTags(point) || this.metricTags(series);
+          const taskId = Number(tags?.task_id);
+          const time = new Date(point.time).getTime();
+          if (!Number.isFinite(taskId) || !Number.isFinite(time)) continue;
+          const value = this.metricValue(point.value);
+          const timestamp = new Date(time).toISOString();
+          const pointKey = `${taskId}\u0000${timestamp}`;
+          if (metricKey === "ping.loss") {
+            const sampleCount = Number(point.count);
+            lossByPoint.set(pointKey, {
+              ratio: value,
+              ...(Number.isFinite(sampleCount) && sampleCount > 0
+                ? { sampleCount }
+                : {}),
+            });
+            continue;
+          }
+
+          taskIds.add(taskId);
+          if (Number.isFinite(seriesInterval) && seriesInterval > 0) {
+            intervalByTask.set(
+              taskId,
+              Math.max(intervalByTask.get(taskId) || 0, seriesInterval)
+            );
+          }
+          latencyRecords.set(pointKey, {
+            task_id: taskId,
+            time: timestamp,
+            value,
+            client: uuid,
+          } as PingHistoryRecord);
+        }
+      }
+
+      const records = Array.from(latencyRecords.entries()).map(
+        ([pointKey, record]) => {
+          const lossPoint = lossByPoint.get(pointKey);
+          if (!lossPoint) return record;
+
+          const lossRatio = lossPoint.ratio;
+          return {
+            ...record,
+            ...(lossRatio !== null ? { loss_ratio: lossRatio } : {}),
+            ...(lossPoint.sampleCount !== undefined
+              ? { loss_sample_count: lossPoint.sampleCount }
+              : {}),
+            ...(lossRatio !== null && lossRatio > 0 ? { value: null } : {}),
+          };
+        }
+      );
+      return { records, taskIds, intervalByTask };
+    };
+
+    const built = buildRecords(metricData);
+    if (!built || !this.isPingMetricsConsistent(built.records, statsData)) {
+      return null;
+    }
+
+    const { records, taskIds, intervalByTask } = built;
+
+    const taskMap = new Map<number, PingTask>();
+    for (const task of taskList) {
+      const id = Number(task.id);
+      if (!Number.isFinite(id) || !taskIds.has(id)) continue;
+      taskMap.set(id, {
+        id,
+        name: task.name || `Task ${id}`,
+        interval: Number(task.interval) || 60,
+        data_interval: intervalByTask.get(id),
+      });
+    }
+
+    const statsList = Array.isArray(statsData?.stats) ? statsData.stats : [];
+    for (const stat of statsList) {
+      const id = Number(stat.task_id);
+      if (!Number.isFinite(id) || !taskIds.has(id)) continue;
+      const existing = taskMap.get(id);
+      const loss = this.metricValue(stat.loss);
+      taskMap.set(id, {
+        id,
+        name: stat.name || existing?.name || `Task ${id}`,
+        interval: Number(stat.interval) || existing?.interval || 60,
+        data_interval: intervalByTask.get(id) || existing?.data_interval,
+        ...(loss !== null && loss >= 0
+          ? { loss: Math.min(100, loss) }
+          : existing?.loss !== undefined
+            ? { loss: existing.loss }
+            : {}),
+      });
+    }
+
+    for (const id of taskIds) {
+      if (!taskMap.has(id)) {
+        taskMap.set(id, {
+          id,
+          name: `Task ${id}`,
+          interval: 60,
+          data_interval: intervalByTask.get(id),
+        });
+      }
+    }
+
+    records.sort(
+      (a, b) => new Date(a.time).getTime() - new Date(b.time).getTime()
+    );
+
+    return {
+      count: records.length,
+      records,
+      tasks: Array.from(taskMap.values()).sort((a, b) => a.id - b.id),
+      ...this.historyRangeMetadata(metricData),
+    };
   }
 
   async get<T>(
@@ -88,16 +942,18 @@ class ApiService {
     }
   }
 
-  // 取得所有節點資訊
+  // 获取所有节点信息
   async getNodes(): Promise<NodeData[]> {
     if (this.useRpc) {
-      const response = await this.rpcCall<{ [uuid: string]: NodeData }>(
-        "common:getNodes"
-      );
+      const response = await this.rpcFallback<NodeData[] | { [uuid: string]: NodeData }>([
+        { method: "public:getNodesInformation" },
+        { method: "common:getNodes" },
+      ]);
       if (response.status === "success" && response.data) {
-        return Object.values(response.data);
+        return Array.isArray(response.data)
+          ? response.data
+          : Object.values(response.data);
       }
-      return [];
     }
     const response = await this.get<NodeData[]>("/api/nodes");
     if ("status" in response && response.status === "success") {
@@ -106,120 +962,140 @@ class ApiService {
     return [];
   }
 
-  // 取得指定節點的最近狀態
+  // 获取指定节点的最近状态
   async getNodeRecentStats(uuid: string): Promise<RpcNodeStatus[]> {
     if (this.useRpc) {
-      const response = await this.rpcCall<{ records: RpcNodeStatus[] }>(
-        "common:getNodeRecentStatus",
-        { uuid }
-      );
-      return response.status === "success" ? response.data.records : [];
+      const response = await this.rpcFallback<RpcNodeStatus[] | { records: RpcNodeStatus[] }>([
+        { method: "public:getClientRecentRecords", params: { uuid } },
+        { method: "common:getNodeRecentStatus", params: { uuid } },
+      ]);
+      if (response.status === "success" && response.data) {
+        return Array.isArray(response.data)
+          ? response.data
+          : response.data.records || [];
+      }
     }
-    const response = await this.get<NodeStats[]>(`/api/recent/${uuid}`);
-    if (response.status === "success" && Array.isArray(response.data)) {
-      return response.data.map((stats) =>
-        convertNodeStatsToRpcNodeStatus(stats, uuid, true)
-      );
-    }
-    return [];
+    return this.getRecentLoadHistory(uuid);
   }
 
-  // 取得負載歷史記錄
+  // 获取实时负载首屏历史，官方 1.2.6 默认主题这里直接使用公开 REST
+  async getRecentLoadHistory(uuid: string): Promise<RpcNodeStatus[]> {
+    const response = await this.get<NodeStats[]>(`/api/recent/${uuid}`);
+    const payload = response as any;
+    const records: NodeStats[] = Array.isArray(payload)
+      ? payload
+      : Array.isArray(payload?.data)
+      ? payload.data
+      : [];
+
+    return records.map((stats) =>
+      convertNodeStatsToRpcNodeStatus(stats, uuid, true)
+    );
+  }
+
+  // 获取负载历史记录
   async getLoadHistory(
     uuid: string,
-    hours: number = 24
-  ): Promise<{ count: number; records: HistoryRecord[] } | null> {
+    hours: number = 24,
+    range?: HistoryQueryRange | null
+  ): Promise<LoadHistoryResponse | null> {
     if (this.useRpc) {
-      const response = await this.rpcCall<any>("common:getRecords", {
+      const metricHistory = await this.getLoadHistoryFromMetrics(
         uuid,
         hours,
-        type: "load",
-      });
-      if (response.status === "success" && response.data) {
-        const data = response.data;
-        // RPC common:getRecords 函式使用 uuid 直接回傳 StatusRecord[] 型別的記錄
-        // 如果未提供 uuid，則 records 為 { [uuid]: StatusRecord[] }
-        const records = Array.isArray(data.records)
-          ? data.records
-          : data.records?.[uuid] || [];
-        return {
-          count: data.count ?? records.length,
-          records,
-        };
-      }
-      return null;
+        range
+      );
+      if (metricHistory) return metricHistory;
+
+      const recordsHistory = await this.getLoadHistoryFromRecordFallbacks(
+        uuid,
+        hours,
+        range
+      );
+      if (recordsHistory) return recordsHistory;
+
+      if (range) return null;
     }
     const response = await this.get<{
       count: number;
       records: HistoryRecord[];
     }>(`/api/records/load?uuid=${uuid}&hours=${hours}`);
-    return response.status === "success" ? response.data : null;
+    if (response.status === "success" && response.data?.records?.length) {
+      const normalized = this.normalizeLoadHistory(response.data, uuid);
+      return normalized && this.hasFiniteMetricValue(normalized.records as any[])
+        ? normalized
+        : null;
+    }
+    return null;
   }
 
-  // 取得 Ping 歷史記錄
+  // 获取 Ping 历史记录
   async getPingHistory(
     uuid: string,
-    hours: number = 24
+    hours: number = 24,
+    range?: HistoryQueryRange | null
   ): Promise<PingHistoryResponse | null> {
     if (this.useRpc) {
-      const response = await this.rpcCall<any>("common:getRecords", {
+      const metricHistory = await this.getPingHistoryFromMetrics(
         uuid,
         hours,
-        type: "ping",
-      });
-      if (response.status === "success" && response.data) {
-        const data = response.data;
-        // RPC type=ping 回傳值：{ count, basic_info: BasicInfo[], records: PingRecord[], from, to }
-        // PingRecord 包含 { task_id, time, value, client }
-        const records: PingHistoryRecord[] = Array.isArray(data.records)
-          ? data.records
-          : [];
+        range
+      );
+      if (metricHistory) return metricHistory;
 
-        // 嘗試使用回應中的任務（某些伺服器版本包含此功能）
-        let tasks: PingTask[] = Array.isArray(data.tasks)
-          ? data.tasks
-          : [];
+      const recordsHistory = await this.getPingHistoryFromRecordFallbacks(
+        uuid,
+        hours,
+        range
+      );
+      if (recordsHistory) return recordsHistory;
 
-        // 如果伺服器未提供任務，則根據記錄中的唯一 task_id 建構任務
-        if (tasks.length === 0 && records.length > 0) {
-          const taskIdSet = new Set<number>();
-          records.forEach((r: PingHistoryRecord) => taskIdSet.add(r.task_id));
-
-          // 如果 basic_info 可用，嘗試從中推導出損失
-          const basicInfo: Array<{ client: string; loss: number }> =
-            Array.isArray(data.basic_info) ? data.basic_info : [];
-          const avgLoss =
-            basicInfo.length > 0
-              ? basicInfo.reduce((sum: number, b: { loss: number }) => sum + (b.loss || 0), 0) / basicInfo.length
-              : 0;
-
-          tasks = Array.from(taskIdSet)
-            .sort((a, b) => a - b)
-            .map((id) => ({
-              id,
-              name: `Task ${id}`,
-              interval: 30,
-              loss: Math.round(avgLoss * 100) / 100,
-            }));
-        }
-
-        return {
-          count: data.count ?? records.length,
-          records,
-          tasks,
-        };
-      }
-      return null;
+      if (range) return null;
     }
     const response = await this.get<PingHistoryResponse>(
       `/api/records/ping?uuid=${uuid}&hours=${hours}`
     );
-    return response.status === "success" ? response.data : null;
+    if (response.status === "success" && response.data?.records?.length) {
+      const normalized = this.normalizePingHistory(response.data);
+      return normalized && normalized.records.length > 0
+        ? normalized
+        : null;
+    }
+    return null;
   }
 
-  // 取得監測節點任務列表（管理員 API）
+  // 获取监测节点任务列表（管理员API）
   async getPingTasks(): Promise<PingTaskFull[]> {
     try {
+      if (this.useRpc) {
+        const response = await this.rpcCall<PingTaskFull[]>(
+          "public:getPublicPingTasks",
+          {},
+          { silent: true }
+        );
+        if (response.status === "success" && Array.isArray(response.data)) {
+          return response.data;
+        }
+
+        const publicResponse = await this.get<PingTaskFull[]>("/api/task/ping");
+        if (
+          publicResponse.status === "success" &&
+          Array.isArray(publicResponse.data)
+        ) {
+          return publicResponse.data;
+        }
+
+        return [];
+      }
+
+      const publicResponse = await this.get<PingTaskFull[]>("/api/task/ping");
+      if (
+        publicResponse.status === "success" &&
+        Array.isArray(publicResponse.data)
+      ) {
+        return publicResponse.data;
+      }
+
       const response = await this.get<PingTaskFull[]>("/api/admin/ping/");
       if (response.status === "success" && Array.isArray(response.data)) {
         return response.data;
@@ -230,22 +1106,28 @@ class ApiService {
     }
   }
 
-  // 取得公開設定
+  // 获取公开设置
   async getPublicSettings(): Promise<PublicInfo | null> {
     if (this.useRpc) {
-      const response = await this.rpcCall<PublicInfo>("common:getPublicInfo");
-      return response.status === "success" ? response.data : null;
+      const response = await this.rpcFallback<PublicInfo>([
+        { method: "public:getPublicSettings" },
+        { method: "common:getPublicInfo" },
+      ]);
+      if (response.status === "success" && response.data) {
+        return response.data;
+      }
     }
     const response = await this.get<PublicInfo>("/api/public");
     return response.status === "success" ? response.data : null;
   }
 
-  // 取得版本資訊
+  // 获取版本信息
   async getVersion(): Promise<{ version: string; hash: string }> {
     if (this.useRpc) {
-      const response = await this.rpcCall<{ version: string; hash: string }>(
-        "common:getVersion"
-      );
+      const response = await this.rpcFallback<{ version: string; hash: string }>([
+        { method: "public:getVersion" },
+        { method: "common:getVersion" },
+      ]);
       if (response.status === "success" && response.data) {
         return response.data;
       }
@@ -258,11 +1140,16 @@ class ApiService {
       : { version: "unknown", hash: "unknown" };
   }
 
-  // 取得使用者資訊
+  // 获取用户信息
   async getUserInfo(): Promise<Me | null> {
     if (this.useRpc) {
-      const response = await this.rpcCall<Me>("common:getMe");
-      return response.status === "success" ? response.data : null;
+      const response = await this.rpcFallback<Me>([
+        { method: "public:getMe" },
+        { method: "common:getMe" },
+      ]);
+      if (response.status === "success" && response.data) {
+        return response.data;
+      }
     }
     try {
       const response = await fetch(`${this.baseUrl}/api/me`);
@@ -277,7 +1164,7 @@ class ApiService {
     }
   }
 
-  // 檢查站點狀態
+  // 检查站点状态
   async checkSiteStatus(): Promise<{
     status: SiteStatus;
     publicInfo: PublicInfo | null;
@@ -338,10 +1225,10 @@ class ApiService {
   }
 }
 
-// 建立 API 服務實例
+// 创建 API 服务实例
 export const apiService = new ApiService();
 
-// WebSocket 連線管理
+// WebSocket 连接管理
 export class WebSocketService {
   private ws: WebSocket | null = null;
   private reconnectAttempts = 0;
@@ -487,7 +1374,7 @@ export class WebSocketService {
   }
 }
 
-// 延遲 WebSocket 服務實例的建立
+// 延迟 WebSocket 服务实例的创建
 let wsServiceInstance: WebSocketService | null = null;
 
 export function getWsService(): WebSocketService {

@@ -36,7 +36,7 @@ export type TrafficLimitTypeFilter =
 
 /** 價格欄位篩選器 */
 export interface PriceFilter {
-  isFreeSearch: boolean; // 開關：ON = 搜尋免費 (price=-1)
+  isFreeSearch: boolean; // 開關：ON = 搜尋免費 (price=-1 或設定的免費標籤)
   isExact: boolean; // 開關：ON = 精確比對，OFF = 範圍搜尋（預設）
   exactValue: string; // 精確價格比對值
   rangeFrom: string; // 範圍模式：最低價格

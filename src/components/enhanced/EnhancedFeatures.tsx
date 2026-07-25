@@ -9,6 +9,7 @@ import { Matomo } from "./Matomo";
 import { CanvasNest } from "./CanvasNest";
 import { Sakura } from "./Sakura";
 import { Live2D } from "./Live2D";
+import { AnnouncementModal } from "./AnnouncementModal";
 import { fetchGeoInfo } from "./useUserGeo";
 import "./enhanced.css";
 
@@ -23,6 +24,7 @@ export function EnhancedFeatures() {
     enableCanvasNest,
     enableSakura,
     enableLive2D,
+    enableAnnouncement,
   } = useAppConfig();
 
   // 當歡迎氣泡關閉但地球元件開啟時，預先取得使用者位置
@@ -39,6 +41,7 @@ export function EnhancedFeatures() {
       {enableFinanceWidget && <FinanceWidget />}
       {enableEarthGlobe && <EarthGlobe />}
       {enableScrollHelpers && <ScrollHelpers />}
+      {enableAnnouncement && <AnnouncementModal />}
       {enableProtection && <Protection />}
       {enableMatomo && <Matomo />}
       {enableCanvasNest && <CanvasNest />}
@@ -50,13 +53,14 @@ export function EnhancedFeatures() {
 
 /**
  * 用於 private-unauthenticated 狀態下的簡化版本
- * 只渲染 Protection 元件
+ * 只渲染公告、Protection 與 Matomo 元件
  */
 export function EnhancedFeaturesPrivate() {
-  const { enableProtection, enableMatomo } = useAppConfig();
+  const { enableAnnouncement, enableProtection, enableMatomo } = useAppConfig();
 
   return (
     <>
+      {enableAnnouncement && <AnnouncementModal />}
       {enableProtection && <Protection />}
       {enableMatomo && <Matomo />}
     </>

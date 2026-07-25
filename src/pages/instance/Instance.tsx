@@ -34,7 +34,8 @@ const Instance = memo(({ node }: InstanceProps) => {
     [node, liveData]
   );
 
-  const { stats, isOnline, trafficPercentage } = useNodeCommons(nodeWithStats);
+  const { stats, isOnline, trafficPercentage, trafficLimitEnabled, trafficLimitInfinite } =
+    useNodeCommons(nodeWithStats);
   const { t } = useLocale();
 
   const swapValue = useMemo(() => {
@@ -101,9 +102,9 @@ const Instance = memo(({ node }: InstanceProps) => {
           label={t("instancePage.totalTraffic")}
           value={
             <div className="flex items-center gap-2">
-              {node.traffic_limit !== 0 && isOnline && stats && (
+              {trafficLimitEnabled && isOnline && stats && (
                 <CircleProgress
-                  value={trafficPercentage}
+                  value={trafficLimitInfinite ? 0 : trafficPercentage}
                   maxValue={100}
                   size={32}
                   strokeWidth={4}
@@ -123,7 +124,8 @@ const Instance = memo(({ node }: InstanceProps) => {
                 <p>
                   {formatTrafficLimit(
                     node.traffic_limit,
-                    node.traffic_limit_type
+                    node.traffic_limit_type,
+                    t
                   )}
                 </p>
               </div>
@@ -144,9 +146,9 @@ const Instance = memo(({ node }: InstanceProps) => {
           label={isOnline ? t("instancePage.runtime") : t("node.lastSeen")}
           value={
             stats && isOnline
-              ? formatUptime(stats.uptime)
+              ? formatUptime(stats.uptime, t)
               : stats?.time
-                ? formatLastSeen(stats.time)
+                ? formatLastSeen(stats.time, t)
                 : t("node.notAvailable")
           }
         />

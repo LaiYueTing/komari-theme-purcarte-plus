@@ -17,13 +17,14 @@ import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@radix-ui/react-label";
 import type { NodeData, PingTaskFull } from "@/types/node";
-import { apiService } from "@/services/api";
+import { apiService, type HistoryQueryRange } from "@/services/api";
 import Loading from "@/components/loading";
 import { usePingChart } from "@/hooks/usePingChart";
 import {
   cutPeakValues,
   calculateTaskStats,
   interpolateNullsLinear,
+  insertSeriesGapRows,
 } from "@/utils/RecordHelper";
 import { useAppConfig } from "@/config";
 import { ScrollableTooltip } from "@/components/ui/tooltip";
@@ -31,16 +32,23 @@ import { useTooltipScrollLock } from "@/hooks/useTooltipScrollLock";
 import Tips from "@/components/ui/tips";
 import { generateColor, lableFormatter } from "@/utils/chartHelper";
 import { useLocale } from "@/config/hooks";
-import { lttbDownsample, calculateAutoMaxPoints } from "@/utils/downsample";
+import {
+  lttbDownsamplePreservingGaps,
+  calculateAutoMaxPoints,
+} from "@/utils/downsample";
 
 interface PingChartProps {
   node: NodeData;
   hours: number;
+  range?: HistoryQueryRange | null;
 }
 
-const PingChart = memo(({ node, hours }: PingChartProps) => {
+const PingChart = memo(({ node, hours, range }: PingChartProps) => {
   const { enableCutPeak, enableConnectBreaks, pingChartMaxPoints, monitorNodeSortMode, monitorNodeCustomOrder } = useAppConfig();
-  const { loading, error, pingHistory } = usePingChart(node, hours);
+  const { loading, error, pingHistory, historyBounds, isDataEmpty } =
+    usePingChart(node, hours, range);
+  const historyStart = historyBounds?.start;
+  const historyEnd = historyBounds?.end;
   const [visiblePingTasks, setVisiblePingTasks] = useState<number[]>([]);
   const [timeRange, setTimeRange] = useState<[number, number] | null>(null);
   const [brushIndices, setBrushIndices] = useState<{
@@ -54,7 +62,7 @@ const PingChart = memo(({ node, hours }: PingChartProps) => {
   const { t } = useLocale();
   const { chartContentRef, handleChartMouseMove, tooltipProps } = useTooltipScrollLock();
 
-  // 管理員 Ping 任務資料（用於按 target/type/weight 排序）
+  // 管理员 Ping 任务数据（用于按 target/type/weight 排序）
   const [pingTasksFull, setPingTasksFull] = useState<PingTaskFull[]>([]);
   useEffect(() => {
     const needsAdminData = ["target_asc", "target_desc", "type_asc", "type_desc", "weight_asc", "weight_desc"].includes(monitorNodeSortMode);
@@ -76,6 +84,12 @@ const PingChart = memo(({ node, hours }: PingChartProps) => {
   }, [pingHistory?.tasks]);
 
   useEffect(() => {
+    setTimeRange(null);
+    setBrushIndices({});
+    setIsResetting(false);
+  }, [hours, node.uuid, range?.start, range?.end]);
+
+  useEffect(() => {
     if (isResetting) {
       setTimeRange(null);
       setBrushIndices({});
@@ -88,10 +102,10 @@ const PingChart = memo(({ node, hours }: PingChartProps) => {
   const midData = useMemo(() => {
     const data = pingHistory?.records || [];
     const tasks = pingHistory?.tasks || [];
-    if (!data.length || !tasks.length) return [];
+    if (!data.length && historyStart === undefined) return [];
 
     const taskIntervals = tasks
-      .map((t) => t.interval)
+      .map((t) => t.data_interval || t.interval)
       .filter((v): v is number => typeof v === "number" && v > 0);
     const fallbackIntervalSec = taskIntervals.length
       ? Math.min(...taskIntervals)
@@ -102,7 +116,7 @@ const PingChart = memo(({ node, hours }: PingChartProps) => {
       Math.max(800, Math.floor(fallbackIntervalSec * 1000 * 0.25))
     );
 
-    // 使用分桶比對取代線性掃描 O(n*m) -> O(n)
+    // 使用分桶匹配替代线性扫描 O(n*m) -> O(n)
     const bucketSize = toleranceMs * 2;
     const grouped: Record<number, any> = {};
     const bucketToAnchor = new Map<number, number>();
@@ -127,7 +141,24 @@ const PingChart = memo(({ node, hours }: PingChartProps) => {
           bucketToAnchor.set(bucket, use);
         }
       }
-      grouped[use][rec.task_id] = rec.value < 0 ? null : rec.value;
+      grouped[use][rec.task_id] =
+        typeof rec.value === "number" &&
+        Number.isFinite(rec.value) &&
+        rec.value >= 0
+          ? rec.value
+          : null;
+    }
+
+    if (historyStart !== undefined && historyEnd !== undefined) {
+      for (const time of [historyStart, historyEnd]) {
+        if (!grouped[time]) {
+          grouped[time] = {
+            time: new Date(time).toISOString(),
+            __ts: time,
+            __rangeAnchor: true,
+          };
+        }
+      }
     }
 
     const merged = Object.values(grouped).sort(
@@ -137,7 +168,8 @@ const PingChart = memo(({ node, hours }: PingChartProps) => {
     if (!merged.length) return [];
 
     const lastTs = (merged as any[])[(merged as any[]).length - 1].__ts;
-    const fromTs = lastTs - hours * 3600_000;
+    const fromTs = historyStart ?? lastTs - hours * 3600_000;
+    const toTs = historyEnd ?? Infinity;
     let startIdx = 0;
     for (let i = 0; i < (merged as any[]).length; i++) {
       if ((merged as any[])[i].__ts >= fromTs) {
@@ -145,22 +177,53 @@ const PingChart = memo(({ node, hours }: PingChartProps) => {
         break;
       }
     }
-    return (merged as any[]).slice(startIdx);
-  }, [pingHistory, hours]);
+    return (merged as any[]).slice(startIdx).filter((row) => row.__ts <= toTs);
+  }, [pingHistory, hours, historyStart, historyEnd]);
 
   const chartData = useMemo(() => {
     let full = midData;
     const tasks = pingHistory?.tasks || [];
-    if (!tasks.length || !full.length) return [];
+    if (!full.length) return [];
+    const activeTasks = tasks.filter(
+      (task) => visiblePingTasks.length === 0 || visiblePingTasks.includes(task.id)
+    );
+    if (!activeTasks.length) {
+      return full.map((d: any) => ({
+        ...d,
+        time: d.__ts ?? new Date(d.time).getTime(),
+      }));
+    }
+    const keys = activeTasks.map((t) => String(t.id));
+    const intervalByKey = new Map(
+      activeTasks.map((task) => [
+        String(task.id),
+        Math.max(
+          30,
+          Number(task.data_interval) || Number(task.interval) || 60
+        ) * 1000,
+      ])
+    );
 
-    if (cutPeak) {
-      const taskKeys = tasks.map((task) => String(task.id));
-      full = cutPeakValues(full, taskKeys);
+    full = insertSeriesGapRows(full, intervalByKey, 1.5);
+
+    const autoMax = calculateAutoMaxPoints(full.length, keys.length);
+    const effectiveMax = pingChartMaxPoints > 0 ? pingChartMaxPoints : autoMax;
+    const preProcessMax =
+      effectiveMax > 0 ? Math.min(full.length, effectiveMax * 4) : 0;
+
+    if (preProcessMax > 0 && full.length > preProcessMax) {
+      const withTs = full.map((d: any) => ({
+        ...d,
+        time: d.__ts ?? new Date(d.time).getTime(),
+      }));
+      full = lttbDownsamplePreservingGaps(withTs, preProcessMax, keys);
     }
 
-    const keys = tasks.map((t) => String(t.id));
+    if (cutPeak) {
+      full = cutPeakValues(full, keys);
+    }
 
-    // 使用 Uint8Array 取代 Set<string> 標記 null 值
+    // 使用 Uint8Array 替代 Set<string> 标记 null 值
     const keyCount = keys.length;
     const preservedNulls = new Uint8Array(full.length * keyCount);
     for (let i = 0; i < full.length; i++) {
@@ -177,7 +240,7 @@ const PingChart = memo(({ node, hours }: PingChartProps) => {
       maxCapMs: 30 * 60_000,
     });
 
-    // 恢復原始 null 值
+    // 恢复原始 null 值
     for (let i = 0; i < full.length; i++) {
       for (let ki = 0; ki < keyCount; ki++) {
         if (preservedNulls[i * keyCount + ki] === 1) {
@@ -186,23 +249,19 @@ const PingChart = memo(({ node, hours }: PingChartProps) => {
       }
     }
 
-    // 自動智慧降採樣
-    const autoMax = calculateAutoMaxPoints(full.length, keys.length);
-    const effectiveMax = pingChartMaxPoints > 0 ? pingChartMaxPoints : autoMax;
-
     if (effectiveMax > 0 && full.length > effectiveMax) {
       const withTs = full.map((d: any) => ({
         ...d,
         time: d.__ts ?? new Date(d.time).getTime(),
       }));
-      return lttbDownsample(withTs, effectiveMax, keys);
+      return lttbDownsamplePreservingGaps(withTs, effectiveMax, keys);
     }
 
     return full.map((d: any) => ({
       ...d,
       time: d.__ts ?? new Date(d.time).getTime(),
     }));
-  }, [midData, cutPeak, pingHistory?.tasks, pingChartMaxPoints]);
+  }, [midData, cutPeak, pingHistory?.tasks, pingChartMaxPoints, visiblePingTasks]);
 
   const handleTaskVisibilityToggle = (taskId: number) => {
     setVisiblePingTasks((prev) =>
@@ -225,7 +284,7 @@ const PingChart = memo(({ node, hours }: PingChartProps) => {
     if (!pingHistory?.tasks) return [];
     const tasks = [...pingHistory.tasks];
 
-    // 建構 admin API 資料查找表（用於 target/type 排序）
+    // 构建 admin API 数据查找表（用于 target/type 排序）
     const adminTaskMap = new Map<number, PingTaskFull>();
     for (const task of pingTasksFull) {
       adminTaskMap.set(task.id, task);
@@ -313,6 +372,7 @@ const PingChart = memo(({ node, hours }: PingChartProps) => {
         const currentPoint = chartData[i];
 
         const isBreak =
+          !currentPoint.__rangeAnchor &&
           (currentPoint[taskKey] === null ||
             currentPoint[taskKey] === undefined) &&
           prevPoint[taskKey] !== null &&
@@ -336,7 +396,8 @@ const PingChart = memo(({ node, hours }: PingChartProps) => {
       const { loss, latestValue, latestTime } = calculateTaskStats(
         pingHistory.records,
         task.id,
-        timeRange
+        timeRange,
+        task.loss
       );
       return {
         ...task,
@@ -348,7 +409,7 @@ const PingChart = memo(({ node, hours }: PingChartProps) => {
     });
   }, [pingHistory?.records, sortedTasks, timeRange]);
 
-  // 僅可見的任務（條件渲染取代 hide 屬性）
+  // 仅可见的任务（条件渲染替代 hide 属性）
   const visibleSortedTasks = useMemo(
     () => sortedTasks.filter((t) => visiblePingTasks.includes(t.id)),
     [sortedTasks, visiblePingTasks]
@@ -500,8 +561,8 @@ const PingChart = memo(({ node, hours }: PingChartProps) => {
             </div>
           </div>
         </CardHeader>
-        <CardContent className="pt-0 flex-grow flex flex-col" ref={chartContentRef}>
-          {pingHistory?.tasks && pingHistory.tasks.length > 0 ? (
+        <CardContent className="relative pt-0 flex-grow flex flex-col" ref={chartContentRef}>
+          {chartData.length > 0 ? (
             <ResponsiveContainer
               width="100%"
               height="100%"
@@ -515,7 +576,12 @@ const PingChart = memo(({ node, hours }: PingChartProps) => {
                 <XAxis
                   type="number"
                   dataKey="time"
-                  domain={timeRange || ["dataMin", "dataMax"]}
+                  domain={
+                    timeRange ||
+                    (historyStart !== undefined && historyEnd !== undefined
+                      ? [historyStart, historyEnd]
+                      : ["dataMin", "dataMax"])
+                  }
                   tickFormatter={(time) => {
                     const date = new Date(time);
                     if (hours === 0) {
@@ -626,6 +692,11 @@ const PingChart = memo(({ node, hours }: PingChartProps) => {
             </ResponsiveContainer>
           ) : (
             <div className="min-h-90 flex items-center justify-center">
+              <p>{t("chart.noData")}</p>
+            </div>
+          )}
+          {!loading && isDataEmpty && chartData.length > 0 && (
+            <div className="pointer-events-none absolute inset-0 flex items-center justify-center">
               <p>{t("chart.noData")}</p>
             </div>
           )}

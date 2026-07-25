@@ -83,6 +83,14 @@ export const defaultTexts = {
     currentTime: "目前時間",
     displayOptionsTitle: "狀態顯示設定",
     currentOnline: "目前線上",
+    assetValue: "資產價值",
+    assetValueOption: "總價值 / 剩餘總價值",
+    assetValueShort: "資產",
+    totalValueShort: "總",
+    remainingTotalValue: "剩餘總價值",
+    remainingValueShort: "剩",
+    monthlyExpenseShort: "月支",
+    specialCases: "特殊計費說明",
     region: "點亮地區",
     trafficShort: "流量",
     traffic: "流量概覽",
@@ -94,6 +102,7 @@ export const defaultTexts = {
     _: "詳情頁",
     title: "詳細資訊",
     cpu: "CPU",
+    customRange: "自訂",
     architecture: "架構",
     virtualization: "虛擬化",
     gpu: "GPU",
@@ -109,6 +118,11 @@ export const defaultTexts = {
     loadingNodeInfo: "正在取得節點資訊 ...",
     nodeNotFound: "找不到該節點",
     enteringNodeDetails: "正在進入節點詳情 ...",
+    startTime: "開始時間",
+    endTime: "結束時間",
+    recentDays: "最近 {count} 天",
+    query: "查詢",
+    invalidTimeRange: "請選擇有效的開始和結束時間",
     latency: "延遲",
     live: "即時",
     hours: "{count} 小時",
@@ -181,11 +195,12 @@ export const defaultTexts = {
 
 export const otherTexts = {
   chart: {
-    packetLossCalculationWarning: "<p>丟包率計算演算法並不準確，謹慎參考</p>",
+    packetLossCalculationWarning:
+      "<p>丟包率使用伺服器端回傳的監測任務統計值，不根據前端圖表斷點或採樣間隔推算。</p>",
     smoothTooltipContent:
       '<h2 class="text-lg font-bold">關於資料平滑的提示</h2><p>當您開啟平滑後，您在統計圖中看到的曲線經過<strong>指數加權移動平均 (EWMA)</strong> 演算法處理，這是一種常用的資料平滑技術。</p></br><p>需要注意的是，經過 EWMA 演算法平滑後的曲線所展示的數值，<strong>並非原始的、真實的測量資料</strong>。它們是根據 EWMA 演算法計算得出的一個<strong>平滑趨勢線</strong>，旨在減少資料波動，使資料模式和趨勢更容易被識別。</p></br><p>因此，您看到的數值更像是<strong>視覺上的呈現</strong>，幫助您更好地理解資料的整體走向和長期趨勢，而不是每一個時間點的精確真實值。如果您需要檢視具體、原始的資料點，請參考未經平滑處理的資料檢視。</p>',
     connectBreaksTooltipContent:
-      '<h2 class="text-lg font-bold">關於連線斷點的提示</h2><p><strong>預設關閉，可在後台設定</strong></p><p>當您開啟「連線斷點」功能後，圖表中的曲線將會跨過那些由於網路問題或其他原因導致的丟包點，形成一條連續的線條。同時，系統會在丟包位置顯示<strong>半透明的垂直參考線</strong>來標記斷點位置。</p>',
+      '<h2 class="text-lg font-bold">關於連線斷點的提示</h2><p><strong>預設關閉，可在後台設定</strong></p><p>當您開啟「連線斷點」功能後，圖表中的曲線將會跨過那些由於網路問題或其他原因導致的丟包點，形成一條連續的線條。同時，系統會在丟包位置顯示<strong>半透明的垂直參考線</strong>來標記斷點位置。此開關只影響圖表顯示，不參與丟包率計算。</p>',
   },
   setting: {
     title: "編輯設定",

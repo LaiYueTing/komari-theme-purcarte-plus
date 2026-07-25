@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import { formatPrice } from "@/utils";
+import { formatPrice, isTrafficLimitInfinite } from "@/utils";
 import type { NodeData } from "@/types/node";
 import type { RpcNodeStatus } from "@/types/rpc";
 import { useNodeData } from "@/contexts/NodeDataContext";
@@ -24,7 +24,7 @@ export const useNodeListCommons = (searchTerm: string, advancedSearchState?: Adv
     getGroups,
   } = useNodeData() as NodeDataContextType;
   const { liveData } = useLiveData() as LiveDataContextType;
-  const { isOfflineNodesBehind, defaultSelectedGroup } = useAppConfig();
+  const { isOfflineNodesBehind, defaultSelectedGroup, freeTag } = useAppConfig();
   const { rates } = useExchangeRates();
   const [selectedGroup, setSelectedGroup] = useState(
     defaultSelectedGroup || ALL_GROUP
@@ -69,7 +69,7 @@ export const useNodeListCommons = (searchTerm: string, advancedSearchState?: Adv
 
     // 進階搜尋啟用時，使用進階過濾取代簡單名稱搜尋
     if (advancedSearchState && !isStateDefault(advancedSearchState)) {
-      nodes = applyAdvancedFilters(nodes, advancedSearchState, rates) as typeof nodes;
+      nodes = applyAdvancedFilters(nodes, advancedSearchState, rates, freeTag) as typeof nodes;
     } else {
       // 簡單搜尋：名稱模糊比對
       nodes = nodes.filter((node: NodeData) =>
@@ -117,6 +117,7 @@ export const useNodeListCommons = (searchTerm: string, advancedSearchState?: Adv
     searchTerm,
     advancedSearchState,
     rates,
+    freeTag,
     sortKey,
     sortOrder,
     isOfflineNodesBehind,
@@ -163,9 +164,11 @@ export const useNodeCommons = (node: NodeData & { stats?: any; _liveDataReady?: 
   const { stats, _liveDataReady } = node;
   const { t } = useLocale();
   const isOnline = stats ? stats.online : false;
+  const trafficLimitInfinite = isTrafficLimitInfinite(node.traffic_limit);
+  const trafficLimitEnabled = Boolean(node.traffic_limit);
   // 離線確認：liveData 已到達且節點不在線（包括 stats 為 undefined 的從未上線節點）
   const isConfirmedOffline = _liveDataReady ? !isOnline : false;
-  const price = formatPrice(node.price, node.currency, node.billing_cycle);
+  const price = formatPrice(node.price, node.currency, node.billing_cycle, t);
 
   const cpuUsage = stats && isOnline ? stats.cpu : 0;
   const memUsage =
@@ -223,13 +226,17 @@ export const useNodeCommons = (node: NodeData & { stats?: any; _liveDataReady?: 
         })
       : t("node.notSet");
 
+  const publicRemarkTagList = node.public_remark
+    ? node.public_remark
+        .split(";")
+        .map((tag) => tag.trim())
+        .filter(Boolean)
+    : [];
+
+  const priceTagIndex = price ? publicRemarkTagList.length : -1;
+
   const tagList = [
-    ...(node.public_remark
-      ? node.public_remark
-          .split(";")
-          .map((tag) => tag.trim())
-          .filter(Boolean)
-      : []),
+    ...publicRemarkTagList,
     ...(price ? [price] : []),
     ...(daysLeftTag ? [daysLeftTag] : []),
     ...(typeof node.tags === "string"
@@ -242,7 +249,8 @@ export const useNodeCommons = (node: NodeData & { stats?: any; _liveDataReady?: 
 
   // 計算流量使用百分比
   const trafficPercentage = useMemo(() => {
-    if (!node.traffic_limit || !stats || !isOnline) return 0;
+    if (!node.traffic_limit || trafficLimitInfinite || !stats || !isOnline)
+      return 0;
 
     // 根據流量限制類型確定使用的流量值
     let usedTraffic = 0;
@@ -265,19 +273,29 @@ export const useNodeCommons = (node: NodeData & { stats?: any; _liveDataReady?: 
     }
 
     return (usedTraffic / node.traffic_limit) * 100;
-  }, [node.traffic_limit, node.traffic_limit_type, stats, isOnline]);
+  }, [
+    node.traffic_limit,
+    node.traffic_limit_type,
+    stats,
+    isOnline,
+    trafficLimitInfinite,
+  ]);
 
   return {
     stats,
     isOnline,
     isConfirmedOffline,
     tagList,
+    priceTagIndex,
     cpuUsage,
     memUsage,
     swapUsage,
     diskUsage,
     load,
+    price,
     expired_at,
     trafficPercentage,
+    trafficLimitEnabled,
+    trafficLimitInfinite,
   };
 };

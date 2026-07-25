@@ -1,5 +1,6 @@
 import * as React from "react";
 import { Box } from "@radix-ui/themes";
+import { useLocale } from "@/config/hooks";
 
 interface FlagProps {
   flag: string; // 地區代碼 (例如 "SG", "US") 或旗幟 emoji (例如 "🇸🇬", "🇺🇳")
@@ -51,6 +52,7 @@ const getCountryCodeFromFlagEmoji = (emoji: string): string | null => {
 };
 
 const Flag = React.memo(({ flag, size }: FlagProps) => {
+  const { t } = useLocale();
   let imgSrc: string;
   let altText: string;
   let resolvedFlagFileName: string; // 最終用於建構檔名的字串 (例如 "SG", "UN")
@@ -79,7 +81,7 @@ const Flag = React.memo(({ flag, size }: FlagProps) => {
   // 建構本機圖片路徑
   imgSrc = `/assets/flags/${resolvedFlagFileName}.svg`;
   // 建構 alt 文字和 aria-label
-  altText = `地區旗幟: ${resolvedFlagFileName}`;
+  altText = t("node.flagAlt", { code: resolvedFlagFileName });
 
   return (
     <Box

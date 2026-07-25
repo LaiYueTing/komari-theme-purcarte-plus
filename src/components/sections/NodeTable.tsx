@@ -19,6 +19,7 @@ import { useAppConfig } from "@/config";
 import { useLocale } from "@/config/hooks";
 import { Card } from "../ui/card";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { FinancePriceTag } from "@/components/enhanced/FinancePriceTag";
 
 interface NodeTableProps {
   nodes: NodeData[];
@@ -38,7 +39,7 @@ export const NodeTable = ({
 
   return (
     <ScrollArea className="w-full" showHorizontalScrollbar>
-      <div className="min-w-[1080px] px-2 pb-2">
+      <div className="node-live-surface min-w-[1080px] px-2 pb-2">
         <div className="space-y-1">
           <Card
             className={`theme-card-style text-primary font-bold grid ${gridCols} text-center gap-4 p-2 items-center transition-colors duration-200`}>
@@ -81,6 +82,7 @@ const NodeTableRow = ({
 }: NodeTableRowProps) => {
   const [isOpen, setIsOpen] = useState(false);
   const [shouldRenderChart, setShouldRenderChart] = useState(false);
+  const [priceTagElement, setPriceTagElement] = useState<HTMLElement | null>(null);
 
   useEffect(() => {
     if (isOpen) {
@@ -93,6 +95,7 @@ const NodeTableRow = ({
     isOnline,
     isConfirmedOffline,
     tagList,
+    priceTagIndex,
     cpuUsage,
     memUsage,
     swapUsage,
@@ -100,9 +103,11 @@ const NodeTableRow = ({
     load,
     expired_at,
     trafficPercentage,
+    trafficLimitEnabled,
+    trafficLimitInfinite,
   } = useNodeCommons(node);
   const gridCols = enableSwap ? "grid-cols-9" : "grid-cols-8";
-  const { pingChartTimeInPreview, enableInstanceDetail, enablePingChart, tableExpiredAtDisplay, tableUptimeDisplay } =
+  const { pingChartTimeInPreview, enableInstanceDetail, enablePingChart, tableExpiredAtDisplay, tableUptimeDisplay, enableFinanceWidget } =
     useAppConfig();
   const { t } = useLocale();
 
@@ -127,10 +132,19 @@ const NodeTableRow = ({
             <Link
               to={`/instance/${node.uuid}`}
               onClick={(e) => e.stopPropagation()}
-              className="hover:underline hover:text-(--accent-11)">
+              className="text-inherit transition-opacity duration-200 hover:opacity-80">
               <div className="text-base font-bold truncate md:whitespace-normal md:break-words">{node.name}</div>
             </Link>
-            <Tag className="text-xs" tags={tagList} />
+            <Tag
+              className="text-xs"
+              tags={tagList}
+              getTagInteraction={({ index }) =>
+                enableFinanceWidget && index === priceTagIndex
+                  ? { ref: setPriceTagElement, className: "cursor-pointer" }
+                  : undefined
+              }
+            />
+            <FinancePriceTag node={node} triggerElement={priceTagElement} />
             {(() => {
               const showExpiry = tableExpiredAtDisplay === "show" ||
                 (tableExpiredAtDisplay === "hideUnset" && expired_at !== t("node.notSet"));
@@ -139,13 +153,13 @@ const NodeTableRow = ({
               const parts: string[] = [];
               if (isOnline && stats) {
                 if (showExpiry) parts.push(expired_at);
-                if (showUptime) parts.push(formatUptime(stats.uptime));
+                if (showUptime) parts.push(formatUptime(stats.uptime, t));
               } else if (!isOnline) {
                 if (showExpiry) parts.push(expired_at);
                 if (showUptime)
                   parts.push(
                     stats?.time
-                      ? `${t("node.lastSeen")} ${formatLastSeen(stats.time)}`
+                      ? `${t("node.lastSeen")} ${formatLastSeen(stats.time, t)}`
                       : t("node.offline")
                   );
               }
@@ -282,12 +296,17 @@ const NodeTableRow = ({
                     : t("node.notAvailable")}
                 </div>
               </div>
-              {node.traffic_limit !== 0 && isOnline && stats && (
+              {trafficLimitEnabled && isOnline && stats && (
                 <>
                   <div className="w-[80%] flex items-center gap-1">
-                    <ProgressBar value={trafficPercentage} h="h-2" />
+                    <ProgressBar
+                      value={trafficLimitInfinite ? 0 : trafficPercentage}
+                      h="h-2"
+                    />
                     <span className="text-right text-xs">
-                      {node.traffic_limit !== 0
+                      {trafficLimitInfinite
+                        ? "∞"
+                        : trafficLimitEnabled
                         ? `${trafficPercentage.toFixed(0)}%`
                         : ""}
                     </span>
@@ -295,7 +314,8 @@ const NodeTableRow = ({
                   <div className="text-xs text-secondary-foreground">
                     {formatTrafficLimit(
                       node.traffic_limit,
-                      node.traffic_limit_type
+                      node.traffic_limit_type,
+                      t
                     )}
                   </div>
                 </>
@@ -318,19 +338,20 @@ const NodeTableRow = ({
                       : t("node.notAvailable")}
                   </div>
                 </div>
-                {node.traffic_limit !== 0 && isOnline && stats && (
+                {trafficLimitEnabled && isOnline && stats && (
                   <div>
                     {formatTrafficLimit(
                       node.traffic_limit,
-                      node.traffic_limit_type
+                      node.traffic_limit_type,
+                      t
                     )}
                   </div>
                 )}
               </div>
-              {node.traffic_limit !== 0 && isOnline && stats && (
+              {trafficLimitEnabled && isOnline && stats && (
                 <div>
                   <CircleProgress
-                    value={trafficPercentage}
+                    value={trafficLimitInfinite ? 0 : trafficPercentage}
                     maxValue={100}
                     size={32}
                     strokeWidth={4}

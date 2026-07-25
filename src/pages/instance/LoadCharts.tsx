@@ -1,4 +1,4 @@
-import { memo, useRef } from "react";
+import { memo } from "react";
 import {
   AreaChart,
   Area,
@@ -17,25 +17,44 @@ import { Flex } from "@radix-ui/themes";
 import Loading from "@/components/loading";
 import { useLoadCharts } from "@/hooks/useLoadCharts";
 import { CustomTooltip } from "@/components/ui/tooltip";
-import { lableFormatter, loadChartTimeFormatter } from "@/utils/chartHelper";
+import { lableFormatter } from "@/utils/chartHelper";
 import type { RpcNodeStatus } from "@/types/rpc";
 import { useLocale } from "@/config/hooks";
+import type { HistoryQueryRange } from "@/services/api";
 
 interface LoadChartsProps {
   node: NodeData;
   hours: number;
+  range?: HistoryQueryRange | null;
   liveData?: RpcNodeStatus;
   isOnline: boolean;
 }
 
-const LoadCharts = memo(
-  ({ node, hours, liveData, isOnline }: LoadChartsProps) => {
-    const { loading, error, chartData, memoryChartData, isDataEmpty } =
-      useLoadCharts(node, hours);
-    const { t } = useLocale();
+const toFiniteNumber = (value: unknown, fallback = 0) => {
+  if (typeof value === "number") {
+    return Number.isFinite(value) ? value : fallback;
+  }
+  if (typeof value === "string" && value.trim() !== "") {
+    const parsed = Number(value);
+    return Number.isFinite(parsed) ? parsed : fallback;
+  }
+  return fallback;
+};
 
-    const chartDataLengthRef = useRef(0);
-    chartDataLengthRef.current = chartData.length;
+const formatPercent = (value: unknown, decimals = 2) =>
+  `${toFiniteNumber(value).toFixed(decimals)}%`;
+
+const LoadCharts = memo(
+  ({ node, hours, range, liveData, isOnline }: LoadChartsProps) => {
+    const {
+      loading,
+      error,
+      chartData,
+      memoryChartData,
+      isDataEmpty,
+      historyBounds,
+    } = useLoadCharts(node, hours, range);
+    const { t } = useLocale();
 
     // 樣式和顏色
     const cn = "flex flex-col w-full overflow-hidden";
@@ -49,7 +68,7 @@ const LoadCharts = memo(
         title: t("chart.cpu"),
         type: "area",
         value: liveData?.cpu
-          ? `${liveData.cpu.toFixed(2)}%`
+          ? formatPercent(liveData.cpu)
           : t("node.notAvailable"),
         dataKey: "cpu",
         yAxisDomain: [0, 100],
@@ -57,7 +76,7 @@ const LoadCharts = memo(
           index !== 0 ? `${value}%` : "",
         color: colors[0],
         data: chartData,
-        tooltipFormatter: (value: number) => `${value.toFixed(2)}%`,
+        tooltipFormatter: (value: unknown) => formatPercent(value),
         tooltipLabel: t("chart.cpuUsageTooltip"),
       },
       {
@@ -89,17 +108,23 @@ const LoadCharts = memo(
             dataKey: "ram",
             color: colors[0],
             tooltipLabel: t("chart.memoryUsageTooltip"),
-            tooltipFormatter: (value: number, raw: any) =>
-              `${formatBytes(raw?.ram_raw || 0)} (${value.toFixed(0)}%)`,
+            tooltipFormatter: (value: unknown, raw: any) =>
+              `${formatBytes(toFiniteNumber(raw?.ram_raw))} (${formatPercent(
+                value,
+                0
+              )})`,
           },
           {
             dataKey: "swap",
             color: colors[1],
             tooltipLabel: t("chart.swapUsageTooltip"),
-            tooltipFormatter: (value: number, raw: any) =>
+            tooltipFormatter: (value: unknown, raw: any) =>
               node.swap_total === 0
                 ? t("node.off")
-                : `${formatBytes(raw?.swap_raw || 0)} (${value.toFixed(0)}%)`,
+                : `${formatBytes(toFiniteNumber(raw?.swap_raw))} (${formatPercent(
+                    value,
+                    0
+                  )})`,
           },
         ],
         yAxisDomain: [0, 100],
@@ -119,10 +144,10 @@ const LoadCharts = memo(
         dataKey: "disk",
         yAxisDomain: [0, node?.disk_total || 100],
         yAxisFormatter: (value: number, index: number) =>
-          index !== 0 ? formatBytes(value) : "",
+          index !== 0 ? formatBytes(toFiniteNumber(value)) : "",
         color: colors[0],
         data: chartData,
-        tooltipFormatter: (value: number) => formatBytes(value),
+        tooltipFormatter: (value: unknown) => formatBytes(toFiniteNumber(value)),
         tooltipLabel: t("chart.diskUsageTooltip"),
       },
       {
@@ -148,17 +173,19 @@ const LoadCharts = memo(
             dataKey: "net_in",
             color: colors[0],
             tooltipLabel: t("chart.download"),
-            tooltipFormatter: (value: number) => `${formatBytes(value, true)}`,
+            tooltipFormatter: (value: unknown) =>
+              `${formatBytes(toFiniteNumber(value), true)}`,
           },
           {
             dataKey: "net_out",
             color: colors[3],
             tooltipLabel: t("chart.upload"),
-            tooltipFormatter: (value: number) => `${formatBytes(value, true)}`,
+            tooltipFormatter: (value: unknown) =>
+              `${formatBytes(toFiniteNumber(value), true)}`,
           },
         ],
         yAxisFormatter: (value: number, index: number) =>
-          index !== 0 ? formatBytes(value) : "",
+          index !== 0 ? formatBytes(toFiniteNumber(value)) : "",
         data: chartData,
       },
       {
@@ -243,9 +270,9 @@ const LoadCharts = memo(
             </div>
           </CardHeader>
           <div
-            className="h-[150px] w-full px-2 pb-2 align-bottom"
+            className="relative h-[150px] w-full px-2 pb-2 align-bottom"
             style={{ minHeight: 0 }}>
-            {!loading && !isDataEmpty && (
+            {!loading && (
               <ChartContainer config={chartConfig} className="h-full w-full">
                 <ChartComponent
                   data={config.data}
@@ -257,7 +284,14 @@ const LoadCharts = memo(
                     vertical={false}
                   />
                   <XAxis
+                    type="number"
                     dataKey="time"
+                    domain={
+                      historyBounds
+                        ? [historyBounds.start, historyBounds.end]
+                        : ["dataMin", "dataMax"]
+                    }
+                    scale="time"
                     tickLine={false}
                     axisLine={{
                       stroke: "var(--theme-text-muted-color)",
@@ -265,14 +299,9 @@ const LoadCharts = memo(
                     tick={{
                       fill: "var(--theme-text-muted-color)",
                     }}
-                    tickFormatter={(value, index) =>
-                      loadChartTimeFormatter(
-                        value,
-                        index,
-                        chartDataLengthRef.current
-                      )
-                    }
-                    interval={0}
+                    tickFormatter={(value) => lableFormatter(value, hours)}
+                    tickCount={2}
+                    interval="preserveStartEnd"
                     height={20}
                   />
                   <YAxis
@@ -323,6 +352,11 @@ const LoadCharts = memo(
                   )}
                 </ChartComponent>
               </ChartContainer>
+            )}
+            {!loading && isDataEmpty && (
+              <div className="pointer-events-none absolute inset-0 flex items-center justify-center">
+                <p>{t("chart.noData")}</p>
+              </div>
             )}
           </div>
         </Card>

@@ -6,11 +6,17 @@ import { apiService, getWsService } from "@/services/api";
 import Loading from "@/components/loading";
 import { defaultTexts, otherTexts } from "./locales";
 import { mergeTexts, deepMerge } from "@/utils/localeUtils";
+import i18next from "i18next";
 
 // 設定提供者屬性型別
 interface ConfigProviderProps {
   children: ReactNode;
 }
+
+type LegacyThemeSettings = Partial<ConfigOptions> & {
+  backagroundAlignment?: unknown;
+  enableVideoBackground?: unknown;
+};
 
 /**
  * 設定提供者元件，用於將設定傳遞給子元件
@@ -28,12 +34,12 @@ export function ConfigProvider({ children }: ConfigProviderProps) {
     try {
       const { status, publicInfo } = await apiService.checkSiteStatus();
       setSiteStatus(status);
-      setPublicSettings(publicInfo);
+      let publicInfoForState = publicInfo;
 
       let mergedConfig: ConfigOptions;
       if (publicInfo) {
         const rawSettings =
-          (publicInfo.theme_settings as Partial<ConfigOptions>) || {};
+          (publicInfo.theme_settings as LegacyThemeSettings) || {};
         // 從後端設定中過濾掉 undefined/null 值，以防止
         // 覆蓋 DEFAULT_CONFIG 的預設值（修復 React 錯誤 #130）
         // 對於 string 型別的設定項，允許空字串通過（使用者可能故意清空）
@@ -42,6 +48,13 @@ export function ConfigProvider({ children }: ConfigProviderProps) {
             ([k, v]) => v !== undefined && v !== null && (v !== "" || typeof DEFAULT_CONFIG[k as keyof ConfigOptions] === "string")
           )
         ) as Partial<ConfigOptions>;
+        if (
+          !themeSettings.backgroundAlignment &&
+          typeof rawSettings.backagroundAlignment === "string" &&
+          rawSettings.backagroundAlignment.trim()
+        ) {
+          themeSettings.backgroundAlignment = rawSettings.backagroundAlignment;
+        }
         mergedConfig = {
           ...DEFAULT_CONFIG,
           ...themeSettings,
@@ -53,7 +66,7 @@ export function ConfigProvider({ children }: ConfigProviderProps) {
         // 向後相容：舊版 enableVideoBackground: true → backgroundMode: "video"
         if (
           !themeSettings.backgroundMode &&
-          (rawSettings as Record<string, unknown>).enableVideoBackground === true
+          rawSettings.enableVideoBackground === true
         ) {
           mergedConfig.backgroundMode = "video";
         }
@@ -81,6 +94,30 @@ export function ConfigProvider({ children }: ConfigProviderProps) {
           }
         }
       }
+
+      if (publicInfoForState && apiService.useRpc) {
+        const [loadMetricRetentionDays, pingMetricRetentionDays] =
+          await Promise.all([
+            apiService.getLoadMetricRetentionDays(publicInfoForState),
+            apiService.getPingMetricRetentionDays(publicInfoForState),
+          ]);
+        if (
+          loadMetricRetentionDays !== null ||
+          pingMetricRetentionDays !== null
+        ) {
+          publicInfoForState = {
+            ...publicInfoForState,
+            ...(loadMetricRetentionDays !== null
+              ? { load_metric_retention_days: loadMetricRetentionDays }
+              : {}),
+            ...(pingMetricRetentionDays !== null
+              ? { ping_metric_retention_days: pingMetricRetentionDays }
+              : {}),
+          };
+        }
+      }
+
+      setPublicSettings(publicInfoForState);
     } catch (error) {
       console.error("Failed to initialize site:", error);
       setConfig(DEFAULT_CONFIG);
@@ -122,7 +159,10 @@ export function ConfigProvider({ children }: ConfigProviderProps) {
 
   if (!isLoaded || !config) {
     return (
-      <Loading text="載入設定中 ..." className={!loading ? "fade-out" : ""} />
+      <Loading
+        text={i18next.t("homePage.loadingConfig")}
+        className={!loading ? "fade-out" : ""}
+      />
     );
   }
 

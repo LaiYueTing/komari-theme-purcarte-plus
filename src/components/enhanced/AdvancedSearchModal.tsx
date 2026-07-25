@@ -18,7 +18,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Search, X, RotateCcw } from "lucide-react";
-import { useLocale } from "@/config/hooks";
+import { useAppConfig, useLocale } from "@/config/hooks";
 import type {
   AdvancedSearchState,
   ValidationErrors,
@@ -35,6 +35,7 @@ import type {
 } from "@/types/advancedSearch";
 import { parseTextInput } from "@/types/advancedSearch";
 import { CURRENCY_OPTIONS } from "@/components/enhanced/useExchangeRates";
+import { normalizeFreeTag } from "@/utils/tagHelper";
 import "./AdvancedSearchModal.css";
 
 // ======================== 工具函式 ========================
@@ -106,6 +107,8 @@ export function AdvancedSearchModal({
   setValidationErrors,
 }: AdvancedSearchModalProps) {
   const { t } = useLocale();
+  const { freeTag } = useAppConfig();
+  const configuredFreeTag = normalizeFreeTag(freeTag);
   const modalRef = useRef<HTMLDivElement>(null);
   const [isClosing, setIsClosing] = useState(false);
 
@@ -290,6 +293,7 @@ export function AdvancedSearchModal({
               onChange={(price) => setState((prev) => ({ ...prev, price }))}
               errors={validationErrors}
               t={t}
+              freeTag={configuredFreeTag}
             />
 
             {/* CPU 核心數：精確/範圍切換 */}
@@ -486,11 +490,13 @@ function PriceSearchField({
   onChange,
   errors,
   t,
+  freeTag,
 }: {
   state: PriceFilter;
   onChange: (val: PriceFilter) => void;
   errors: ValidationErrors;
-  t: (key: string) => string;
+  t: (key: string, params?: Record<string, string | number>) => string;
+  freeTag: string;
 }) {
   const fromError = errors.price_from;
   const toError = errors.price_to;
@@ -627,7 +633,9 @@ function PriceSearchField({
           )}
         </>
       )}
-      <span className="search-field-help">{t("advancedSearch.priceHelp")}</span>
+      <span className="search-field-help">
+        {t("advancedSearch.priceHelp", { tag: freeTag })}
+      </span>
       {fromError && (
         <span className="search-field-error">
           {t("advancedSearch.rangeFrom")}: {t(`advancedSearch.validation.${fromError}`)}
@@ -806,7 +814,7 @@ function DateSearchField({
         /* 精確日期輸入 */
         <input
           type="date"
-          className={`flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-xs transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring ${errors.expired_at ? "search-input-error" : ""}`}
+          className={`advanced-search-date-input ${errors.expired_at ? "search-input-error" : ""}`}
           value={state.exactDate}
           onChange={(e) => onChange({ ...state, exactDate: e.target.value })}
         />
@@ -816,7 +824,7 @@ function DateSearchField({
           <div className="search-date-input">
             <input
               type="date"
-              className={`flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-xs transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring ${errors.expired_at_from ? "search-input-error" : ""}`}
+              className={`advanced-search-date-input ${errors.expired_at_from ? "search-input-error" : ""}`}
               value={state.rangeFrom}
               onChange={(e) =>
                 onChange({ ...state, rangeFrom: e.target.value })
@@ -828,7 +836,7 @@ function DateSearchField({
           <div className="search-date-input">
             <input
               type="date"
-              className={`flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-xs transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring ${errors.expired_at_to ? "search-input-error" : ""}`}
+              className={`advanced-search-date-input ${errors.expired_at_to ? "search-input-error" : ""}`}
               value={state.rangeTo}
               onChange={(e) =>
                 onChange({ ...state, rangeTo: e.target.value })

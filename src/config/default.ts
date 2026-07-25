@@ -1,3 +1,5 @@
+export const DEFAULT_FREE_TAG = "免費";
+
 // 設定型別定義
 export interface ConfigOptions {
     isShowConfigEditButtonInLogined: boolean; // 是否在登入時顯示設定編輯按鈕
@@ -9,10 +11,12 @@ export interface ConfigOptions {
     videoBackgroundUrl: string; // 桌面端影片背景 URL
     videoBackgroundUrlMobile: string; // 行動端影片背景 URL
     backgroundAlignment: string; // 背景對齊方式
+    enableBlur: boolean; // 是否啟用磨砂玻璃效果
     blurValue: number; // 磨砂玻璃模糊值
     blurBackgroundColor: string; // 磨砂玻璃背景顏色
     enableTransparentTags: boolean; // 是否啟用標籤透明背景
     tagDefaultColorList: string; // 標籤預設顏色清單
+    freeTag: string; // 免費標籤文字
     selectThemeColor: ColorType; // 預設主題顏色
     globalFontFamily: string; // 全域字型 font-family 堆疊
     customFontFaceCss: string; // 自訂 @font-face CSS（用於載入外部字型）
@@ -76,6 +80,12 @@ export interface ConfigOptions {
     enableCustomCursor: boolean; // 是否啟用自訂滑鼠游標
     cursorNormalUrl: string; // 一般狀態滑鼠游標圖片 URL
     cursorPointerUrl: string; // 可點擊狀態滑鼠游標圖片 URL
+    // 公告彈窗設定
+    enableAnnouncement: boolean; // 是否啟用公告彈窗
+    announcementLogoUrl: string; // 公告彈窗 Logo 圖片 URL 或特殊佔位符
+    announcementLogoShape: LogoShapeType; // 公告彈窗 Logo 樣式
+    announcementTitle: string; // 公告標題
+    announcementContent: string; // 公告主內容
     enableProtection: boolean; // 是否啟用自訂警告保護
     protectionLogoUrl: string; // 訪客保護彈窗 Logo 圖片 URL
     protectionLogoShape: LogoShapeType; // 訪客保護彈窗 Logo 樣式
@@ -115,11 +125,13 @@ export const DEFAULT_CONFIG: ConfigOptions = {
     videoBackgroundUrl: "/assets/LanternRivers_1080p15fps2Mbps3s.mp4",
     videoBackgroundUrlMobile: "",
     backgroundAlignment: "cover,top",
+    enableBlur: true,
     blurValue: 5,
     blurBackgroundColor: "rgba(255, 255, 255, 0.5)|rgba(0, 0, 0, 0.5)",
     enableTransparentTags: true,
     tagDefaultColorList:
         "lime,cyan,pink,crimson,iris,violet,plum,indigo,blue,jade,mint,grass,teal,sky,red,ruby,tomato,orange,amber,yellow,green,purple,gold,bronze,brown,gray,mauve,slate",
+    freeTag: DEFAULT_FREE_TAG,
     selectThemeColor: "violet",
     globalFontFamily:
         "'Harmony Hans', 'Noto Sans TC', 'Noto Sans SC', Ubuntu, -apple-system, BlinkMacSystemFont, 'PingFang TC', 'PingFang SC', 'Microsoft JhengHei', 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif",
@@ -129,7 +141,7 @@ export const DEFAULT_CONFIG: ConfigOptions = {
     selectedDefaultView: "grid",
     selectedDefaultAppearance: "system",
     statusCardsVisibility:
-        "currentTime:true,currentOnline:true,regionOverview:true,trafficOverview:true,networkSpeed:true",
+        "currentTime:true,currentOnline:true,regionOverview:true,trafficOverview:true,networkSpeed:true,assetValue:true,monthlyExpense:true",
     selectedHeaderStyle: "fixed",
     enableLogo: true,
     logoUrl: "/assets/logo.png",
@@ -148,7 +160,7 @@ export const DEFAULT_CONFIG: ConfigOptions = {
     enableServerUptime: false,
     serverStartTime: "",
     serverUptimeTemplate:
-        "已不穩定運行 {days} 天 {hours} 小時 {minutes} 分鐘 {seconds} 秒",
+        "已穩定運行 {years} 年 {days} 天 {hours} 小時 {minutes} 分鐘 {seconds} 秒",
     footerCustomContent: "",
     enableJsonRPC2Api: true,
     isShowStatsInHeader: false,
@@ -187,6 +199,12 @@ export const DEFAULT_CONFIG: ConfigOptions = {
     enableCustomCursor: true,
     cursorNormalUrl: "/assets/normal.png",
     cursorPointerUrl: "/assets/pointer.png",
+    // 公告彈窗設定
+    enableAnnouncement: false,
+    announcementLogoUrl: "/assets/logo.png",
+    announcementLogoShape: "circle",
+    announcementTitle: "溫馨提示",
+    announcementContent: "",
     enableProtection: false,
     protectionLogoUrl: "/assets/logo.png",
     protectionLogoShape: "circle",

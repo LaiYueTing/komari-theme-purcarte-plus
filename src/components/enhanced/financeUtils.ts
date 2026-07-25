@@ -1,5 +1,6 @@
 import type { NodeData } from "@/types/node.d";
 import type { ExchangeRates } from "./useExchangeRates";
+import { isTrafficLimitInfinite } from "@/utils/trafficLimit";
 
 // 到期時間超過多少年視為無限期（按原價計算）
 const LONG_TERM_YEARS = 100;
@@ -136,6 +137,35 @@ export function calculateMonthlyExpense(
   return cycleMonths > 0 ? priceBase / cycleMonths : 0;
 }
 
+export interface FinanceNodeValues {
+  priceBase: number;
+  monthlyExpense: number;
+  remainingValue: number;
+  isSpecialFree: boolean;
+  isLongTerm: boolean;
+}
+
+export function calculateFinanceNodeValues(
+  node: NodeData,
+  rates: ExchangeRates,
+  date: Date = new Date()
+): FinanceNodeValues {
+  const { price: priceBase, isSpecialFree } = parsePriceToBase(node, rates);
+  const { remainingValue, isLongTerm } = calculateRemainingValue(
+    node,
+    rates,
+    date
+  );
+
+  return {
+    priceBase,
+    monthlyExpense: calculateMonthlyExpense(priceBase, node.billing_cycle),
+    remainingValue,
+    isSpecialFree,
+    isLongTerm,
+  };
+}
+
 /**
  * 根據選擇的日期計算剩餘價值（以 rates 基準貨幣計）
  */
@@ -198,7 +228,7 @@ export function formatBytes(bytes: number): string {
  * 格式化流量
  */
 export function formatTraffic(bytes: number, t?: (key: string) => string): string {
-  if (bytes === 362838837166080) return t ? t("enhanced.trade.trafficInfinite") : "∞TB/月";
+  if (isTrafficLimitInfinite(bytes)) return t ? t("enhanced.trade.trafficInfinite") : "∞TB/月";
   if (bytes === 0) return t ? t("enhanced.trade.trafficUnlimited") : "無限制";
   return formatBytes(bytes) + (t ? t("enhanced.trade.trafficPerMonth") : "/月");
 }
