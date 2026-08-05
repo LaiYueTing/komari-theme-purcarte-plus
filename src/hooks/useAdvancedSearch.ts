@@ -105,8 +105,8 @@ function serializeStateToUrl(state: AdvancedSearchState): string {
       params.set(`${URL_PREFIX.price}to`, state.price.rangeTo.trim());
     }
   }
-  // 價格貨幣（非 CNY 時才寫入）
-  if (state.price.currency && state.price.currency !== "CNY") {
+  // 價格貨幣（非 TWD 時才寫入）
+  if (state.price.currency && state.price.currency !== "TWD") {
     params.set(`${URL_PREFIX.price}cur`, state.price.currency);
   }
 

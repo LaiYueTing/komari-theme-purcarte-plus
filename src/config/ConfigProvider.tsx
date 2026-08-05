@@ -18,6 +18,24 @@ type LegacyThemeSettings = Partial<ConfigOptions> & {
   enableVideoBackground?: unknown;
 };
 
+const supportsJsonRpc2 = (version: string | null | undefined): boolean => {
+  const normalizedVersion = String(version || "").trim();
+  if (!normalizedVersion) return false;
+
+  // Snapshot builds are newer development builds and support JSON-RPC2.
+  if (/^snapshot(?:[-_].*)?$/i.test(normalizedVersion)) return true;
+
+  const match = normalizedVersion.match(/(\d+)\.(\d+)\.(\d+)/);
+  if (!match) return false;
+
+  const [, major, minor, patch] = match.map(Number);
+  return (
+    major > 1 ||
+    (major === 1 && minor > 0) ||
+    (major === 1 && minor === 0 && patch >= 7)
+  );
+};
+
 /**
  * 設定提供者元件，用於將設定傳遞給子元件
  */
@@ -76,23 +94,21 @@ export function ConfigProvider({ children }: ConfigProviderProps) {
       setConfig(mergedConfig);
 
       // Initialize RPC
+      let shouldUseRpc = false;
       if (mergedConfig.enableJsonRPC2Api) {
         const versionInfo = await apiService.getVersion();
-        if (versionInfo && versionInfo.version) {
-          const match = versionInfo.version.match(/(\d+)\.(\d+)\.(\d+)/);
-          if (match) {
-            const [, major, minor, patch] = match.map(Number);
-            if (
-              major > 1 ||
-              (major === 1 && minor > 0) ||
-              (major === 1 && minor === 0 && patch >= 7)
-            ) {
-              apiService.useRpc = true;
-              getWsService().useRpc = true;
-              console.log("RPC has been enabled for API and WebSocket.");
-            }
-          }
+        if (supportsJsonRpc2(versionInfo?.version)) {
+          shouldUseRpc = true;
+          apiService.enableRpc();
+          getWsService().enableRpc();
+          console.log(
+            `RPC has been enabled for API and WebSocket (${versionInfo.version}).`
+          );
         }
+      }
+      if (!shouldUseRpc && (apiService.useRpc || getWsService().useRpc)) {
+        apiService.disableRpc();
+        getWsService().disableRpcAndFallback();
       }
 
       if (publicInfoForState && apiService.useRpc) {

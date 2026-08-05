@@ -41,7 +41,7 @@ export interface PriceFilter {
   exactValue: string; // 精確價格比對值
   rangeFrom: string; // 範圍模式：最低價格
   rangeTo: string; // 範圍模式：最高價格
-  currency: string; // 搜尋貨幣代碼，預設 "CNY"，自動匯率轉換
+  currency: string; // 搜尋貨幣代碼，預設 "TWD"，自動匯率轉換
 }
 
 /** 日期搜尋模式 */
@@ -150,7 +150,7 @@ export function createDefaultAdvancedSearchState(): AdvancedSearchState {
     auto_renewal: "any",
     hidden: "any",
     traffic_limit_type: "any",
-    price: { isFreeSearch: false, isExact: false, exactValue: "", rangeFrom: "", rangeTo: "", currency: "CNY" },
+    price: { isFreeSearch: false, isExact: false, exactValue: "", rangeFrom: "", rangeTo: "", currency: "TWD" },
     cpu_cores: { isExact: false, exactValue: "", rangeFrom: "", rangeTo: "" },
     expired_at: { mode: "range", exactDate: "", rangeFrom: "", rangeTo: "" },
     mem_total: { from: "", to: "", unit: "MB" },

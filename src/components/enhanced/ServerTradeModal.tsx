@@ -194,7 +194,7 @@ export function ServerTradeModal({
       params.set("tm_amount", tradeAmount);
     }
     // 貨幣單位
-    if (userCurrency && userCurrency !== "CNY") {
+    if (userCurrency && userCurrency !== "TWD") {
       params.set("tm_cur", userCurrency);
     }
     const shareUrl = `${window.location.origin}/?${params.toString()}`;

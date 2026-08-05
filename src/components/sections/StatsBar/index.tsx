@@ -81,7 +81,7 @@ export const StatsBar = (props: StatsBarProps) => {
   const { t } = useLocale();
   const { nodes } = useNodeData();
   const [financeCurrency, setFinanceCurrency] = useState(
-    () => localStorage.getItem("fin_currency") || "CNY"
+    () => localStorage.getItem("fin_currency") || "TWD"
   );
   const [excludeFree, setExcludeFree] = useState(() => {
     const stored = localStorage.getItem("fin_exclude_free");
@@ -101,7 +101,7 @@ export const StatsBar = (props: StatsBarProps) => {
       const next =
         (event as CustomEvent<string>).detail ||
         localStorage.getItem("fin_currency") ||
-        "CNY";
+        "TWD";
       setFinanceCurrency(next);
     };
     const handleExcludeFreeChange = (event: Event) => {
@@ -114,7 +114,7 @@ export const StatsBar = (props: StatsBarProps) => {
     };
     const handleStorage = (event: StorageEvent) => {
       if (event.key === "fin_currency") {
-        setFinanceCurrency(event.newValue || "CNY");
+        setFinanceCurrency(event.newValue || "TWD");
       }
       if (event.key === "fin_exclude_free") {
         setExcludeFree(event.newValue !== "false");

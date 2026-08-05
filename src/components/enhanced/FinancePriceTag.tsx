@@ -48,7 +48,7 @@ function FinancePriceTooltip({
   const [isHovered, setIsHovered] = useState(false);
   const [isPinned, setIsPinned] = useState(false);
   const [userCurrency, setUserCurrency] = useState(
-    () => localStorage.getItem("fin_currency") || "CNY"
+    () => localStorage.getItem("fin_currency") || "TWD"
   );
   const [position, setPosition] = useState({ top: 0, left: 0 });
   const tooltipRef = useRef<HTMLDivElement | null>(null);
@@ -106,12 +106,12 @@ function FinancePriceTooltip({
       const next =
         (event as CustomEvent<string>).detail ||
         localStorage.getItem("fin_currency") ||
-        "CNY";
+        "TWD";
       setUserCurrency(next);
     };
     const handleStorage = (event: StorageEvent) => {
       if (event.key === "fin_currency") {
-        setUserCurrency(event.newValue || "CNY");
+        setUserCurrency(event.newValue || "TWD");
       }
     };
 
