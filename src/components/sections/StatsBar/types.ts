@@ -1,3 +1,5 @@
+import type { NodeData } from "@/types/node";
+
 export type DisplayOptions = {
   currentTime: boolean;
   currentOnline: boolean;
@@ -30,6 +32,8 @@ export interface StatsBarProps {
   setDisplayOptions: (options: Partial<DisplayOptions>) => void;
   stats: StatsSnapshot;
   loading: boolean;
+  /** 首頁目前分組／搜尋後的可見節點，用於資產統計按展示範圍彙總。 */
+  financeNodes?: NodeData[];
   enableGroupedBar?: boolean;
   groups?: string[];
   selectedGroup?: string;

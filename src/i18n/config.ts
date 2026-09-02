@@ -59,5 +59,18 @@ const i18n = i18next
         },
     });
 
+// 同步 <html lang>：index.html 固定 lang="en" 會讓瀏覽器誤判語言而跳出翻譯提示，
+// 因此在初始化完成與每次切換語言時，將實際語言寫回 documentElement
+const applyHtmlLang = (lng?: string) => {
+    if (typeof document === "undefined") return;
+    const lang = lng || i18next.resolvedLanguage || i18next.language;
+    if (lang) {
+        document.documentElement.lang = lang;
+    }
+};
+
+i18next.on("languageChanged", applyHtmlLang);
+i18n.then(() => applyHtmlLang());
+
 export default i18n;
 export { resources };
